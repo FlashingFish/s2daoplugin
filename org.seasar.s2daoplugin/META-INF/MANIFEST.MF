@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.name
+Bundle-SymbolicName: org.seasar.s2daoplugin; singleton:=true
+Bundle-Version: 0.0.6
+Bundle-Activator: org.seasar.s2daoplugin.S2DaoPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.jface.text,
+ org.eclipse.jdt.core,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.seasar.kijimuna.core
+Eclipse-AutoStart: true
+Export-Package: org.seasar.s2daoplugin
+Bundle-Vendor: %plugin.provider

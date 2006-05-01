@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+   <!-- actions -->
+   <extension
+		point="org.eclipse.ui.popupMenus">
+		<viewerContribution
+			targetID="#CompilationUnitEditorContext"
+			id="org.seasar.s2daoplugin.sqlopener.viewer">
+			<action
+     			id="org.seasar.s2daoplugin.sqlopener.viewer.open"
+	     		class="org.seasar.s2daoplugin.SQLFileOpenEditorAction"
+	 			label="%SQLFileOpenAction.label"
+				menubarPath="additions"/>
+		</viewerContribution>
+		<objectContribution
+			id="org.seasar.s2daoplugin.sqlopener.object"
+			objectClass="org.eclipse.jdt.core.IJavaElement">
+			<visibility>
+				<or>
+					<objectClass name="org.eclipse.jdt.core.ICompilationUnit"/>
+					<objectClass name="org.eclipse.jdt.core.IType"/>
+					<objectClass name="org.eclipse.jdt.core.IMethod"/>
+				</or>
+			</visibility>
+			<action
+				id="org.seasar.s2daoplugin.sqlopener.object.open"
+				class="org.seasar.s2daoplugin.SQLFileOpenObjectAction"
+				label="%SQLFileOpenAction.label"
+				menubarPath="additions"/>
+		</objectContribution>
+   </extension>
+
+</plugin>
