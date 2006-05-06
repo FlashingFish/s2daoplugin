@@ -29,7 +29,7 @@ import org.seasar.s2daoplugin.util.StringUtil;
 public class ComponentFilter implements IComponentFilter {
 
 	private String[] targetClassNames;
-	private Set targetClassRttiSet = new HashSet();
+	private Set targetClassTypeSet = new HashSet();
 	private DiconModelManager manager;
 	
 	public ComponentFilter(String[] targetClassNames) {
@@ -47,7 +47,7 @@ public class ComponentFilter implements IComponentFilter {
 	}
 	
 	public void initialize() {
-		buildTargetClassRtties();
+		buildTargetClassTypes();
 	}
 	
 	public IComponentElement[] filtering(IComponentElement[] components) {
@@ -59,8 +59,7 @@ public class ComponentFilter implements IComponentFilter {
 			IComponentElement component = components[i];
 			IRtti componentRtti = getManager().getRtti(component.getComponentClassName());
 			// targetClassが空ならすべてのコンポーネントが対象
-			if (StringUtil.isEmpty(targetClassNames[0]) ||
-					targetClassRttiSet.contains(componentRtti)) {
+			if (StringUtil.isEmpty(targetClassNames[0]) || isTarget(componentRtti)) {
 				result.add(component);
 			}
 		}
@@ -71,18 +70,25 @@ public class ComponentFilter implements IComponentFilter {
 		return manager;
 	}
 	
-	private void buildTargetClassRtties() {
+	private void buildTargetClassTypes() {
 		for (int i = 0; i < targetClassNames.length; i++) {
 			IRtti rtti = getManager().getRtti(targetClassNames[i]);
-			addRtti(rtti);
+			addType(rtti);
 		}
 	}
 	
-	private void addRtti(IRtti rtti) {
+	private void addType(IRtti rtti) {
 		if (rtti == null) {
 			return;
 		}
-		targetClassRttiSet.add(rtti);
+		targetClassTypeSet.add(rtti.getType());
+	}
+	
+	private boolean isTarget(IRtti rtti) {
+		if (rtti == null) {
+			return false;
+		}
+		return targetClassTypeSet.contains(rtti.getType());
 	}
 
 }
