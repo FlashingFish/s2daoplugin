@@ -43,8 +43,6 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	private Map youngContainerMap2 = new HashMap();				// IContainerElement.storage.fullPath, IContainerElement
 	private List listeners = new ArrayList();
 	
-	private Map componentCacheMap = new HashMap();
-	
 	private DiconModelManager(IProject project) {
 		this.project = project;
 		initialize();
@@ -74,40 +72,18 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		}
 	}
 	
-	public IComponentCache addComponentCache(String key, IComponentCache cache) {
-		if (StringUtil.isEmpty(key) || cache == null) {
-			return null;
-		}
-		if (!componentCacheMap.containsKey(key)) {
-			cache.setManager(this);
-			cache.initialize();
-			if (cache instanceof IDiconChangeListener) {
-				IDiconChangeListener listener = (IDiconChangeListener) cache;
-				fireInitialEvent(listener);
-				addDiconChangeListener(listener);
-			}
-			componentCacheMap.put(key, cache);
-			return cache;
-		}
-		return (IComponentCache) componentCacheMap.get(key);
-	}
-	
-	public IComponentCache getComponentCache(String key) {
-		return (IComponentCache) componentCacheMap.get(key);
-	}
-	
 	public IContainerElement[] getAllContainers() {
-		initializeIfNeed();
+		initialize();
 		return DiconUtil.toContainerArray(getAllContainerMap().values());
 	}
 	
 	public IContainerElement[] getAffectedContainers() {
-		initializeIfNeed();
+		initialize();
 		return DiconUtil.toContainerArray(getAffectedContainerMap().values());
 	}
 	
 	public IContainerElement[] getUnaffectedContainers() {
-		initializeIfNeed();
+		initialize();
 		return DiconUtil.toContainerArray(getUnaffectedContainerMap().values());
 	}
 	
@@ -124,6 +100,8 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		if (listener == null) {
 			return;
 		}
+		listener.setManager(this);
+		fireInitialEvent(listener);
 		listeners.add(listener);
 	}
 	
@@ -138,20 +116,18 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		}
 	}
 	
-	private void initializeIfNeed() {
-		if (!initialized) {
-			initialize();
-		}
-	}
-	
 	private void initialize() {
-		DiconNature nature = DiconNature.getInstance(project);
-		if (nature != null) {
-			ModelManager model = nature.getModel();
-			buildContainerMap(model);
-			model.addRecordChangeListener(this);
-			initialized = true;
+		if (initialized) {
+			return;
 		}
+		DiconNature nature = DiconNature.getInstance(project);
+		if (nature == null) {
+			return;
+		}
+		ModelManager model = nature.getModel();
+		buildContainerMap(model);
+		model.addRecordChangeListener(this);
+		initialized = true;
 	}
 	
 	private void clearContainerMap() {
@@ -242,6 +218,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireInitialEvent(IDiconChangeListener listener) {
+		listener.initialize();
 		IContainerElement[] containers = getAllContainers();
 		for (int i = 0; i < containers.length; i++) {
 			fireAdded(listener, containers[i]);

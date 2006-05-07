@@ -25,10 +25,12 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
 public class S2DaoSqlFinder implements S2DaoConstants {
@@ -79,7 +81,7 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 			IMethod[] methods = type.getMethods();
 			List sqlFileList = new LinkedList();
 			for (int i = 0; i < methods.length; i++) {
-				sqlFileList.addAll(findSqlFileFromMethod(methods[i]));
+				sqlFileList.addAll(findSqlFilesFromMethod(methods[i]));
 			}
 			return (IFile[]) sqlFileList.toArray(new IFile[sqlFileList.size()]);
 		} catch (JavaModelException e) {
@@ -92,11 +94,60 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		if (method == null) {
 			return EMPTY_FILES;
 		}
-		List sqlFileList = findSqlFileFromMethod(method);
+		List sqlFileList = findSqlFilesFromMethod(method);
 		return (IFile[]) sqlFileList.toArray(new IFile[sqlFileList.size()]);
 	}
 	
-	private List findSqlFileFromMethod(IMethod method) {
+	public IMethod findMethodFromSql(IFile file) {
+		if (file == null || !"sql".equals(file.getFileExtension())) {
+			return null;
+		}
+		String[] split = S2DaoUtil.splitSqlFileName(file.getName());
+		if (split.length != 2) {
+			return null;
+		}
+		IPath packagePath = getPackagePath(file);
+		if (packagePath == null) {
+			return null;
+		}
+		IJavaProject project = JavaCore.create(file.getProject());
+		IPath[] srcPaths = getJavaSourceFolderPaths(project);
+		for (int i = 0; i < srcPaths.length; i++) {
+			try {
+				IPackageFragment pack =
+					project.findPackageFragment(srcPaths[i].append(packagePath));
+				if (pack == null) {
+					continue;
+				}
+				ICompilationUnit unit = pack.getCompilationUnit(split[0] + ".java");
+				IType type = unit.findPrimaryType();
+				IMethod[] methods = type.getMethods();
+				for (int j = 0; j < methods.length; j++) {
+					if (methods[j].getElementName().equals(split[1])) {
+						return methods[j];
+					}
+				}
+			} catch (JavaModelException e) {
+				S2DaoPlugin.log(e);
+			}
+		}
+		return null;
+	}
+	
+	private IPath getPackagePath(IFile file) {
+		IJavaProject project = JavaCore.create(file.getProject());
+		IPath[] srcPaths = getJavaSourceFolderPaths(project);
+		for (int i = 0; i < srcPaths.length; i++) {
+			if (srcPaths[i].matchingFirstSegments(file.getFullPath())
+					== srcPaths[i].segmentCount()) {
+				return file.getFullPath().removeFirstSegments(
+						srcPaths[i].segmentCount()).removeLastSegments(1);
+			}
+		}
+		return null;
+	}
+	
+	private List findSqlFilesFromMethod(IMethod method) {
 		IType type = method.getCompilationUnit().findPrimaryType();
 		IJavaProject project = type.getJavaProject();
 		String packagePath = packageToPath(type);

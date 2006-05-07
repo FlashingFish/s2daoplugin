@@ -28,6 +28,7 @@ public interface S2DaoConstants {
 	String SUFFIX_POSTGRESQL = "_postgre";
 	String SUFFIX_FIREBIRD = "_firebird";
 	String SUFFIX_HSQLDB = "_hsql";
+	
 	String[] DBMS_SUFFIXES = new String[] {
 			SUFFIX_DEFAULT, SUFFIX_ORACLE, SUFFIX_DB2, SUFFIX_MSSQL,
 			SUFFIX_MYSQL, SUFFIX_POSTGRESQL, SUFFIX_FIREBIRD, SUFFIX_HSQLDB,
@@ -38,5 +39,10 @@ public interface S2DaoConstants {
 	
 	IFile[] EMPTY_FILES = new IFile[0];
 	IPath[] EMPTY_PATHS = new IPath[0];
+	
+	String SQL_MARKER = "org.seasar.s2daoplugin.sqlmarker";
+	
+	String S2DAO_NATURE = "org.seasar.s2daoplugin.s2daonature";
+	String SQL_MARKER_BUILDER = "org.seasar.s2daoplugin.sqlmarkerbuilder";
 
 }
