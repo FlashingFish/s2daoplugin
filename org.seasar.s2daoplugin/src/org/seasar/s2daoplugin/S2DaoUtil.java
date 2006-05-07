@@ -15,6 +15,8 @@
  */
 package org.seasar.s2daoplugin;
 
+import java.util.StringTokenizer;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IMethod;
@@ -23,6 +25,7 @@ import org.seasar.s2daoplugin.cache.AutoRegisterCache;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.ComponentCacheGroup;
+import org.seasar.s2daoplugin.cache.ComponentCacheManager;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
@@ -62,33 +65,73 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		return false;
 	}
 	
-	public static String changeSuffix(String suffix, String filename) {
-		if (suffix == null || StringUtil.isEmpty(filename)) {
+	public static String changeSuffix(String newSuffix, String filename) {
+		if (newSuffix == null || StringUtil.isEmpty(filename)) {
 			return null;
+		}
+		boolean extensionDeleted = false;
+		if (hasSqlExtension(filename)) {
+			filename = removeExtension(filename);
+			extensionDeleted = true;
+		}
+		filename = removeSuffix(filename) + newSuffix;
+		return extensionDeleted ? filename + EXTENSION : filename;
+	}
+	
+	// FIXME: もっと厳密に
+	public static String[] splitSqlFileName(String filename) {
+		if (StringUtil.isEmpty(filename)) {
+			return new String[0];
+		}
+		StringTokenizer st = new StringTokenizer(filename, "_");
+		if (st.countTokens() < 2) {
+			return new String[0];
+		}
+		return new String[] {st.nextToken(), removeExtension(st.nextToken())};
+	}
+	
+	private static String removeExtension(String filename) {
+		int index = filename.lastIndexOf('.');
+		return index != -1 ? filename.substring(0, index) : filename;
+	}
+	
+	private static String removeSuffix(String filename) {
+		boolean extensionDeleted = false;
+		if (hasSqlExtension(filename)) {
+			filename = removeExtension(filename);
+			extensionDeleted = true;
 		}
 		for (int i = 0; i < DBMS_SUFFIXES.length; i++) {
 			if (DBMS_SUFFIXES[i].equals(SUFFIX_DEFAULT)) {
 				continue;
 			}
-			if (filename.endsWith(DBMS_SUFFIXES[i] + EXTENSION)) {
-				return filename.replaceAll(DBMS_SUFFIXES[i] + EXTENSION, suffix + EXTENSION);
+			if (filename.endsWith(DBMS_SUFFIXES[i])) {
+				filename = filename.substring(0, filename.lastIndexOf(DBMS_SUFFIXES[i]));
+				break;
 			}
 		}
-		if (filename.endsWith(EXTENSION)) {
-			return filename.replaceAll(EXTENSION, suffix + EXTENSION);
-		} else {
-			return filename + suffix + EXTENSION;
-		}
+		return extensionDeleted ? filename + EXTENSION : filename;
 	}
 	
+	private static boolean hasSqlExtension(String filename) {
+		return filename.endsWith(EXTENSION);
+	}
+	
+	// TODO: ここが1度も実行されずにkijimunaがON->OFF->ONされるとマズイ
 	public static synchronized IComponentCache getS2DaoComponentCache(IProject project) {
-		DiconModelManager manager = DiconModelManager.getInstance(project);
-		if (manager != null) {
-			IComponentCache cache = manager.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
-			return cache != null ? cache :
-				manager.addComponentCache(S2DAO_COMPONENT_CACHE_KEY, createS2DaoComponentCache());
+		DiconModelManager modelManager = DiconModelManager.getInstance(project);
+		ComponentCacheManager manager = ComponentCacheManager.getInstance(project);
+		if (modelManager == null) {
+			manager.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+			return null;
 		}
-		return null;
+		IComponentCache cache = manager.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		if (cache == null) {
+			cache = createS2DaoComponentCache();
+			modelManager.addDiconChangeListener(cache);
+			manager.addComponentCache(S2DAO_COMPONENT_CACHE_KEY, cache);
+		}
+		return cache;
 	}
 	
 	private static IComponentCache createS2DaoComponentCache() {

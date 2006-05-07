@@ -20,8 +20,6 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public interface IComponentCache extends IDiconChangeListener {
 
-	void setManager(DiconModelManager manager);
-	
 	DiconModelManager getManager();
 	
 	IComponentElement[] getComponents(IType type);
@@ -29,8 +27,6 @@ public interface IComponentCache extends IDiconChangeListener {
 	IComponentElement[] getAllComponents();
 	
 	boolean contains(IType type);
-	
-	void initialize();
 	
 	void addComponent(IComponentElement component);
 	

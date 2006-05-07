@@ -15,9 +15,12 @@
  */
 package org.seasar.s2daoplugin;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public class S2DaoPlugin extends AbstractUIPlugin {
 
@@ -34,6 +37,31 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+	}
+	
+	public void addS2DaoNature(IProject project) throws CoreException {
+		if (project == null || project.hasNature(S2DaoConstants.S2DAO_NATURE)) {
+			return;
+		}
+		IProjectDescription desc = project.getDescription();
+		String[] newIds = (String[]) ArrayUtil.add(
+				desc.getNatureIds(), S2DaoConstants.S2DAO_NATURE);
+		desc.setNatureIds(newIds);
+		project.setDescription(desc, null);
+	}
+	
+	public void removeS2DaoNature(IProject project) throws CoreException {
+		if (project == null) {
+			return;
+		}
+		IProjectDescription desc = project.getDescription();
+		String[] ids = desc.getNatureIds();
+		if (ArrayUtil.contains(ids, S2DaoConstants.S2DAO_NATURE)) {
+			String[] newIds = (String[]) ArrayUtil.remove(
+					ids, S2DaoConstants.S2DAO_NATURE);
+			desc.setNatureIds(newIds);
+			project.setDescription(desc, null);
+		}
 	}
 	
 	public static S2DaoPlugin getDefault() {

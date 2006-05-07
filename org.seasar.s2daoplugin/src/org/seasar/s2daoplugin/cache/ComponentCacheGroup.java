@@ -55,9 +55,9 @@ public class ComponentCacheGroup implements IComponentCache {
 
 	public IComponentElement[] getAllComponents() {
 		List result = new LinkedList();
-		for (int i = 0; i < componentCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentCaches.get(i);
-			result.addAll(Arrays.asList(cache.getAllComponents()));
+		IComponentCache[] caches = getAllCaches();
+		for (int i = 0; i < caches.length; i++) {
+			result.addAll(Arrays.asList(caches[i].getAllComponents()));
 		}
 		return (IComponentElement[]) result
 				.toArray(new IComponentElement[result.size()]);

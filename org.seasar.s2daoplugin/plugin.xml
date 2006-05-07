@@ -32,5 +32,53 @@
 				menubarPath="additions"/>
 		</objectContribution>
    </extension>
+   
+   <!-- nature, builder -->
+   <extension
+   		point="org.eclipse.core.resources.natures"
+   		id="s2daonature">
+   		<runtime>
+   			<run class="org.seasar.s2daoplugin.S2DaoNature"/>
+   		</runtime>
+   		<requires-nature id="org.seasar.kijimuna.core.nature"/>
+   		<builder id="org.seasar.s2daoplugin.sqlmarkerbuilder"/>
+   </extension>
+   <extension
+   		point="org.eclipse.core.resources.builders"
+   		id="sqlmarkerbuilder"
+   		name="%plugin.builder">
+   		<builder>
+   			<run class="org.seasar.s2daoplugin.sqlmarker.SqlMarkerBuilder"/>
+   		</builder>
+   </extension>
+   
+   <!-- project property page -->
+   <extension
+   		point="org.eclipse.ui.propertyPages">
+   		<page
+   			id="org.seasar.s2daoplugin.propertypage"
+   			adaptable="true"
+   			name="%plugin.propertypage"
+   			objectClass="org.eclipse.core.resources.IProject"
+   			class="org.seasar.s2daoplugin.property.S2DaoPropertyPage">
+   			<filter name="nature" value="org.seasar.kijimuna.core.nature"/>
+   		</page>
+   </extension>
+   
+   <!-- marker, marker image provider -->
+   <extension
+   		point="org.eclipse.core.resources.markers"
+   		id="sqlmarker"
+   		name="SQL">
+   		<super type="org.eclipse.core.resources.textmarker"/>
+   		<persistent value="false"/>
+   </extension>
+   <extension
+  		point="org.eclipse.ui.ide.markerImageProviders">
+  		<imageprovider
+  			markertype="org.seasar.s2daoplugin.sqlmarker"
+            icon="icons/sql_marker.gif"
+            id="org.seasar.s2daoplugin.sqlmarker.imageprovider"/>
+   </extension>
 
 </plugin>

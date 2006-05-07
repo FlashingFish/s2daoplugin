@@ -19,6 +19,10 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public interface IDiconChangeListener {
 
+	void setManager(DiconModelManager manager);
+	
+	void initialize();
+	
 	void diconAdded(IContainerElement container);
 	
 	void diconUpdated(IContainerElement old, IContainerElement young);
@@ -26,4 +30,5 @@ public interface IDiconChangeListener {
 	void diconRemoved(IContainerElement container);
 	
 	void finishChanged();
+
 }

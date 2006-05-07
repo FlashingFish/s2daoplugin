@@ -23,15 +23,16 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.model.AutoRegisterElement;
+import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public abstract class AbstractComponentCache implements IComponentCache {
 
 	private static final String[] allAutoRegisters;
 	
 	static {
-		allAutoRegisters = new String[CacheConstants.ASPECT_AUTO_REGISTERS.length + CacheConstants.COMPONENT_AUTO_REGISTERS.length];
-		System.arraycopy(CacheConstants.COMPONENT_AUTO_REGISTERS, 0, allAutoRegisters, 0, CacheConstants.COMPONENT_AUTO_REGISTERS.length);
-		System.arraycopy(CacheConstants.ASPECT_AUTO_REGISTERS, 0, allAutoRegisters, CacheConstants.COMPONENT_AUTO_REGISTERS.length, CacheConstants.ASPECT_AUTO_REGISTERS.length);
+		allAutoRegisters = (String[]) ArrayUtil.add(
+				CacheConstants.COMPONENT_AUTO_REGISTERS,
+				CacheConstants.ASPECT_AUTO_REGISTERS);
 	}
 	
 	private ICacheBuilder builder;
