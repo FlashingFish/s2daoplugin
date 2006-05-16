@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.sqlopener.wizard;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -27,6 +27,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.seasar.s2daoplugin.Messages;
+import org.seasar.s2daoplugin.S2DaoConstants;
+import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
 public class SQLCreationWizardPage extends WizardNewFileCreationPage {
