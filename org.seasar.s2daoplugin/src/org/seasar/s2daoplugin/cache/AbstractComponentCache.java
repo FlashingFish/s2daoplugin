@@ -90,7 +90,6 @@ public abstract class AbstractComponentCache implements IComponentCache {
 		return getManager().getRtti(fullyQualifiedClassName);
 	}
 	
-	// TODO: new‚µ‚È‚¢‚ÅAutoRegisterUtil‚ÉˆÚ‚·‚©H
 	private IComponentElement[] wrap(IContainerElement container) {
 		IComponentElement[] components = DiconUtil.getComponents(container);
 		List result = new ArrayList();

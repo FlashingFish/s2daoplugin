@@ -2,7 +2,10 @@
 - ライセンスを Common Public License Version 1.0 から Apache License, Version 2.0 へ変更
 - InterceptorChainおよび、<component>の直接指定によるS2DaoInterceptorのアスペクトに対応
 - プロジェクトのクリーンを行うとS2Daoのコンポーネントが正しく判断できない問題を修正
--
+- AspectAutoRegisterでコンポーネントの自動登録にアスペクトしている場合、interceptorプロパティが
+  S2DaoInterceptorでなくてもS2Daoのコンポーネントと判断（interceptorプロパティを無視）していた
+  問題を修正
+- 
 
 * 0.0.6 [2006/4/11]
 - SQLファイルを開くときにS2Daoのコンポーネントを判断する方法を、diconファイルにおいて

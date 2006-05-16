@@ -13,30 +13,21 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.builder;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IType;
+import java.util.List;
+
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
-public interface IComponentCache extends IDiconChangeListener {
+public class AspectAutoRegisterCacheBuilder extends
+		AbstractAspectAutoCacheBuilder {
 
-	IComponentElement[] getComponents(IType type);
+	public AspectAutoRegisterCacheBuilder(String interceptorClassName) {
+		super(interceptorClassName);
+	}
 	
-	IComponentElement[] getAllComponents();
-	
-	IPath[] getAllContainerPaths();
-	
-	IType[] getAllAppliedTypes();
-	
-	boolean contains(IType type);
-	
-	boolean contains(IType type, IPath containerPath);
-	
-	void addComponent(IComponentElement component);
-	
-	void removeComponent(IComponentElement component);
-	
-	void clearCache();
+	protected List findAdditionalComponents(IComponentElement[] components) {
+		return findTargetAutoRegisters();
+	}
 
 }

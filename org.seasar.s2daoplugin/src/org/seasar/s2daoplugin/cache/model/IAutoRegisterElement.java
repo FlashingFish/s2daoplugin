@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.model;
 
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public interface IAutoRegisterElement extends IComponentElement {
@@ -23,7 +24,14 @@ public interface IAutoRegisterElement extends IComponentElement {
 	int TYPE_COMPONENT = 1;
 	int TYPE_COMPONENT_TARGET = 2;
 	
+	boolean isApplied(IType type);
+	
 	boolean isApplied(String packageName, String shortClassName);
 	
 	int getAutoRegisterType();
+	
+	String getPackageName();
+	
+	String getIgnorePackageName();
+
 }

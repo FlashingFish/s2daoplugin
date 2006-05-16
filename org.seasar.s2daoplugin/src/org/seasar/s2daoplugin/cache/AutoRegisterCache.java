@@ -16,19 +16,24 @@
 package org.seasar.s2daoplugin.cache;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
 import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 
 public class AutoRegisterCache extends AbstractComponentCache {
 
 	private Set autoRegisters = new HashSet();
+	private Map autoRegisterByContainer = new HashMap();
 	
 	public AutoRegisterCache(ICacheBuilder builder) {
 		super(builder);
@@ -40,9 +45,9 @@ public class AutoRegisterCache extends AbstractComponentCache {
 		}
 		List components = new ArrayList();
 		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
-			IAutoRegisterElement ar = (IAutoRegisterElement) it.next();
-			if (isApplied(ar, type)) {
-				components.add(ar);
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (auto.isApplied(type)) {
+				components.add(auto);
 			}
 		}
 		return (IComponentElement[]) components
@@ -54,13 +59,40 @@ public class AutoRegisterCache extends AbstractComponentCache {
 				.toArray(new IComponentElement[autoRegisters.size()]);
 	}
 
+	public IPath[] getAllContainerPaths() {
+		return (IPath[]) autoRegisterByContainer.keySet().toArray(
+				new IPath[autoRegisterByContainer.size()]);
+	}
+	
+	public IType[] getAllAppliedTypes() {
+		Set result = new HashSet();
+		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			result.addAll(AutoRegisterUtil.getAppliedTypes(auto));
+		}
+		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
 	public boolean contains(IType type) {
 		if (type == null) {
 			return false;
 		}
-		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
-			IAutoRegisterElement ar = (IAutoRegisterElement) it.next();
-			if (isApplied(ar, type)) {
+		for (Iterator it = autoRegisterByContainer.keySet().iterator(); it.hasNext();) {
+			if (contains(type, (IPath) it.next())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean contains(IType type, IPath containerPath) {
+		Set components = (Set) autoRegisterByContainer.get(containerPath);
+		if (components == null) {
+			return false;
+		}
+		for (Iterator it = components.iterator(); it.hasNext();) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (auto.isApplied(type)) {
 				return true;
 			}
 		}
@@ -72,20 +104,44 @@ public class AutoRegisterCache extends AbstractComponentCache {
 			return;
 		}
 		autoRegisters.add(component);
+		addComponentByContainer((IAutoRegisterElement) component);
 	}
 
 	public void removeComponent(IComponentElement component) {
+		if (!(component instanceof IAutoRegisterElement)) {
+			return;
+		}
 		autoRegisters.remove(component);
+		removeComponentByContainer((IAutoRegisterElement) component);
 	}
 
 	public void clearCache() {
 		autoRegisters.clear();
+		autoRegisterByContainer.clear();
 	}
 	
-	private boolean isApplied(IAutoRegisterElement autoRegister, IType type) {
-		return autoRegister.isApplied(
-				type.getPackageFragment().getElementName(),
-				type.getElementName());
+	private void addComponentByContainer(IAutoRegisterElement autoRegister) {
+		IPath key = autoRegister.getStorage().getFullPath();
+		if (autoRegisterByContainer.containsKey(key)) {
+			Set components = (Set) autoRegisterByContainer.get(key);
+			components.add(autoRegister);
+		} else {
+			Set components = new HashSet();
+			components.add(autoRegister);
+			autoRegisterByContainer.put(key, components);
+		}
+	}
+	
+	private void removeComponentByContainer(IAutoRegisterElement autoRegister) {
+		IPath key = autoRegister.getStorage().getFullPath();
+		Set components = (Set) autoRegisterByContainer.get(key);
+		if (components == null) {
+			return;
+		}
+		components.remove(autoRegister);
+		if (components.size() == 0) {
+			autoRegisterByContainer.remove(key);
+		}
 	}
 
 }

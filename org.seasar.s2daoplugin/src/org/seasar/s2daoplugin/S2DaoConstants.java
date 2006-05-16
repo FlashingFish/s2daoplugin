@@ -16,7 +16,6 @@
 package org.seasar.s2daoplugin;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
 
 public interface S2DaoConstants {
 
@@ -38,7 +37,6 @@ public interface S2DaoConstants {
 	String S2DAO_INTERCEPTOR = "org.seasar.dao.interceptors.S2DaoInterceptor";
 	
 	IFile[] EMPTY_FILES = new IFile[0];
-	IPath[] EMPTY_PATHS = new IPath[0];
 	
 	String SQL_MARKER = "org.seasar.s2daoplugin.sqlmarker";
 	

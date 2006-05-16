@@ -21,6 +21,8 @@ public interface IDiconChangeListener {
 
 	void setManager(DiconModelManager manager);
 	
+	DiconModelManager getManager();
+	
 	void initialize();
 	
 	void diconAdded(IContainerElement container);

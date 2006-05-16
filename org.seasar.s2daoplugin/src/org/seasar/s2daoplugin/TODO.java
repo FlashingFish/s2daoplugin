@@ -13,30 +13,15 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+interface TODO {
 
-public interface IComponentCache extends IDiconChangeListener {
-
-	IComponentElement[] getComponents(IType type);
-	
-	IComponentElement[] getAllComponents();
-	
-	IPath[] getAllContainerPaths();
-	
-	IType[] getAllAppliedTypes();
-	
-	boolean contains(IType type);
-	
-	boolean contains(IType type, IPath containerPath);
-	
-	void addComponent(IComponentElement component);
-	
-	void removeComponent(IComponentElement component);
-	
-	void clearCache();
+	/* 
+	 * TODO: diconファイルが変わったときにマーカを操作
+	 * 
+	 * TODO: キャッシュを任意のcomponentごとではなくてdicon（container）ごとにするか
+	 *
+	 */
 
 }
