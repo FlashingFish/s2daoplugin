@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IStorage;
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.info.IComponentKey;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
@@ -46,12 +47,25 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 		autoRegisterComponent = component;
 	}
 	
+	public boolean isApplied(IType type) {
+		return isApplied(type.getPackageFragment().getElementName(),
+				type.getElementName());
+	}
+	
 	public boolean isApplied(String packageName, String shortClassName) {
 		return autoRegister.match(packageName, shortClassName);
 	}
 	
 	public int getAutoRegisterType() {
 		return autoRegisterType;
+	}
+	
+	public String getPackageName() {
+		return autoRegister.getPackageName();
+	}
+	
+	public String getIgnorePackageName() {
+		return autoRegister.getIgnorePackageName();
 	}
 
 	public String getComponentName() {
@@ -214,10 +228,10 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 	}
 	
 	private int createAutoRegisterType(IComponentElement component) {
-		return isComponentType(component) ? TYPE_COMPONENT : TYPE_COMPONENT_TARGET;
+		return isTypeComponent(component) ? TYPE_COMPONENT : TYPE_COMPONENT_TARGET;
 	}
 	
-	private boolean isComponentType(IComponentElement component) {
+	private boolean isTypeComponent(IComponentElement component) {
 		return isType(CacheConstants.COMPONENT_AUTO_REGISTERS, component);
 	}
 	
@@ -243,6 +257,8 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 		private IComponentElement autoRegisterComponent;
 		private ClassPattern classPattern;
 		private ClassPattern ignoreClassPattern;
+		private String packageName;
+		private String ignorePackageName;
 		
 		public AutoRegister(IComponentElement autoRegister) {
 			if (autoRegister == null) {
@@ -250,6 +266,14 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 			}
 			buildPatterns(autoRegister);
 			this.autoRegisterComponent = autoRegister;
+		}
+		
+		public String getPackageName() {
+			return packageName;
+		}
+		
+		public String getIgnorePackageName() {
+			return ignorePackageName;
 		}
 		
 		public boolean match(String packageName, String className) {
@@ -302,6 +326,7 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 		
 		private void setClassPattern(String packageName, String className) {
 			classPattern = new ClassPattern(packageName, className);
+			this.packageName = packageName;
 		}
 		
 		private void buildIgnoreClassPattern(IInitMethodElement initMethod) {
@@ -317,6 +342,7 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 		
 		private void setIgnoreClassPattern(String packageName, String className) {
 			ignoreClassPattern = new ClassPattern(packageName, className);
+			this.ignorePackageName = packageName;
 		}
 		
 		private String trim(String value) {

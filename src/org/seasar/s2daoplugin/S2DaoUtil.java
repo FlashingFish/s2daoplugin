@@ -22,12 +22,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.seasar.s2daoplugin.cache.AutoRegisterCache;
+import org.seasar.s2daoplugin.cache.AutoRegisterCacheComposite;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
-import org.seasar.s2daoplugin.cache.ComponentCacheGroup;
+import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.ComponentCacheManager;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.builder.AspectAutoRegisterCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AutoAspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.CacheBuilderChain;
@@ -135,12 +137,13 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	}
 	
 	private static IComponentCache createS2DaoComponentCache() {
-		return new ComponentCacheGroup()
+		return new CacheComposite()
 				.addComponentCache(new ComponentCache(new CacheBuilderChain()
 						.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
 						.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
-				.addComponentCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
-				.addComponentCache(new AutoRegisterCache(new ComponentCacheBuilder(ASPECT_AUTO_REGISTERS)));
+				.addComponentCache(new AutoRegisterCacheComposite()
+						.addComponentAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
+						.addComponentTargetAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
 	}
 
 }

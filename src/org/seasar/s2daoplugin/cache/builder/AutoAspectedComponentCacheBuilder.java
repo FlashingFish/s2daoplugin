@@ -15,56 +15,32 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
-import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 
-public class AutoAspectedComponentCacheBuilder extends AbstractComponentTargetCacheBuilder {
+public class AutoAspectedComponentCacheBuilder extends 
+		AbstractAspectAutoCacheBuilder {
 
-	private final IComponentHolder aspectHolder;
-	private final IComponentHolder aspectAutoRegisterHolder;
-	
-	public AutoAspectedComponentCacheBuilder(String targetClassName) {
-		this(new String[] {targetClassName});
-	}
-	
-	public AutoAspectedComponentCacheBuilder(String[] targetClassNames) {
-		aspectHolder = createHolder(targetClassNames);
-		aspectAutoRegisterHolder = createHolder(CacheConstants.ASPECT_AUTO_REGISTERS);
+	public AutoAspectedComponentCacheBuilder(String interceptorClassName) {
+		super(interceptorClassName);
 	}
 	
 	protected List findAdditionalComponents(IComponentElement[] components) {
 		List result = new LinkedList();
-		List s2daoAutoRegisters = findS2DaoAutoRegisters();
+		List autoRegisters = findTargetAutoRegisters();
 		for (int i = 0; i < components.length; i++) {
-			for (int j = 0; j < s2daoAutoRegisters.size(); j++) {
-				IAutoRegisterElement ar = (IAutoRegisterElement) s2daoAutoRegisters.get(j);
+			for (int j = 0; j < autoRegisters.size(); j++) {
+				IAutoRegisterElement ar = (IAutoRegisterElement) autoRegisters.get(j);
 				if (isApplied(ar, components[i])) {
 					result.add(components[i]);
 				}
 			}
 		}
 		return result;
-	}
-	
-	private List findS2DaoAutoRegisters() {
-		List s2daoAutoRegisters = new ArrayList();
-		IComponentElement[] components = (IComponentElement[]) aspectAutoRegisterHolder.getComponents();
-		for (int i = 0; i < components.length; i++) {
-			IComponentElement[] aspectComponents = aspectHolder.getComponents();
-			for (int j = 0; j < aspectComponents.length; j++) {
-				IAutoRegisterElement auto = (IAutoRegisterElement) components[i];
-				if (AutoRegisterUtil.hasInterceptor(auto, aspectComponents[j])) {
-					s2daoAutoRegisters.add(auto);
-				}
-			}
-		}
-		return s2daoAutoRegisters;
 	}
 	
 	private boolean isApplied(IAutoRegisterElement autoRegister, IComponentElement target) {

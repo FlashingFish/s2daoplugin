@@ -15,21 +15,32 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
+import org.seasar.s2daoplugin.util.JavaUtil;
 
-public final class AutoRegisterUtil {
+public class AutoRegisterUtil {
 
-	public static boolean hasInterceptor(IAutoRegisterElement autoRegister, IComponentElement interceptor) {
-		if (autoRegister.getAutoRegisterType() !=
-				IAutoRegisterElement.TYPE_COMPONENT_TARGET) {
+	public static boolean hasInterceptor(IAutoRegisterElement autoRegister,
+			IComponentElement interceptor) {
+		if (autoRegister == null || interceptor == null) {
 			return false;
 		}
-		if (interceptor == null) {
+		if (autoRegister.getAutoRegisterType() !=
+				IAutoRegisterElement.TYPE_COMPONENT_TARGET) {
 			return false;
 		}
 		List props = autoRegister.getPropertyList();
@@ -41,6 +52,45 @@ public final class AutoRegisterUtil {
 			}
 		}
 		return false;
+	}
+	
+	public static List getAppliedTypes(IAutoRegisterElement autoRegister) {
+		List result = new ArrayList();
+		if (autoRegister == null ||
+				autoRegister.getAutoRegisterType() !=
+					IAutoRegisterElement.TYPE_COMPONENT) {
+			return result;
+		}
+		IJavaProject project = JavaCore.create(autoRegister.getProject());
+		TypeCollectingVisitor v = new TypeCollectingVisitor(autoRegister);
+		JavaUtil.visitSourceFolders(project, autoRegister.getPackageName(), v);
+		return v.getResult();
+	}
+	
+	
+	private static class TypeCollectingVisitor implements IResourceVisitor {
+
+		private IAutoRegisterElement autoRegister;
+		private Set result = new HashSet();
+		
+		public TypeCollectingVisitor(IAutoRegisterElement autoRegister) {
+			this.autoRegister = autoRegister;
+		}
+		
+		public boolean visit(IResource resource) throws CoreException {
+			if (!"java".equals(resource.getFileExtension())) {
+				return true;
+			}
+			IType type = JavaUtil.findPrimaryType(resource);
+			if (autoRegister.isApplied(type)) {
+				result.add(type);
+			}
+			return true;
+		}
+		
+		public List getResult() {
+			return new ArrayList(result);
+		}
 	}
 
 }

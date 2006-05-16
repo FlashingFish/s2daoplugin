@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
@@ -30,22 +31,48 @@ import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
 
 public class ComponentCache extends AbstractComponentCache {
 
-	private Map componentMap = new HashMap();						// IType, Set<IComponentElement
+	private Map componentByType = new HashMap();
+	private Map componentByContainer = new HashMap();
 	
 	public ComponentCache(ICacheBuilder builder) {
 		super(builder);
 	}
 	
+	public IPath[] getAllContainerPaths() {
+		return (IPath[]) componentByContainer.keySet()
+				.toArray(new IPath[componentByContainer.size()]);
+	}
+	
+	public IType[] getAllAppliedTypes() {
+		return (IType[]) componentByType.keySet()
+				.toArray(new IType[componentByType.size()]);
+	}
+	
 	public boolean contains(IType type) {
-		return componentMap.containsKey(type);
+		return componentByType.containsKey(type);
+	}
+	
+	public boolean contains(IType type, IPath containerPath) {
+		Set components = (Set) componentByContainer.get(containerPath);
+		if (components == null) {
+			return false;
+		}
+		for (Iterator it = components.iterator(); it.hasNext();) {
+			IComponentElement component = (IComponentElement) it.next();
+			IRtti rtti = getRtti(component);
+			if (rtti != null && rtti.getType().equals(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public IComponentElement[] getComponents(IType type) {
 		if (type == null) {
 			return CacheConstants.EMPTY_COMPONENTS;
 		}
-		if (componentMap.containsKey(type)) {
-			Set result = (Set) componentMap.get(type);
+		if (componentByType.containsKey(type)) {
+			Set result = (Set) componentByType.get(type);
 			return (IComponentElement[]) result
 				.toArray(new IComponentElement[result.size()]);
 		}
@@ -54,7 +81,7 @@ public class ComponentCache extends AbstractComponentCache {
 	
 	public IComponentElement[] getAllComponents() {
 		List componentList = new LinkedList();
-		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
+		for (Iterator it = componentByType.values().iterator(); it.hasNext();) {
 			Set components = (Set) it.next();
 			for (Iterator it2 = components.iterator(); it2.hasNext();) {
 				IComponentElement component = (IComponentElement) it2.next();
@@ -66,50 +93,61 @@ public class ComponentCache extends AbstractComponentCache {
 	}
 	
 	public void clearCache() {
-		componentMap.clear();
+		componentByType.clear();
+		componentByContainer.clear();
 	}
 	
 	public void addComponent(IComponentElement component) {
-		addComponentMap(component);
+		IRtti componentRtti = getRtti(component);
+		if (componentRtti != null) {
+			addComponentByType(componentRtti.getType(), component);
+			addComponentByContainer(component.getStorage().getFullPath(), component);
+		}
 	}
 	
 	public void removeComponent(IComponentElement component) {
-		removeComponentMap(component);
-	}
-	
-	private void addComponentMap(IComponentElement component) {
 		IRtti componentRtti = getRtti(component);
 		if (componentRtti != null) {
-			addComponentMap(componentRtti.getType(), component);
+			removeComponentByType(componentRtti.getType(), component);
+			removeComponentByContainer(component.getStorage().getFullPath(), component);
 		}
 	}
 	
-	private void addComponentMap(IType type, IComponentElement component) {
-		if (componentMap.containsKey(type)) {
-			Set componentSet = (Set) componentMap.get(type);
-			componentSet.add(component);
+	private void addComponentByType(IType type, IComponentElement component) {
+		addComponentMap(componentByType, type, component);
+	}
+	
+	private void addComponentByContainer(IPath path, IComponentElement component) {
+		addComponentMap(componentByContainer, path, component);
+	}
+	
+	private void addComponentMap(Map map, Object key, IComponentElement component) {
+		if (map.containsKey(key)) {
+			Set components = (Set) map.get(key);
+			components.add(component);
 		} else {
-			Set componentSet = new HashSet();
-			componentSet.add(component);
-			componentMap.put(type, componentSet);
+			Set components = new HashSet();
+			components.add(component);
+			map.put(key, components);
 		}
 	}
 	
-	private void removeComponentMap(IComponentElement component) {
-		IRtti componentRtti = getRtti(component);
-		if (componentRtti != null) {
-			removeComponentMap(componentRtti.getType(), component);
-		}
+	private void removeComponentByType(IType type, IComponentElement component) {
+		removeComponentMap(componentByType, type, component);
 	}
 	
-	private void removeComponentMap(IType type, IComponentElement component) {
-		Set componentSet = (Set) componentMap.get(type);
-		if (componentSet == null) {
+	private void removeComponentByContainer(IPath path, IComponentElement component) {
+		removeComponentMap(componentByContainer, path, component);
+	}
+	
+	private void removeComponentMap(Map map, Object key, IComponentElement component) {
+		Set components = (Set) map.get(key);
+		if (components == null) {
 			return;
 		}
-		componentSet.remove(component);
-		if (componentSet.isEmpty()) {
-			componentMap.remove(type);
+		components.remove(component);
+		if (components.isEmpty()) {
+			map.remove(key);
 		}
 	}
 

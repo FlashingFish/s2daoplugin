@@ -23,13 +23,12 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 
@@ -44,35 +43,42 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	public boolean visit(IResourceDelta delta) throws CoreException {
-		if ("java".equals(delta.getFullPath().getFileExtension())) {
+		String extension = delta.getFullPath().getFileExtension();
+		if ("java".equals(extension)) {
 			handleJava(delta);
-		} else if ("sql".equals(delta.getFullPath().getFileExtension())) {
+		} else if ("sql".equals(extension)) {
 			handleSql(delta);
 		}
 		return true;
 	}
 	
 	private void handleJava(IResourceDelta delta) throws CoreException {
-		if (!(delta.getKind() == IResourceDelta.ADDED ||
-				delta.getKind() == IResourceDelta.CHANGED)) {
-			return;
-		}
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
 			return;
 		}
-		Object obj = delta.getResource().getAdapter(IJavaElement.class);
-		if (!(obj instanceof ICompilationUnit)) {
+		final IType type = JavaUtil.findPrimaryType(delta.getResource());
+		if (!cache.contains(type)) {
 			return;
 		}
-		final IType type = ((ICompilationUnit) obj).findPrimaryType();
-		if (cache.contains(type)) {
-			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					SqlMarkerUtil.remark(type);
-				}
-			};
-			project.getWorkspace().run(runnable, null);
+		switch (delta.getKind()) {
+			case IResourceDelta.ADDED:
+				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					public void run(IProgressMonitor monitor) throws CoreException {
+						SqlMarkerUtil.mark(type);
+					}
+				};
+				project.getWorkspace().run(runnable, null);
+				break;
+			
+			case IResourceDelta.CHANGED:
+				runnable = new IWorkspaceRunnable() {
+					public void run(IProgressMonitor monitor) throws CoreException {
+						SqlMarkerUtil.remark(type);
+					}
+				};
+				project.getWorkspace().run(runnable, null);
+				break;
 		}
 	}
 	

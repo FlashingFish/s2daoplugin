@@ -16,8 +16,6 @@
 package org.seasar.s2daoplugin.sqlmarker;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
@@ -27,14 +25,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 
+// TODO: IWorkspaceRunnableÇÃÇ±Ç∆ÇçlÇ¶ÇÈ
 public class SqlMarkerUtil {
 
 	private static S2DaoSqlFinder finder = new S2DaoSqlFinder();
@@ -45,13 +42,9 @@ public class SqlMarkerUtil {
 			return;
 		}
 		unmarkAll(project);
-		IComponentElement[] components = cache.getAllComponents();
-		for (int i = 0; i < components.length; i++) {
-			IRtti rtti = (IRtti) components[i].getAdapter(IRtti.class);
-			// TODO: AutoRegisterÇÃèàóùÇ‡ì¸ÇÍÇÈ
-			if (rtti != null && !rtti.getType().isBinary()) {
-				mark(rtti.getType());
-			}
+		IType[] appliedTypes = cache.getAllAppliedTypes();
+		for (int i = 0; i < appliedTypes.length; i++) {
+			mark(appliedTypes[i]);
 		}
 	}
 	
@@ -64,9 +57,13 @@ public class SqlMarkerUtil {
 		if (type == null) {
 			return;
 		}
-		IMethod[] methods = getMethodsHasSql(type);
-		for (int i = 0; i < methods.length; i++) {
-			mark(methods[i]);
+		try {
+			IMethod[] methods = type.getMethods();
+			for (int i = 0; i < methods.length; i++) {
+				mark(methods[i]);
+			}
+		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
 		}
 	}
 	
@@ -74,7 +71,9 @@ public class SqlMarkerUtil {
 		if (method == null) {
 			return;
 		}
-		createMarker(method);
+		if (hasSql(method)) {
+			createMarker(method);
+		}
 	}
 	
 	public static void unmarkAll(IProject project) {
@@ -105,44 +104,42 @@ public class SqlMarkerUtil {
 		if (method == null) {
 			return;
 		}
+		IMarker[] markers = null;
 		try {
-			IMarker[] markers = method.getResource().findMarkers(
+			markers = method.getResource().findMarkers(
 					S2DaoConstants.SQL_MARKER, false, IResource.DEPTH_ZERO);
-			for (int i = 0; i < markers.length; i++) {
+		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
+			return;
+		}
+		for (int i = 0; i < markers.length; i++) {
+			try {
 				int start = getStart(method);
 				int end = start + getLength(method);
 				if (start == getStart(markers[i]) && end == getEnd(markers[i])) {
 					markers[i].delete();
 					return;
 				}
+			} catch (CoreException e) {
+				S2DaoPlugin.log(e);
 			}
-		} catch (CoreException e) {
-			S2DaoPlugin.log(e);
 		}
 	}
 	
-	private static IMethod[] getMethodsHasSql(IType type) {
-		IMethod[] methods;
-		try {
-			methods = type.getMethods();
-		} catch (JavaModelException e) {
-			return new IMethod[0];
-		}
-		List result = new LinkedList();
-		for (int i = 0; i < methods.length; i++) {
-			if (finder.findSqlFiles(methods[i]).length != 0) {
-				result.add(methods[i]);
-			}
-		}
-		return (IMethod[]) result.toArray(new IMethod[result.size()]);
+	private static boolean hasSql(IMethod method) {
+		return finder.findSqlFiles(method).length != 0;
 	}
 	
 	private static IMarker createMarker(IMethod method) {
+		if (method.isBinary()) {
+			return null;
+		}
 		try {
 			IMarker marker = method.getResource().createMarker(S2DaoConstants.SQL_MARKER);
 			marker.setAttributes(createMarkerAttributes(method));
 			return marker;
 		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
 			return null;
 		}
 	}
