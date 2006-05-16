@@ -11,7 +11,7 @@
 			id="org.seasar.s2daoplugin.sqlopener.viewer">
 			<action
      			id="org.seasar.s2daoplugin.sqlopener.viewer.open"
-	     		class="org.seasar.s2daoplugin.SQLFileOpenEditorAction"
+	     		class="org.seasar.s2daoplugin.sqlopener.SQLFileOpenEditorAction"
 	 			label="%SQLFileOpenAction.label"
 				menubarPath="additions"/>
 		</viewerContribution>
@@ -27,7 +27,7 @@
 			</visibility>
 			<action
 				id="org.seasar.s2daoplugin.sqlopener.object.open"
-				class="org.seasar.s2daoplugin.SQLFileOpenObjectAction"
+				class="org.seasar.s2daoplugin.sqlopener.SQLFileOpenObjectAction"
 				label="%SQLFileOpenAction.label"
 				menubarPath="additions"/>
 		</objectContribution>

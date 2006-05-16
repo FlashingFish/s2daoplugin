@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.sqlopener;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -35,7 +35,13 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.seasar.s2daoplugin.Messages;
+import org.seasar.s2daoplugin.S2DaoConstants;
+import org.seasar.s2daoplugin.S2DaoPlugin;
+import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.sqlopener.wizard.SQLCreationWizard;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
 public abstract class SQLFileOpenAction
