@@ -37,20 +37,24 @@ public class SqlMarkerUtil {
 	private static S2DaoSqlFinder finder = new S2DaoSqlFinder();
 	
 	public static void remarkAll(IProject project) {
-		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
-		if (cache == null) {
-			return;
-		}
 		unmarkAll(project);
-		IType[] appliedTypes = cache.getAllAppliedTypes();
-		for (int i = 0; i < appliedTypes.length; i++) {
-			mark(appliedTypes[i]);
-		}
+		markAll(project);
 	}
 	
 	public static void remark(IType type) {
 		unmark(type);
 		mark(type);
+	}
+	
+	public static void markAll(IProject project) {
+		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
+		if (cache == null) {
+			return;
+		}
+		IType[] appliedTypes = cache.getAllAppliedTypes();
+		for (int i = 0; i < appliedTypes.length; i++) {
+			mark(appliedTypes[i]);
+		}
 	}
 	
 	public static void mark(IType type) {

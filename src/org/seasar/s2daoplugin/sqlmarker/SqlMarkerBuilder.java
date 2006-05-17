@@ -31,7 +31,6 @@ public class SqlMarkerBuilder extends IncrementalProjectBuilder {
 		if (kind == FULL_BUILD) {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
-					// TODO: progress‚ðŽg‚¤
 					SqlMarkerUtil.remarkAll(getProject());
 				}
 			};

@@ -41,19 +41,25 @@ public class S2DaoPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		S2DaoPlugin plugin = S2DaoPlugin.getDefault();
 		try {
+			IWorkspaceRunnable runnable = null;
 			if (useS2DaoPlugin.getSelection()) {
 				plugin.addS2DaoNature(getProject());
-				// TODO: ‚±‚±‚Åƒrƒ‹ƒ_‚Ì‹N“®
-				
+				runnable = new IWorkspaceRunnable() {
+					public void run(IProgressMonitor monitor)
+							throws CoreException {
+						SqlMarkerUtil.markAll(getProject());
+					}
+				};
 			} else {
 				plugin.removeS2DaoNature(getProject());
-				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-					public void run(IProgressMonitor monitor) throws CoreException {
+				runnable = new IWorkspaceRunnable() {
+					public void run(IProgressMonitor monitor)
+							throws CoreException {
 						SqlMarkerUtil.unmarkAll(getProject());
 					}
 				};
-				getProject().getWorkspace().run(runnable, null);
 			}
+			getProject().getWorkspace().run(runnable, null);
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 		}
