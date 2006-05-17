@@ -41,10 +41,10 @@ import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.sqlopener.wizard.SQLCreationWizard;
+import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizard;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
-public abstract class SQLFileOpenAction
+public abstract class AbstractSqlOpenAction
 		implements IEditorActionDelegate, IObjectActionDelegate {
 
 	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
@@ -134,7 +134,7 @@ public abstract class SQLFileOpenAction
 		IFolder folder = finder.guessSqlStoredFolder(method);
 		IResource resource = folder != null ? folder : method.getResource();
 		
-		SQLCreationWizard wizard = new SQLCreationWizard();
+		SqlCreationWizard wizard = new SqlCreationWizard();
 		wizard.setInitialFileName(S2DaoUtil.createSqlFileName(method));
 		wizard.init(PlatformUI.getWorkbench(), new StructuredSelection(resource));
 		WizardDialog dialog = new WizardDialog(getShell(), wizard);

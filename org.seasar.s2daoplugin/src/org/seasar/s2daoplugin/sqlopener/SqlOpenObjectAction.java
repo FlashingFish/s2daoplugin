@@ -22,7 +22,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
-public class SQLFileOpenObjectAction extends SQLFileOpenAction {
+public class SqlOpenObjectAction extends AbstractSqlOpenAction {
 
 	private IStructuredSelection structured;
 	
