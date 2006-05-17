@@ -21,7 +21,10 @@ interface TODO {
 	 * TODO: diconファイルが変わったときにマーカを操作
 	 * 
 	 * TODO: キャッシュを任意のcomponentごとではなくてdicon（container）ごとにするか
-	 *
+	 * 
+	 * TODO: プラグインが無効にされているときのことを考える
+	 * 
+	 * TODO: マーカだけを無効にする
 	 */
 
 }
