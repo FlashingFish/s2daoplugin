@@ -24,7 +24,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class SQLFileOpenEditorAction extends SQLFileOpenAction {
+public class SqlOpenEditorAction extends AbstractSqlOpenAction {
 
 	private ITextEditor editor;
 	
