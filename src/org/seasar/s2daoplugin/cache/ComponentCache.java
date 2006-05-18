@@ -79,6 +79,22 @@ public class ComponentCache extends AbstractComponentCache {
 		return CacheConstants.EMPTY_COMPONENTS;
 	}
 	
+	public IComponentElement[] getComponents(IType type, IPath containerPath) {
+		Set components = (Set) componentByContainer.get(containerPath);
+		if (components == null) {
+			return CacheConstants.EMPTY_COMPONENTS;
+		}
+		Set result = new HashSet();
+		for (Iterator it = components.iterator(); it.hasNext();) {
+			IComponentElement component = (IComponentElement) it.next();
+			IRtti rtti = getRtti(component);
+			if (rtti != null && rtti.getType().equals(type)) {
+				result.add(component);
+			}
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+	}
+	
 	public IComponentElement[] getAllComponents() {
 		List componentList = new LinkedList();
 		for (Iterator it = componentByType.values().iterator(); it.hasNext();) {

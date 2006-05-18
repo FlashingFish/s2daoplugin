@@ -15,11 +15,9 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,7 +41,7 @@ public class AutoRegisterCache extends AbstractComponentCache {
 		if (type == null) {
 			return CacheConstants.EMPTY_COMPONENTS;
 		}
-		List components = new ArrayList();
+		Set components = new HashSet();
 		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
 			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
 			if (auto.isApplied(type)) {
@@ -52,6 +50,24 @@ public class AutoRegisterCache extends AbstractComponentCache {
 		}
 		return (IComponentElement[]) components
 				.toArray(new IComponentElement[components.size()]);
+	}
+	
+	public IComponentElement[] getComponents(IType type, IPath containerPath) {
+		if (type == null || containerPath == null) {
+			return CacheConstants.EMPTY_COMPONENTS;
+		}
+		Set components = (Set) autoRegisterByContainer.get(containerPath);
+		if (components == null) {
+			return CacheConstants.EMPTY_COMPONENTS;
+		}
+		Set result = new HashSet();
+		for (Iterator it = components.iterator(); it.hasNext();) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (auto.isApplied(type)) {
+				result.add(auto);
+			}
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 
 	public IComponentElement[] getAllComponents() {

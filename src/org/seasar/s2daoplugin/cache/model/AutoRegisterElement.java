@@ -48,6 +48,9 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 	}
 	
 	public boolean isApplied(IType type) {
+		if (type == null) {
+			return false;
+		}
 		return isApplied(type.getPackageFragment().getElementName(),
 				type.getElementName());
 	}
