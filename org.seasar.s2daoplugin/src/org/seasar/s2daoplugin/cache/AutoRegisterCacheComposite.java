@@ -16,6 +16,7 @@
 package org.seasar.s2daoplugin.cache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,28 @@ public class AutoRegisterCacheComposite extends AbstractCacheComposite {
 
 	private List componentAutoCaches = new ArrayList();
 	private List componentTargetAutoCaches = new ArrayList();
+	
+	public IComponentElement[] getComponents(IType type, IPath containerPath) {
+		if (type == null || containerPath == null) {
+			return CacheConstants.EMPTY_COMPONENTS;
+		}
+		Set result = new HashSet();
+		for (int i = 0; i < componentAutoCaches.size(); i++) {
+			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
+			IComponentElement[] components = cache.getComponents(type, containerPath);
+			if (components.length == 0) {
+				continue;
+			}
+			IComponentElement[] componentTargets =
+				getComponentTargetsByContainer(type, containerPath);
+			if (componentTargets.length == 0) {
+				continue;
+			}
+			result.addAll(Arrays.asList(components));
+			result.addAll(Arrays.asList(componentTargets));
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+	}
 	
 	public IType[] getAllAppliedTypes() {
 		Set result = new HashSet();
@@ -50,7 +73,6 @@ public class AutoRegisterCacheComposite extends AbstractCacheComposite {
 		return (IType[]) result.toArray(new IType[result.size()]);
 	}
 	
-	// FIXME: component‚Ì‡˜‚ð”»’è‚·‚é
 	public boolean contains(IType type) {
 		if (type == null) {
 			return false;
@@ -105,25 +127,53 @@ public class AutoRegisterCacheComposite extends AbstractCacheComposite {
 	}
 	
 	private boolean containsByContainers(IType type, IPath[] paths, IComponentCache cache) {
-		for (int j = 0; j < paths.length; j++) {
-			if (!cache.contains(type, paths[j])) {
+		for (int i = 0; i < paths.length; i++) {
+			if (!cache.contains(type, paths[i])) {
 				continue;
 			}
-			if (containsComponentTargetAuto(type, paths[j])) {
+			int lowest = getLowestComponentLineNumber(cache.getComponents(type, paths[i]));
+			if (containsComponentTargetAuto(type, paths[i], lowest)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean containsComponentTargetAuto(IType type, IPath containerPath) {
+	private boolean containsComponentTargetAuto(IType type, IPath containerPath, int lowest) {
 		for (int i = 0; i < componentTargetAutoCaches.size(); i++) {
 			IComponentCache cache = (IComponentCache) componentTargetAutoCaches.get(i);
 			if (!cache.contains(type, containerPath)) {
 				return false;
 			}
+			if (lowest > getLowestComponentLineNumber(
+					cache.getComponents(type, containerPath))) {
+				return false;
+			}
 		}
 		return true;
+	}
+	
+	private int getLowestComponentLineNumber(IComponentElement[] components) {
+		int lowest = Integer.MAX_VALUE;
+		for (int i = 0; i < components.length; i++) {
+			int start = components[i].getStartLine();
+			lowest = lowest > start ? start : lowest;
+		}
+		return lowest;
+	}
+	
+	private IComponentElement[] getComponentTargetsByContainer(IType type,
+			IPath containerPath) {
+		Set result = new HashSet();
+		for (int i = 0; i < componentTargetAutoCaches.size(); i++) {
+			IComponentCache cache = (IComponentCache) componentTargetAutoCaches.get(i);
+			IComponentElement[] components = cache.getComponents(type, containerPath);
+			if (components.length == 0) {
+				return CacheConstants.EMPTY_COMPONENTS;
+			}
+			result.addAll(Arrays.asList(components));
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 
 }

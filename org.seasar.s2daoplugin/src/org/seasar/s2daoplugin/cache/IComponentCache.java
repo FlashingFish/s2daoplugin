@@ -23,6 +23,8 @@ public interface IComponentCache extends IDiconChangeListener {
 
 	IComponentElement[] getComponents(IType type);
 	
+	IComponentElement[] getComponents(IType type, IPath containerPath);
+	
 	IComponentElement[] getAllComponents();
 	
 	IPath[] getAllContainerPaths();

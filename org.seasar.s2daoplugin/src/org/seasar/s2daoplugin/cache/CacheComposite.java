@@ -23,10 +23,20 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public class CacheComposite extends AbstractCacheComposite {
 
 	private List caches = new ArrayList();
+	
+	public IComponentElement[] getComponents(IType type, IPath containerPath) {
+		Set result = new HashSet();
+		IComponentCache[] caches = getAllCaches();
+		for (int i = 0; i < caches.length; i++) {
+			result.addAll(Arrays.asList(caches[i].getComponents(type, containerPath)));
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+	}
 	
 	public IType[] getAllAppliedTypes() {
 		Set result = new HashSet();
