@@ -18,7 +18,6 @@ package org.seasar.s2daoplugin.sqlmarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.S2DaoPlugin;
@@ -55,12 +54,11 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		if (container == null) {
 			return EMPTY_TYPES;
 		}
-		IPath containerPath = container.getStorage().getFullPath();
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(getProject());
 		if (cache == null) {
 			return EMPTY_TYPES;
 		}
-		return cache.getAppliedTypes(containerPath);
+		return cache.getAppliedTypes(container.getStorage().getFullPath());
 	}
 	
 	protected void run(IWorkspaceRunnable runnable) {

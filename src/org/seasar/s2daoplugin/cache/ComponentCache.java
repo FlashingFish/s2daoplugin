@@ -18,8 +18,6 @@ package org.seasar.s2daoplugin.cache;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,16 +110,16 @@ public class ComponentCache extends AbstractComponentCache {
 	}
 	
 	public IComponentElement[] getAllComponents() {
-		List componentList = new LinkedList();
+		Set result = new HashSet();
 		for (Iterator it = componentByType.values().iterator(); it.hasNext();) {
 			Set components = (Set) it.next();
 			for (Iterator it2 = components.iterator(); it2.hasNext();) {
 				IComponentElement component = (IComponentElement) it2.next();
-				componentList.add(component);
+				result.add(component);
 			}
 		}
-		return (IComponentElement[]) componentList
-			.toArray(new IComponentElement[componentList.size()]);
+		return (IComponentElement[]) result
+			.toArray(new IComponentElement[result.size()]);
 	}
 	
 	public void clearCache() {

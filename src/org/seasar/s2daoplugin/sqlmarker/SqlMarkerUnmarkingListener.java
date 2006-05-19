@@ -38,9 +38,7 @@ public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
 		final IType[] types = getAppliedTypes(container);
 		run(new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				for (int i = 0; i < types.length; i++) {
-					SqlMarkerUtil.unmark(types[i]);
-				}
+				SqlMarkerUtil.unmark(types);
 			}
 		});
 	}
