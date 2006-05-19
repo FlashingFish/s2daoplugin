@@ -18,9 +18,9 @@ package org.seasar.s2daoplugin;
 interface TODO {
 
 	/* 
-	 * TODO: diconファイルが変わったときにマーカを操作
+	 * TODO: キャッシュを構築するタイミングを考える
 	 * 
-	 * TODO: キャッシュを任意のcomponentごとではなくてdicon（container）ごとにするか
+	 * TODO: キャッシュを刷新する
 	 * 
 	 * TODO: プラグインが無効にされているときのことを考える
 	 * 

@@ -87,6 +87,10 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		return DiconUtil.toContainerArray(getUnaffectedContainerMap().values());
 	}
 	
+	public IProject getProject() {
+		return project;
+	}
+	
 	public IRtti getRtti(String fullyQualifiedClassName) {
 		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
 			return null;

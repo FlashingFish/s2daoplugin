@@ -60,7 +60,7 @@ public class JavaUtil {
 		for (int i = 0; i < srcPaths.length; i++) {
 			try {
 				IPackageFragment pack =
-					project.findPackageFragment(srcPaths[i].append(packageName));
+					project.findPackageFragment(srcPaths[i].append(toPathName(packageName)));
 				if (pack == null) {
 					continue;
 				}
@@ -80,6 +80,10 @@ public class JavaUtil {
 			return null;
 		}
 		return ((ICompilationUnit) obj).findPrimaryType();
+	}
+	
+	private static String toPathName(String packageName) {
+		return packageName.replace('.', '/');
 	}
 
 }

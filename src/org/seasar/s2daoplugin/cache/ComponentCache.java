@@ -48,6 +48,22 @@ public class ComponentCache extends AbstractComponentCache {
 				.toArray(new IType[componentByType.size()]);
 	}
 	
+	public IType[] getAppliedTypes(IPath containerPath) {
+		Set components = (Set) componentByContainer.get(containerPath);
+		if (components == null) {
+			return new IType[0];
+		}
+		Set result = new HashSet();
+		for (Iterator it = components.iterator(); it.hasNext();) {
+			IComponentElement component = (IComponentElement) it.next();
+			IRtti rtti = getRtti(component);
+			if (rtti != null) {
+				result.add(rtti.getType());
+			}
+		}
+		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
 	public boolean contains(IType type) {
 		return componentByType.containsKey(type);
 	}

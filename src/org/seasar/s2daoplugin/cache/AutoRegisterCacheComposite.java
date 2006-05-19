@@ -73,6 +73,20 @@ public class AutoRegisterCacheComposite extends AbstractCacheComposite {
 		return (IType[]) result.toArray(new IType[result.size()]);
 	}
 	
+	public IType[] getAppliedTypes(IPath containerPath) {
+		Set result = new HashSet();
+		for (int i = 0; i < componentAutoCaches.size(); i++) {
+			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
+			IType[] types = cache.getAppliedTypes(containerPath);
+			for (int j = 0; j < types.length; j++) {
+				if (contains(types[j], containerPath)) {
+					result.add(types[j]);
+				}
+			}
+		}
+		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
 	public boolean contains(IType type) {
 		if (type == null) {
 			return false;

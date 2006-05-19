@@ -32,6 +32,7 @@ import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
+// TODO: IAutoRegisterElement‚ÉˆÚ“®
 public class AutoRegisterUtil {
 
 	public static boolean hasInterceptor(IAutoRegisterElement autoRegister,
