@@ -23,10 +23,11 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.seasar.s2daoplugin.cache.AutoRegisterCache;
 import org.seasar.s2daoplugin.cache.AutoRegisterCacheComposite;
+import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
-import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.ComponentCacheManager;
+import org.seasar.s2daoplugin.cache.DiconChangeListenerChain;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.builder.AspectAutoRegisterCacheBuilder;
@@ -34,6 +35,8 @@ import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AutoAspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.CacheBuilderChain;
 import org.seasar.s2daoplugin.cache.builder.ComponentCacheBuilder;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
@@ -130,8 +133,12 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		IComponentCache cache = manager.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
 		if (cache == null) {
 			cache = createS2DaoComponentCache();
-			modelManager.addDiconChangeListener(cache);
 			manager.addComponentCache(S2DAO_COMPONENT_CACHE_KEY, cache);
+			DiconChangeListenerChain chain = new DiconChangeListenerChain();
+			chain.addListener(new SqlMarkerUnmarkingListener());
+			chain.addListener(cache);
+			chain.addListener(new SqlMarkerMarkingListener());
+			modelManager.addDiconChangeListener(chain);
 		}
 		return cache;
 	}

@@ -47,6 +47,15 @@ public class CacheComposite extends AbstractCacheComposite {
 		return (IType[]) result.toArray(new IType[result.size()]);
 	}
 	
+	public IType[] getAppliedTypes(IPath containerPath) {
+		Set result = new HashSet();
+		IComponentCache[] caches = getAllCaches();
+		for (int i = 0; i < caches.length; i++) {
+			result.addAll(Arrays.asList(caches[i].getAppliedTypes(containerPath)));
+		}
+		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
 	public boolean contains(IType type) {
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {

@@ -31,6 +31,8 @@ public interface IComponentCache extends IDiconChangeListener {
 	
 	IType[] getAllAppliedTypes();
 	
+	IType[] getAppliedTypes(IPath containerPath);
+	
 	boolean contains(IType type);
 	
 	boolean contains(IType type, IPath containerPath);

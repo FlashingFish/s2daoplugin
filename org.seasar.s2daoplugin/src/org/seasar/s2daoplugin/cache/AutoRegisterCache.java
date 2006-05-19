@@ -81,12 +81,25 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	}
 	
 	public IType[] getAllAppliedTypes() {
+		Set result = getAppliedTypes(autoRegisters);
+		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
+	public IType[] getAppliedTypes(IPath containerPath) {
+		Set result = getAppliedTypes((Set) autoRegisterByContainer.get(containerPath));
+		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
+	private Set getAppliedTypes(Set autoRegisters) {
 		Set result = new HashSet();
+		if (autoRegisters == null) {
+			return result;
+		}
 		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
 			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
 			result.addAll(AutoRegisterUtil.getAppliedTypes(auto));
 		}
-		return (IType[]) result.toArray(new IType[result.size()]);
+		return result;
 	}
 	
 	public boolean contains(IType type) {
