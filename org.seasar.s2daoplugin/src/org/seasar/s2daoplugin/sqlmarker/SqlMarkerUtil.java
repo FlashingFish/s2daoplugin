@@ -51,9 +51,15 @@ public class SqlMarkerUtil {
 		if (cache == null) {
 			return;
 		}
-		IType[] appliedTypes = cache.getAllAppliedTypes();
-		for (int i = 0; i < appliedTypes.length; i++) {
-			mark(appliedTypes[i]);
+		mark(cache.getAllAppliedTypes());
+	}
+	
+	public static void mark(IType[] types) {
+		if (types == null) {
+			return;
+		}
+		for (int i = 0; i < types.length; i++) {
+			mark(types[i]);
 		}
 	}
 	
@@ -92,6 +98,14 @@ public class SqlMarkerUtil {
 		}
 	}
 	
+	public static void unmark(IType[] types) {
+		if (types == null) {
+			return;
+		}
+		for (int i = 0; i < types.length; i++) {
+			unmark(types[i]);
+		}
+	}
 	public static void unmark(IType type) {
 		if (type == null) {
 			return;

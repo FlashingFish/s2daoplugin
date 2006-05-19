@@ -16,8 +16,8 @@
 package org.seasar.s2daoplugin.cache;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
@@ -41,7 +41,7 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	}
 
 	public IComponentElement[] getComponents(IType type) {
-		List result = new LinkedList();
+		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			result.addAll(Arrays.asList(caches[i].getComponents(type)));
@@ -50,7 +50,7 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	}
 
 	public IComponentElement[] getAllComponents() {
-		List result = new LinkedList();
+		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			result.addAll(Arrays.asList(caches[i].getAllComponents()));
@@ -59,7 +59,7 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	}
 	
 	public IPath[] getAllContainerPaths() {
-		List result = new LinkedList();
+		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			result.addAll(Arrays.asList(caches[i].getAllContainerPaths()));
