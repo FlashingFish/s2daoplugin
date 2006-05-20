@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.seasar.kijimuna.core.KijimunaCore;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
@@ -48,11 +50,13 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 			handleJava(delta);
 		} else if ("sql".equals(extension)) {
 			handleSql(delta);
+		} else if (".project".equals(delta.getResource().getName())) {
+			handleDotProject(delta);
 		}
 		return true;
 	}
 	
-	private void handleJava(IResourceDelta delta) throws CoreException {
+	private void handleJava(IResourceDelta delta) {
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
 			return;
@@ -63,26 +67,24 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 		}
 		switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SqlMarkerUtil.mark(type);
 					}
-				};
-				project.getWorkspace().run(runnable, null);
+				});
 				break;
 			
 			case IResourceDelta.CHANGED:
-				runnable = new IWorkspaceRunnable() {
+				run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SqlMarkerUtil.remark(type);
 					}
-				};
-				project.getWorkspace().run(runnable, null);
+				});
 				break;
 		}
 	}
 	
-	private void handleSql(IResourceDelta delta) throws CoreException {
+	private void handleSql(IResourceDelta delta) {
 		IResource resource = delta.getResource();
 		if (!(resource instanceof IFile)) {
 			return;
@@ -93,22 +95,44 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 		}
 		switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SqlMarkerUtil.mark(method);
 					}
-				};
-				project.getWorkspace().run(runnable, null);
+				});
 				break;
 			
 			case IResourceDelta.REMOVED:
-				runnable = new IWorkspaceRunnable() {
+				run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SqlMarkerUtil.unmark(method);
 					}
-				};
-				project.getWorkspace().run(runnable, null);
+				});
 				break;
+		}
+	}
+	
+	private void handleDotProject(IResourceDelta delta) throws CoreException {
+		if (project.hasNature(KijimunaCore.ID_NATURE_DICON)) {
+			run(new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					SqlMarkerUtil.markAll(project);
+				}
+			});
+		} else {
+			run(new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					SqlMarkerUtil.unmarkAll(project);
+				}
+			});
+		}
+	}
+	
+	private void run(IWorkspaceRunnable runnable) {
+		try {
+			project.getWorkspace().run(runnable, null);
+		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
 		}
 	}
 

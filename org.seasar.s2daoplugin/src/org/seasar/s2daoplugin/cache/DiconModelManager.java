@@ -15,12 +15,9 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.eclipse.core.resources.IProject;
 import org.seasar.kijimuna.core.dicon.DiconNature;
@@ -32,16 +29,16 @@ import org.seasar.s2daoplugin.util.StringUtil;
 
 public class DiconModelManager implements IProjectRecordChangeListener {
 
-	private static final Map managerMap = new WeakHashMap();	// IProject, DiconModelManager
+	private static final Map managerMap = new HashMap();
 	
 	private IProject project;
 	private boolean initialized;
 	// youngは更新されたdicon、oldは更新されていないdicon
-	private Map oldContainerMap1 = new HashMap();				// IContainerElement.storage.fullPath, IContainerElement
-	private Map youngContainerMap1 = new HashMap();				// IContainerElement.storage.fullPath, IContainerElement
-	private Map oldContainerMap2 = new HashMap();				// IContainerElement.storage.fullPath, IContainerElement
-	private Map youngContainerMap2 = new HashMap();				// IContainerElement.storage.fullPath, IContainerElement
-	private List listeners = new ArrayList();
+	private Map oldContainerMap1 = new HashMap();
+	private Map youngContainerMap1 = new HashMap();
+	private Map oldContainerMap2 = new HashMap();
+	private Map youngContainerMap2 = new HashMap();
+	private Map listeners = new HashMap();
 	
 	private DiconModelManager(IProject project) {
 		this.project = project;
@@ -100,17 +97,21 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 				nature.getRttiLoader().loadRtti(fullyQualifiedClassName) : null;
 	}
 	
-	public void addDiconChangeListener(IDiconChangeListener listener) {
-		if (listener == null) {
-			return;
-		}
-		listener.setManager(this);
-		fireInitialEvent(listener);
-		listeners.add(listener);
+	public boolean hasListener(String key) {
+		return listeners.containsKey(key);
 	}
 	
-	public void removeDiconListener(IDiconChangeListener listener) {
-		listeners.remove(listener);
+	public void addDiconChangeListener(String key, IDiconChangeListener listener) {
+		if (StringUtil.isEmpty(key) || listener == null) {
+			return;
+		}
+		listeners.put(key, listener);
+		listener.setManager(this);
+		fireInitialEvent(listener);
+	}
+	
+	public void removeDiconListener(String key) {
+		listeners.remove(key);
 	}
 	
 	public void finishChanged() {
@@ -231,8 +232,8 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireAddedAll(IContainerElement container) {
-		for (int i = 0; i < listeners.size(); i++) {
-			fireAdded((IDiconChangeListener) listeners.get(i), container);
+		for (Iterator it = listeners.values().iterator(); it.hasNext();) {
+			fireAdded((IDiconChangeListener) it.next(), container);
 		}
 	}
 	
@@ -241,8 +242,8 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireUpdatedAll(IContainerElement old, IContainerElement young) {
-		for (int i = 0; i < listeners.size(); i++) {
-			fireUpdated((IDiconChangeListener) listeners.get(i), old, young);
+		for (Iterator it = listeners.values().iterator(); it.hasNext();) {
+			fireUpdated((IDiconChangeListener) it.next(), old, young);
 		}
 	}
 	
@@ -252,8 +253,8 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireRemovedAll(IContainerElement container) {
-		for (int i = 0; i < listeners.size(); i++) {
-			fireRemoved((IDiconChangeListener) listeners.get(i), container);
+		for (Iterator it = listeners.values().iterator(); it.hasNext();) {
+			fireRemoved((IDiconChangeListener) it.next(), container);
 		}
 	}
 	
@@ -262,8 +263,8 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireFinishChangedAll() {
-		for (int i = 0 ; i < listeners.size(); i++) {
-			fireFinishChanged((IDiconChangeListener) listeners.get(i));
+		for (Iterator it = listeners.values().iterator(); it.hasNext();) {
+			fireFinishChanged((IDiconChangeListener) it.next());
 		}
 	}
 	

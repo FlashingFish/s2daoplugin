@@ -52,6 +52,7 @@ public abstract class AbstractComponentCache implements IComponentCache {
 	
 	public void initialize() {
 		if (!initialized) {
+			clearCache();
 			builder.initialize();
 			initialized = true;
 		}
