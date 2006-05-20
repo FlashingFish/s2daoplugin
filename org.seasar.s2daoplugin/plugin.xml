@@ -40,7 +40,6 @@
    		<runtime>
    			<run class="org.seasar.s2daoplugin.S2DaoNature"/>
    		</runtime>
-   		<requires-nature id="org.seasar.kijimuna.core.nature"/>
    		<builder id="org.seasar.s2daoplugin.sqlmarkerbuilder"/>
    </extension>
    <extension
