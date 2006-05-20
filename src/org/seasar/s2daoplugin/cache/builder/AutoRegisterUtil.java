@@ -16,6 +16,7 @@
 package org.seasar.s2daoplugin.cache.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,13 +29,22 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
+import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
-// TODO: IAutoRegisterElement‚ÉˆÚ“®
-public class AutoRegisterUtil {
+public class AutoRegisterUtil implements CacheConstants {
 
+	private static final Set autoRegisterNames;
+	
+	static {
+		int size = COMPONENT_AUTO_REGISTERS.length + ASPECT_AUTO_REGISTERS.length;
+		autoRegisterNames = new HashSet(size);
+		autoRegisterNames.addAll(Arrays.asList(COMPONENT_AUTO_REGISTERS));
+		autoRegisterNames.addAll(Arrays.asList(ASPECT_AUTO_REGISTERS));
+	}
+	
 	public static boolean hasInterceptor(IAutoRegisterElement autoRegister,
 			IComponentElement interceptor) {
 		if (autoRegister == null || interceptor == null) {
@@ -66,6 +76,16 @@ public class AutoRegisterUtil {
 		TypeCollectingVisitor v = new TypeCollectingVisitor(autoRegister);
 		JavaUtil.visitSourceFolders(project, autoRegister.getPackageName(), v);
 		return v.getResult();
+	}
+	
+	public static boolean isAutoRegister(IComponentElement component) {
+		if (component == null) {
+			return false;
+		}
+		if (component instanceof IAutoRegisterElement) {
+			return true;
+		}
+		return autoRegisterNames.contains(component.getComponentClassName());
 	}
 	
 	
