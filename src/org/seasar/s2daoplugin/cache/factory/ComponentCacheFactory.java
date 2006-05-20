@@ -105,8 +105,7 @@ public class ComponentCacheFactory {
 		}
 		
 		public void unregister(String key) {
-			Object ret = factoryDefMap.remove(key);
-			if (ret == null) {
+			if (factoryDefMap.remove(key) == null) {
 				return;
 			}
 			synchronized (factoryMap) {
