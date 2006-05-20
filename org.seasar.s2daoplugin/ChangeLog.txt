@@ -5,6 +5,8 @@
 - AspectAutoRegisterでコンポーネントの自動登録にアスペクトしている場合、interceptorプロパティが
   S2DaoInterceptorでなくてもS2Daoのコンポーネントと判断（interceptorプロパティを無視）していた
   問題を修正
+- プラグインを有効/無効にできる機能の追加
+- SQLファイルを持つDAOのメソッドにマーカを付ける機能の追加
 - 
 
 * 0.0.6 [2006/4/11]

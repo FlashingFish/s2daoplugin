@@ -18,7 +18,7 @@ package org.seasar.s2daoplugin;
 interface TODO {
 
 	/* 
-	 * FIXME: 複数のdiconファイルでひとつのITypeを参照している場合、diconファイルの変更で
+	 * TODO: 複数のdiconファイルでひとつのITypeを参照している場合、diconファイルの変更で
 	 * マーカを操作すると消すべきでないマーカまで消してしまう。diconファイルの変更では
 	 * 全てのマーカをリマークするべきか？
 	 * 
