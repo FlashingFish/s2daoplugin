@@ -15,26 +15,18 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
 import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.model.AutoRegisterElement;
-import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public abstract class AbstractComponentCache implements IComponentCache {
 
-	private static final String[] allAutoRegisters;
-	
-	static {
-		allAutoRegisters = (String[]) ArrayUtil.add(
-				CacheConstants.COMPONENT_AUTO_REGISTERS,
-				CacheConstants.ASPECT_AUTO_REGISTERS);
-	}
-	
 	private ICacheBuilder builder;
 	private DiconModelManager manager;
 	private boolean initialized;
@@ -92,27 +84,14 @@ public abstract class AbstractComponentCache implements IComponentCache {
 	
 	private IComponentElement[] wrap(IContainerElement container) {
 		IComponentElement[] components = DiconUtil.getComponents(container);
-		List result = new ArrayList();
+		Set result = new HashSet();
 		for (int i = 0; i < components.length; i++) {
-			IComponentElement component = isAutoRegister(getRtti(components[i])) ?
+			IComponentElement component = AutoRegisterUtil.isAutoRegister(components[i]) ?
 					new AutoRegisterElement(components[i]) : components[i];
 			result.add(component);
 		}
 		return (IComponentElement[]) result
 				.toArray(new IComponentElement[result.size()]);
-	}
-	
-	private boolean isAutoRegister(IRtti rtti) {
-		if (rtti == null) {
-			return false;
-		}
-		for (int i = 0; i < allAutoRegisters.length; i++) {
-			IRtti r = getRtti(allAutoRegisters[i]);
-			if (r != null && rtti.getType().equals(r.getType())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }
