@@ -75,6 +75,9 @@ public abstract class AbstractSqlOpenAction
 			if (member == null) {
 				return;
 			}
+			if (!isPluginEnabled(member.getJavaProject().getProject())) {
+				return;
+			}
 			if (!isS2DaoComponent(member)) {
 				return;
 			}
@@ -85,6 +88,16 @@ public abstract class AbstractSqlOpenAction
 	}
 	
 	protected abstract IJavaElement getSelectedJavaElement() throws CoreException;
+	
+	private boolean isPluginEnabled(IProject project) throws CoreException {
+		if (!S2DaoPlugin.isEnabled(project)) {
+			String title = Messages.getMessage("SQLFileOpenAction.plugindisabled.title");
+			String msg = Messages.getMessage("SQLFileOpenAction.plugindisabled.message");
+			MessageDialog.openInformation(getShell(), title, msg);
+			return false;
+		}
+		return true;
+	}
 	
 	private IFile[] findSqlFiles(IMember member) {
 		IFile[] sqlFiles = S2DaoConstants.EMPTY_FILES;
@@ -126,8 +139,8 @@ public abstract class AbstractSqlOpenAction
 	
 	private boolean confirmCreation() {
 		String title = Messages.getMessage("SQLFileOpenAction.creation.confirm.title");
-		String message = Messages.getMessage("SQLFileOpenAction.creation.confirm.message");
-		return MessageDialog.openConfirm(getShell(), title, message);
+		String msg = Messages.getMessage("SQLFileOpenAction.creation.confirm.message");
+		return MessageDialog.openConfirm(getShell(), title, msg);
 	}
 	
 	private void openSqlCreationWizard(IMethod method) {

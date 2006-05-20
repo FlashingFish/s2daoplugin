@@ -29,6 +29,7 @@ import org.seasar.s2daoplugin.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.DiconChangeListenerChain;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.builder.AspectAutoRegisterCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AutoAspectedComponentCacheBuilder;
@@ -43,7 +44,7 @@ import org.seasar.s2daoplugin.util.StringUtil;
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 
 	private static final String EXTENSION = ".sql";
-	private static boolean listenerAdded;
+	private static IDiconChangeListener listener;
 	
 	static {
 		if (!ComponentCacheFactory.isRegistered(S2DAO_COMPONENT_CACHE_KEY)) {
@@ -136,7 +137,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		DiconModelManager manager = DiconModelManager.getInstance(project);
 		ComponentCacheFactory factory = ComponentCacheFactory.getInstance(project);
 		if (manager == null) {
-			listenerAdded = false;
+			listener = null;
 			factory.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
 			return null;
 		}
@@ -144,15 +145,26 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		if (cache == null) {
 			return null;
 		}
-		if (!listenerAdded) {
-			listenerAdded = true;
+		if (listener == null) {
 			DiconChangeListenerChain chain = new DiconChangeListenerChain();
+			listener = chain;
 			chain.addListener(new SqlMarkerUnmarkingListener());
 			chain.addListener(cache);
 			chain.addListener(new SqlMarkerMarkingListener());
 			manager.addDiconChangeListener(chain);
 		}
 		return cache;
+	}
+	
+	public static synchronized void removeS2DaoComponentCache(IProject project) {
+		ComponentCacheFactory factory = ComponentCacheFactory.getInstance(project);
+		factory.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		DiconModelManager manager = DiconModelManager.getInstance(project);
+		if (manager == null) {
+			return;
+		}
+		manager.removeDiconListener(listener);
+		listener = null;
 	}
 	
 	
