@@ -13,22 +13,11 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.cache.factory;
 
-interface TODO {
+import org.seasar.s2daoplugin.cache.IComponentCache;
 
-	/* 
-	 * TODO: 複数のdiconファイルでひとつのITypeを参照している場合、diconファイルの変更で
-	 * マーカを操作すると消すべきでないマーカまで消してしまう。diconファイルの変更では
-	 * 全てのマーカをリマークするべきか？
-	 *
-	 * TODO: キャッシュ機能を刷新する
-	 * 
-	 * TODO: プラグインが無効にされているときのことを考える
-	 * 
-	 * TODO: マーカだけを無効にする
-	 * 
-	 * TODO: Daoを継承しているときのSQLファイルを探す順序
-	 */
+public interface IComponentCacheFactory {
 
+	IComponentCache createComponentCache();
 }
