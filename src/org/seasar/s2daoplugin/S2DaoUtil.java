@@ -29,7 +29,6 @@ import org.seasar.s2daoplugin.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.DiconChangeListenerChain;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.builder.AspectAutoRegisterCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AutoAspectedComponentCacheBuilder;
@@ -44,7 +43,6 @@ import org.seasar.s2daoplugin.util.StringUtil;
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 
 	private static final String EXTENSION = ".sql";
-	private static IDiconChangeListener listener;
 	
 	static {
 		if (!ComponentCacheFactory.isRegistered(S2DAO_COMPONENT_CACHE_KEY)) {
@@ -132,12 +130,10 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		return filename.endsWith(EXTENSION);
 	}
 	
-	// TODO: ここが1度も実行されずにkijimunaがON->OFF->ONされるとマズイ
 	public static synchronized IComponentCache getS2DaoComponentCache(IProject project) {
 		DiconModelManager manager = DiconModelManager.getInstance(project);
 		ComponentCacheFactory factory = ComponentCacheFactory.getInstance(project);
 		if (manager == null) {
-			listener = null;
 			factory.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
 			return null;
 		}
@@ -145,13 +141,12 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		if (cache == null) {
 			return null;
 		}
-		if (listener == null) {
+		if (!manager.hasListener(S2DAO_COMPONENT_CACHE_KEY)) {
 			DiconChangeListenerChain chain = new DiconChangeListenerChain();
-			listener = chain;
 			chain.addListener(new SqlMarkerUnmarkingListener());
 			chain.addListener(cache);
 			chain.addListener(new SqlMarkerMarkingListener());
-			manager.addDiconChangeListener(chain);
+			manager.addDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY, chain);
 		}
 		return cache;
 	}
@@ -163,8 +158,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		if (manager == null) {
 			return;
 		}
-		manager.removeDiconListener(listener);
-		listener = null;
+		manager.removeDiconListener(S2DAO_COMPONENT_CACHE_KEY);
 	}
 	
 	
