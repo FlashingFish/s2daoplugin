@@ -68,6 +68,10 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 		return plugin;
 	}
 	
+	public static boolean isEnabled(IProject project) throws CoreException {
+		return project.hasNature(S2DaoConstants.S2DAO_NATURE);
+	}
+	
 	public static void log(CoreException e) {
 		getDefault().getLog().log(e.getStatus());
 	}

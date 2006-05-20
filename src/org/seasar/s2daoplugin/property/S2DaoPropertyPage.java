@@ -29,6 +29,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.seasar.s2daoplugin.Messages;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoPlugin;
+import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil;
 
 public class S2DaoPropertyPage extends PropertyPage {
@@ -58,6 +59,7 @@ public class S2DaoPropertyPage extends PropertyPage {
 						SqlMarkerUtil.unmarkAll(getProject());
 					}
 				};
+				S2DaoUtil.removeS2DaoComponentCache(getProject());
 			}
 			getProject().getWorkspace().run(runnable, null);
 		} catch (CoreException e) {
