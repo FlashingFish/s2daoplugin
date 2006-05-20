@@ -60,7 +60,6 @@
    			name="%plugin.propertypage"
    			objectClass="org.eclipse.core.resources.IProject"
    			class="org.seasar.s2daoplugin.property.S2DaoPropertyPage">
-   			<filter name="nature" value="org.seasar.kijimuna.core.nature"/>
    		</page>
    </extension>
    
