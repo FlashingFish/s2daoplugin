@@ -26,7 +26,6 @@ import org.seasar.s2daoplugin.cache.AutoRegisterCacheComposite;
 import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
-import org.seasar.s2daoplugin.cache.ComponentCacheManager;
 import org.seasar.s2daoplugin.cache.DiconChangeListenerChain;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
@@ -35,6 +34,8 @@ import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.AutoAspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.CacheBuilderChain;
 import org.seasar.s2daoplugin.cache.builder.ComponentCacheBuilder;
+import org.seasar.s2daoplugin.cache.factory.ComponentCacheFactory;
+import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
 import org.seasar.s2daoplugin.util.StringUtil;
@@ -42,6 +43,14 @@ import org.seasar.s2daoplugin.util.StringUtil;
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 
 	private static final String EXTENSION = ".sql";
+	private static boolean listenerAdded;
+	
+	static {
+		if (!ComponentCacheFactory.isRegistered(S2DAO_COMPONENT_CACHE_KEY)) {
+			ComponentCacheFactory.registerFactory(
+					S2DAO_COMPONENT_CACHE_KEY, new S2DaoComponentCacheFactory());
+		}
+	}
 	
 	public static String createBaseSqlFileName(IMethod method) {
 		if (method == null) {
@@ -124,33 +133,40 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	
 	// TODO: ここが1度も実行されずにkijimunaがON->OFF->ONされるとマズイ
 	public static synchronized IComponentCache getS2DaoComponentCache(IProject project) {
-		DiconModelManager modelManager = DiconModelManager.getInstance(project);
-		ComponentCacheManager manager = ComponentCacheManager.getInstance(project);
-		if (modelManager == null) {
-			manager.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		DiconModelManager manager = DiconModelManager.getInstance(project);
+		ComponentCacheFactory factory = ComponentCacheFactory.getInstance(project);
+		if (manager == null) {
+			listenerAdded = false;
+			factory.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
 			return null;
 		}
-		IComponentCache cache = manager.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		IComponentCache cache = factory.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
 		if (cache == null) {
-			cache = createS2DaoComponentCache();
-			manager.addComponentCache(S2DAO_COMPONENT_CACHE_KEY, cache);
+			return null;
+		}
+		if (!listenerAdded) {
+			listenerAdded = true;
 			DiconChangeListenerChain chain = new DiconChangeListenerChain();
 			chain.addListener(new SqlMarkerUnmarkingListener());
 			chain.addListener(cache);
 			chain.addListener(new SqlMarkerMarkingListener());
-			modelManager.addDiconChangeListener(chain);
+			manager.addDiconChangeListener(chain);
 		}
 		return cache;
 	}
 	
-	private static IComponentCache createS2DaoComponentCache() {
-		return new CacheComposite()
-				.addComponentCache(new ComponentCache(new CacheBuilderChain()
-						.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
-						.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
-				.addComponentCache(new AutoRegisterCacheComposite()
-						.addComponentAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
-						.addComponentTargetAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
+	
+	private static class S2DaoComponentCacheFactory implements IComponentCacheFactory {
+
+		public IComponentCache createComponentCache() {
+			return new CacheComposite()
+					.addComponentCache(new ComponentCache(new CacheBuilderChain()
+							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
+							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
+					.addComponentCache(new AutoRegisterCacheComposite()
+							.addComponentAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
+							.addComponentTargetAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
+		}
 	}
 
 }
