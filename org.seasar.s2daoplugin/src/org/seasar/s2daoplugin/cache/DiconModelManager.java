@@ -110,7 +110,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		fireInitialEvent(listener);
 	}
 	
-	public void removeDiconListener(String key) {
+	public void removeDiconChangeListener(String key) {
 		listeners.remove(key);
 	}
 	

@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
-public class DiconChangeListenerChain implements IDiconChangeListener {
+public class SequentializedListenerChain implements IDiconChangeListener {
 
 	private DiconModelManager manager;
 	private List listeners = new ArrayList();
@@ -84,7 +84,7 @@ public class DiconChangeListenerChain implements IDiconChangeListener {
 		}
 	}
 	
-	public DiconChangeListenerChain addListener(IDiconChangeListener listener) {
+	public SequentializedListenerChain addListener(IDiconChangeListener listener) {
 		if (listener == null) {
 			return this;
 		}
