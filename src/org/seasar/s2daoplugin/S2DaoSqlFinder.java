@@ -15,8 +15,8 @@
  */
 package org.seasar.s2daoplugin;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -31,6 +31,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class S2DaoSqlFinder implements S2DaoConstants {
@@ -42,30 +43,18 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		IJavaProject project = method.getJavaProject();
 		IType type = method.getCompilationUnit().findPrimaryType();
 		String packagePath = packageToPath(type);
-		IPath[] sourcePaths = JavaUtil.getSourceFolderPaths(project);
+		IPath[] srcPaths = JavaProjectUtil.getSourceFolderPaths(project);
 		
 		int maxCount = 0;
 		IFolder storedFolder = null;
-		for (int i = 0; i < sourcePaths.length; i++) {
-			IPackageFragment pack = null;
-			try {
-				pack = project.findPackageFragment(sourcePaths[i].append(packagePath));
-			} catch (JavaModelException ignore) {
-				S2DaoPlugin.log(ignore);
-			}
-			if (pack != null) {
-				IResource resource = pack.getResource();
-				if (resource instanceof IFolder) {
-					SqlCountingVisitor visitor = new SqlCountingVisitor();
-					try {
-						resource.accept(visitor, IResource.DEPTH_ONE, false);
-					} catch (CoreException ignore) {
-						S2DaoPlugin.log(ignore);
-					}
-					if (maxCount < visitor.getCount()) {
-						storedFolder = (IFolder) resource; 
-						maxCount = visitor.getCount();
-					}
+		for (int i = 0; i < srcPaths.length; i++) {
+			SqlCountingVisitor visitor = new SqlCountingVisitor();
+			visit(project, srcPaths[i].append(packagePath), visitor);
+			if (maxCount < visitor.getCount()) {
+				IPackageFragment pack = visitor.getPathPackage();
+				if (pack != null && pack.getResource() instanceof IFolder) {
+					storedFolder = (IFolder) pack.getResource();
+					maxCount = visitor.getCount();
 				}
 			}
 		}
@@ -78,11 +67,11 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		}
 		try {
 			IMethod[] methods = type.getMethods();
-			List sqlFileList = new LinkedList();
+			Set result = new HashSet();
 			for (int i = 0; i < methods.length; i++) {
-				sqlFileList.addAll(findSqlFilesFromMethod(methods[i]));
+				result.addAll(findSqlFilesFromMethod(methods[i]));
 			}
-			return (IFile[]) sqlFileList.toArray(new IFile[sqlFileList.size()]);
+			return (IFile[]) result.toArray(new IFile[result.size()]);
 		} catch (JavaModelException e) {
 			S2DaoPlugin.log(e);
 			return EMPTY_FILES;
@@ -93,8 +82,8 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		if (method == null) {
 			return EMPTY_FILES;
 		}
-		List sqlFileList = findSqlFilesFromMethod(method);
-		return (IFile[]) sqlFileList.toArray(new IFile[sqlFileList.size()]);
+		Set result = findSqlFilesFromMethod(method);
+		return (IFile[]) result.toArray(new IFile[result.size()]);
 	}
 	
 	public IMethod findMethodFromSql(IFile file) {
@@ -105,12 +94,12 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		if (split.length != 2) {
 			return null;
 		}
-		IPath packagePath = getPackagePath(file);
+		IPath packagePath = JavaUtil.getPackagePath(file);
 		if (packagePath == null) {
 			return null;
 		}
 		IJavaProject project = JavaCore.create(file.getProject());
-		IPath[] srcPaths = JavaUtil.getSourceFolderPaths(project);
+		IPath[] srcPaths = JavaProjectUtil.getSourceFolderPaths(project);
 		for (int i = 0; i < srcPaths.length; i++) {
 			try {
 				IPackageFragment pack =
@@ -133,51 +122,38 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		return null;
 	}
 	
-	private IPath getPackagePath(IFile file) {
-		IJavaProject project = JavaCore.create(file.getProject());
-		IPath[] srcPaths = JavaUtil.getSourceFolderPaths(project);
-		for (int i = 0; i < srcPaths.length; i++) {
-			if (srcPaths[i].matchingFirstSegments(file.getFullPath())
-					== srcPaths[i].segmentCount()) {
-				return file.getFullPath().removeFirstSegments(
-						srcPaths[i].segmentCount()).removeLastSegments(1);
-			}
-		}
-		return null;
-	}
-	
-	private List findSqlFilesFromMethod(IMethod method) {
+	private Set findSqlFilesFromMethod(IMethod method) {
 		IType type = method.getCompilationUnit().findPrimaryType();
 		IJavaProject project = type.getJavaProject();
 		String packagePath = packageToPath(type);
 		String basename = S2DaoUtil.createBaseSqlFileName(method);
-		IPath[] sourcePaths = JavaUtil.getSourceFolderPaths(project);
-		return findSqlFileFromPaths(project, sourcePaths, packagePath, basename);
+		IPath[] sourcePaths = JavaProjectUtil.getSourceFolderPaths(project);
+		return findSqlFilesFromPaths(project, sourcePaths, packagePath, basename);
 	}
 	
-	private List findSqlFileFromPaths(IJavaProject project, IPath[] paths,
+	private Set findSqlFilesFromPaths(IJavaProject project, IPath[] paths,
 			String packagePath, String basename) {
-		List sqlFileList = new LinkedList();
+		Set result = new HashSet();
 		for (int i = 0; i < paths.length; i++) {
-			try {
-				sqlFileList.addAll(findSqlFileFromPath(project, paths[i].append(packagePath), basename));
-			} catch (CoreException ignore) {
-				S2DaoPlugin.log(ignore);
-			}
+			SqlFindingVisitor visitor = new SqlFindingVisitor(basename);
+			visit(project, paths[i].append(packagePath), visitor);
+			result.addAll(visitor.getResult());
 		}
-		return sqlFileList;
+		return result;
 	}
 	
-	private List findSqlFileFromPath(IJavaProject project, IPath path,
-			String basename) throws CoreException {
-		List sqlFileList = new LinkedList();
-		IPackageFragment pack = project.findPackageFragment(path);
-		if (pack != null) {
-			SqlFindingVisitor visitor = new SqlFindingVisitor(basename);
-			pack.getResource().accept(visitor, IResource.DEPTH_ONE, false);
-			sqlFileList.addAll(visitor.getSqlFileList());
+	private IResourceVisitor visit(IJavaProject project, IPath path,
+			SqlVisitor visitor) {
+		try {
+			IPackageFragment pack = project.findPackageFragment(path);
+			if (pack != null) {
+				visitor.setPathPackage(pack);
+				pack.getResource().accept(visitor, IResource.DEPTH_ONE, false);
+			}
+		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
 		}
-		return sqlFileList;
+		return visitor;
 	}
 	
 	private String packageToPath(IType type) {
@@ -185,9 +161,27 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 	}
 	
 	
-	private static class SqlFindingVisitor implements IResourceVisitor {
+	private interface SqlVisitor extends IResourceVisitor {
+		void setPathPackage(IPackageFragment pack);
+		IPackageFragment getPathPackage();
+	}
+	
+	private static abstract class AbstractSqlVisitor implements SqlVisitor {
+		
+		private IPackageFragment pack;
+		
+		public void setPathPackage(IPackageFragment pack) {
+			this.pack = pack;
+		}
+		
+		public IPackageFragment getPathPackage() {
+			return pack;
+		}
+	}
+	
+	private static class SqlFindingVisitor extends AbstractSqlVisitor {
 
-		private List sqlFileList = new LinkedList();
+		private Set result = new HashSet();
 		private String basename;
 		
 		public SqlFindingVisitor(String basename) {
@@ -197,19 +191,19 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		public boolean visit(IResource resource) throws CoreException {
 			if (resource.getType() == IResource.FILE) {
 				if (S2DaoUtil.isValidSqlFileName((IFile)resource, basename)) {
-					sqlFileList.add(resource);
+					result.add(resource);
 				}
 				return false;
 			}
 			return true;
 		}
 		
-		public List getSqlFileList() {
-			return sqlFileList;
+		public Set getResult() {
+			return result;
 		}
 	}
 	
-	private static class SqlCountingVisitor implements IResourceVisitor {
+	private static class SqlCountingVisitor extends AbstractSqlVisitor {
 
 		private int count;
 		
