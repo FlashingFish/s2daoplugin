@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,12 +28,7 @@ public class SqlMarkerBuilder extends IncrementalProjectBuilder {
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
 		if (kind == FULL_BUILD) {
-			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					SqlMarkerUtil.remarkAll(getProject());
-				}
-			};
-			getProject().getWorkspace().run(runnable, null);
+			SqlMarkerUtil.getCreator().remarkAll(getProject());
 		} else {
 			IResourceDelta delta = getDelta(getProject());
 			if (delta != null) {

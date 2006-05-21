@@ -15,9 +15,6 @@
  */
 package org.seasar.s2daoplugin.sqlmarker;
 
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
@@ -35,12 +32,8 @@ public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
 	}
 	
 	private void unmark(IContainerElement container) {
-		final IType[] types = getAppliedTypes(container);
-		run(new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				SqlMarkerUtil.unmark(types);
-			}
-		});
+		IType[] types = getAppliedTypes(container);
+		getMarker().unmark(types);
 	}
 
 }
