@@ -32,6 +32,7 @@ import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
+import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class AutoRegisterUtil implements CacheConstants {
@@ -74,7 +75,7 @@ public class AutoRegisterUtil implements CacheConstants {
 		}
 		IJavaProject project = JavaCore.create(autoRegister.getProject());
 		TypeCollectingVisitor v = new TypeCollectingVisitor(autoRegister);
-		JavaUtil.visitSourceFolders(project, autoRegister.getPackageName(), v);
+		JavaProjectUtil.visitSourceFolders(project, autoRegister.getPackageName(), v);
 		return v.getResult();
 	}
 	
