@@ -26,7 +26,7 @@ import org.seasar.s2daoplugin.cache.AutoRegisterCacheComposite;
 import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
-import org.seasar.s2daoplugin.cache.DiconChangeListenerChain;
+import org.seasar.s2daoplugin.cache.SequentializedListenerChain;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.builder.AspectAutoRegisterCacheBuilder;
@@ -142,7 +142,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			return null;
 		}
 		if (!manager.hasListener(S2DAO_COMPONENT_CACHE_KEY)) {
-			DiconChangeListenerChain chain = new DiconChangeListenerChain();
+			SequentializedListenerChain chain = new SequentializedListenerChain();
 			chain.addListener(new SqlMarkerUnmarkingListener());
 			chain.addListener(cache);
 			chain.addListener(new SqlMarkerMarkingListener());
@@ -158,7 +158,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		if (manager == null) {
 			return;
 		}
-		manager.removeDiconListener(S2DAO_COMPONENT_CACHE_KEY);
+		manager.removeDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY);
 	}
 	
 	
