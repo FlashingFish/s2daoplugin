@@ -16,9 +16,7 @@
 package org.seasar.s2daoplugin.property;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,26 +40,14 @@ public class S2DaoPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		S2DaoPlugin plugin = S2DaoPlugin.getDefault();
 		try {
-			IWorkspaceRunnable runnable = null;
 			if (useS2DaoPlugin.getSelection()) {
 				plugin.addS2DaoNature(getProject());
-				runnable = new IWorkspaceRunnable() {
-					public void run(IProgressMonitor monitor)
-							throws CoreException {
-						SqlMarkerUtil.markAll(getProject());
-					}
-				};
+				SqlMarkerUtil.getCreator().markAll(getProject());
 			} else {
 				plugin.removeS2DaoNature(getProject());
-				runnable = new IWorkspaceRunnable() {
-					public void run(IProgressMonitor monitor)
-							throws CoreException {
-						SqlMarkerUtil.unmarkAll(getProject());
-					}
-				};
+				SqlMarkerUtil.getCreator().unmarkAll(getProject());
 				S2DaoUtil.removeS2DaoComponentCache(getProject());
 			}
-			getProject().getWorkspace().run(runnable, null);
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 		}

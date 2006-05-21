@@ -16,20 +16,19 @@
 package org.seasar.s2daoplugin.sqlmarker;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.SqlMarkerCreator;
 
 public abstract class AbstractSqlMarkerListener implements IDiconChangeListener {
 
 	protected static final IType[] EMPTY_TYPES = new IType[0];
 	
+	private SqlMarkerCreator marker = SqlMarkerUtil.getCreator();
 	private DiconModelManager manager;
 	
 	public void setManager(DiconModelManager manager) {
@@ -50,6 +49,10 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		return manager.getProject();
 	}
 	
+	protected SqlMarkerCreator getMarker() {
+		return marker;
+	}
+	
 	protected IType[] getAppliedTypes(IContainerElement container) {
 		if (container == null) {
 			return EMPTY_TYPES;
@@ -59,14 +62,6 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 			return EMPTY_TYPES;
 		}
 		return cache.getAppliedTypes(container.getStorage().getFullPath());
-	}
-	
-	protected void run(IWorkspaceRunnable runnable) {
-		try {
-			getProject().getWorkspace().run(runnable, null);
-		} catch (CoreException e) {
-			S2DaoPlugin.log(e);
-		}
 	}
 
 }
