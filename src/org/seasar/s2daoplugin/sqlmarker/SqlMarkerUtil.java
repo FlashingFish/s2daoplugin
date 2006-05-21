@@ -240,6 +240,9 @@ public class SqlMarkerUtil {
 		private SqlMarkerCreator enclosedCreator = new CreatorWithoutRunnable();
 		
 		public void remarkAll(final IProject project) {
+			if (project == null) {
+				return;
+			}
 			run(project, new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
 					enclosedCreator.remarkAll(project);
@@ -259,6 +262,9 @@ public class SqlMarkerUtil {
 		}
 
 		public void markAll(final IProject project) {
+			if (project == null) {
+				return;
+			}
 			run(project, new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
 					enclosedCreator.markAll(project);
