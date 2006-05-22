@@ -29,6 +29,16 @@ interface TODO {
 	 * TODO: マーカだけを無効にする
 	 * 
 	 * TODO: Daoを継承しているときのSQLファイルを探す順序
+	 * 
+	 * TODO: ComponentFilterが対象のITypeを探すのがinitializeの時だけなので、後から
+	 * クラスが追加された場合は探せないからなんとかする
+	 * 
+	 * TODO: 継承元も対象のクラスと判断する（IRttiか名前で一致させるか再考慮）
+	 * 
+	 * TODO: kijimunaを使わないで使える設定を作る
+	 * 
+	 * TODO: スレッドセーフに
+	 * 
 	 */
 
 }
