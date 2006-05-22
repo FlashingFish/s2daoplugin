@@ -142,8 +142,8 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		return result;
 	}
 	
-	private IResourceVisitor visit(IJavaProject project, IPath path,
-			SqlVisitor visitor) {
+	private void visit(IJavaProject project, IPath path,
+			ISqlVisitor visitor) {
 		try {
 			IPackageFragment pack = project.findPackageFragment(path);
 			if (pack != null) {
@@ -153,7 +153,6 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 		}
-		return visitor;
 	}
 	
 	private String packageToPath(IType type) {
@@ -161,12 +160,12 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 	}
 	
 	
-	private interface SqlVisitor extends IResourceVisitor {
+	private interface ISqlVisitor extends IResourceVisitor {
 		void setPathPackage(IPackageFragment pack);
 		IPackageFragment getPathPackage();
 	}
 	
-	private static abstract class AbstractSqlVisitor implements SqlVisitor {
+	private static abstract class AbstractSqlVisitor implements ISqlVisitor {
 		
 		private IPackageFragment pack;
 		

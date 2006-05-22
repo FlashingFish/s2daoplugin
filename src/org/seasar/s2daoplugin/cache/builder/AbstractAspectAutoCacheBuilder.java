@@ -43,6 +43,9 @@ public abstract class AbstractAspectAutoCacheBuilder extends
 		for (int i = 0; i < components.length; i++) {
 			IComponentElement[] aspectComponents = aspectHolder.getComponents();
 			for (int j = 0; j < aspectComponents.length; j++) {
+				if (!AutoRegisterUtil.isAutoRegister(components[i])) {
+					continue;
+				}
 				IAutoRegisterElement auto = (IAutoRegisterElement) components[i];
 				if (AutoRegisterUtil.hasInterceptor(auto, aspectComponents[j])) {
 					autoRegisters.add(auto);

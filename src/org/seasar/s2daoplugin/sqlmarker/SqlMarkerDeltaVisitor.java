@@ -27,13 +27,13 @@ import org.seasar.kijimuna.core.KijimunaCore;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.SqlMarkerCreator;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 
 	private IProject project;
-	private SqlMarkerCreator marker = SqlMarkerUtil.getCreator();
+	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
 	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
 	
 	public SqlMarkerDeltaVisitor(IProject project) {

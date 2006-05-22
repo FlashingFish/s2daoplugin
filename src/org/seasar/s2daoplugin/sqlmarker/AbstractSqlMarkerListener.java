@@ -22,13 +22,13 @@ import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
-import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.SqlMarkerCreator;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 
 public abstract class AbstractSqlMarkerListener implements IDiconChangeListener {
 
 	protected static final IType[] EMPTY_TYPES = new IType[0];
 	
-	private SqlMarkerCreator marker = SqlMarkerUtil.getCreator();
+	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
 	private DiconModelManager manager;
 	
 	public void setManager(DiconModelManager manager) {
@@ -49,7 +49,7 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		return manager.getProject();
 	}
 	
-	protected SqlMarkerCreator getMarker() {
+	protected ISqlMarkerCreator getMarker() {
 		return marker;
 	}
 	

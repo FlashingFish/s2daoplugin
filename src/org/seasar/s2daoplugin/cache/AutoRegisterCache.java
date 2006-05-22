@@ -129,7 +129,7 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	}
 	
 	public void addComponent(IComponentElement component) {
-		if (!(component instanceof IAutoRegisterElement)) {
+		if (!AutoRegisterUtil.isAutoRegister(component)) {
 			return;
 		}
 		autoRegisters.add(component);
@@ -137,7 +137,7 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	}
 
 	public void removeComponent(IComponentElement component) {
-		if (!(component instanceof IAutoRegisterElement)) {
+		if (!AutoRegisterUtil.isAutoRegister(component)) {
 			return;
 		}
 		autoRegisters.remove(component);

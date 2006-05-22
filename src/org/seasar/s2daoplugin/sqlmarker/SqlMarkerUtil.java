@@ -36,19 +36,19 @@ import org.seasar.s2daoplugin.cache.IComponentCache;
 
 public class SqlMarkerUtil {
 
-	private static SqlMarkerCreator creator = new Creator();
-	private static SqlMarkerCreator creatorWithoutRunnable = new CreatorWithoutRunnable();
+	private static ISqlMarkerCreator creator = new Creator();
+	private static ISqlMarkerCreator creatorWithoutRunnable = new CreatorWithoutRunnable();
 	
-	public static SqlMarkerCreator getCreator() {
+	public static ISqlMarkerCreator getCreator() {
 		return creator;
 	}
 	
-	public static SqlMarkerCreator getCreatorWithoutRunnable() {
+	public static ISqlMarkerCreator getCreatorWithoutRunnable() {
 		return creatorWithoutRunnable;
 	}
 	
 	
-	public interface SqlMarkerCreator {
+	public interface ISqlMarkerCreator {
 		void remarkAll(IProject project);
 		void remark(IType type);
 		void markAll(IProject project);
@@ -61,7 +61,7 @@ public class SqlMarkerUtil {
 		void unmark(IMethod method);
 	}
 	
-	private static abstract class AbstractCreator implements SqlMarkerCreator {
+	private static abstract class AbstractCreator implements ISqlMarkerCreator {
 		
 		private S2DaoSqlFinder finder = new S2DaoSqlFinder();
 		
@@ -237,7 +237,7 @@ public class SqlMarkerUtil {
 
 	private static class Creator extends AbstractCreator {
 
-		private SqlMarkerCreator enclosedCreator = new CreatorWithoutRunnable();
+		private ISqlMarkerCreator enclosedCreator = new CreatorWithoutRunnable();
 		
 		public void remarkAll(final IProject project) {
 			if (project == null) {
