@@ -17,6 +17,7 @@
 		</viewerContribution>
 		<objectContribution
 			id="org.seasar.s2daoplugin.sqlopener.object"
+			adaptable="true"
 			objectClass="org.eclipse.jdt.core.IJavaElement">
 			<visibility>
 				<or>

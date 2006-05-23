@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.JavaCore;
 public class JavaUtil {
 
 	public static IType findPrimaryType(IResource resource) {
-		if (resource == null || !"java".equals(resource.getFileExtension())) {
+		if (resource == null || !isJavaFile(resource)) {
 			return null;
 		}
 		Object obj = resource.getAdapter(IJavaElement.class);
@@ -38,6 +38,9 @@ public class JavaUtil {
 	}
 	
 	public static IPath getPackagePath(IFile file) {
+		if (file == null) {
+			return null;
+		}
 		IJavaProject project = JavaCore.create(file.getProject());
 		IPath[] srcPaths = JavaProjectUtil.getSourceFolderPaths(project);
 		for (int i = 0; i < srcPaths.length; i++) {
@@ -48,6 +51,11 @@ public class JavaUtil {
 			}
 		}
 		return null;
+	}
+	
+	public static boolean isJavaFile(IResource resource) {
+		return resource != null &&
+				"java".equalsIgnoreCase(resource.getFileExtension());
 	}
 
 }
