@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 
@@ -66,6 +67,10 @@ public class JavaProjectUtil {
 				S2DaoPlugin.log(e);
 			}
 		}
+	}
+
+	public static boolean isInSourceFolder(IResource resource) {
+		return resource != null && JavaCore.create(resource.getParent()) != null;
 	}
 	
 	private static String toPathName(String packageName) {

@@ -44,9 +44,9 @@ public class ComponentCacheFactory {
 				if (factoryMap.containsKey(project)) {
 					return (ComponentCacheFactory) factoryMap.get(project);
 				}
-				ComponentCacheFactory manager = new ComponentCacheFactory();
-				factoryMap.put(project, manager);
-				return manager;
+				ComponentCacheFactory factory = new ComponentCacheFactory();
+				factoryMap.put(project, factory);
+				return factory;
 			}
 		}
 	}

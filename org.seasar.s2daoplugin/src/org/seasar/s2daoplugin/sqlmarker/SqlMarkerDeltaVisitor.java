@@ -28,6 +28,7 @@ import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
+import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
@@ -77,7 +78,8 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	
 	private void handleSql(IResourceDelta delta) {
 		IResource resource = delta.getResource();
-		if (!(resource instanceof IFile)) {
+		if (!(resource instanceof IFile) ||
+				!JavaProjectUtil.isInSourceFolder(resource)) {
 			return;
 		}
 		final IMethod method = finder.findMethodFromSql((IFile) resource);
