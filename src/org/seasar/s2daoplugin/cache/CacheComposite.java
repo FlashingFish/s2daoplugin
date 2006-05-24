@@ -27,10 +27,16 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public class CacheComposite extends AbstractCacheComposite {
 
+	private static final IType[] EMPTY_TYPES = new IType[0];
+	private static final IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
+	
 	private List caches = new ArrayList();
 	
 	public IComponentElement[] getComponents(IType type, IPath containerPath) {
 		Set result = new HashSet();
+		if (type == null || containerPath == null) {
+			return EMPTY_COMPONENTS;
+		}
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			result.addAll(Arrays.asList(caches[i].getComponents(type, containerPath)));
@@ -48,6 +54,9 @@ public class CacheComposite extends AbstractCacheComposite {
 	}
 	
 	public IType[] getAppliedTypes(IPath containerPath) {
+		if (containerPath == null) {
+			return EMPTY_TYPES;
+		}
 		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
@@ -57,6 +66,9 @@ public class CacheComposite extends AbstractCacheComposite {
 	}
 	
 	public boolean contains(IType type) {
+		if (type == null) {
+			return false;
+		}
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			if (caches[i].contains(type)) {
@@ -67,6 +79,9 @@ public class CacheComposite extends AbstractCacheComposite {
 	}
 	
 	public boolean contains(IType type, IPath containerPath) {
+		if (type == null || containerPath == null) {
+			return false;
+		}
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			if (caches[i].contains(type, containerPath)) {

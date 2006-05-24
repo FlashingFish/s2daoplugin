@@ -46,9 +46,9 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		String extension = delta.getFullPath().getFileExtension();
-		if ("java".equals(extension)) {
+		if ("java".equalsIgnoreCase(extension)) {
 			handleJava(delta);
-		} else if ("sql".equals(extension)) {
+		} else if ("sql".equalsIgnoreCase(extension)) {
 			handleSql(delta);
 		} else if (".project".equals(delta.getResource().getName())) {
 			handleDotProject(delta);
@@ -57,11 +57,12 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	private void handleJava(IResourceDelta delta) {
+		final IType type = JavaUtil.findPrimaryType(delta.getResource());
+		marker.unmark(type);
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
 			return;
 		}
-		final IType type = JavaUtil.findPrimaryType(delta.getResource());
 		if (!cache.contains(type)) {
 			return;
 		}
