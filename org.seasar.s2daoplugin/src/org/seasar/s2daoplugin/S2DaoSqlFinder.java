@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -109,6 +110,9 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 				}
 				ICompilationUnit unit = pack.getCompilationUnit(split[0] + ".java");
 				IType type = unit.findPrimaryType();
+				if (type == null) {
+					continue;
+				}
 				IMethod[] methods = type.getMethods();
 				for (int j = 0; j < methods.length; j++) {
 					if (methods[j].getElementName().equals(split[1])) {
@@ -123,7 +127,14 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 	}
 	
 	private Set findSqlFilesFromMethod(IMethod method) {
-		IType type = method.getCompilationUnit().findPrimaryType();
+		ICompilationUnit unit = method.getCompilationUnit();
+		if (unit == null) {
+			return Collections.EMPTY_SET;
+		}
+		IType type = unit.findPrimaryType();
+		if (type == null) {
+			return Collections.EMPTY_SET;
+		}
 		IJavaProject project = type.getJavaProject();
 		String packagePath = packageToPath(type);
 		String basename = S2DaoUtil.createBaseSqlFileName(method);

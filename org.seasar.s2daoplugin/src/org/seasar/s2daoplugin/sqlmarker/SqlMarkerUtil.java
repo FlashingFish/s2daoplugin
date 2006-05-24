@@ -70,10 +70,16 @@ public class SqlMarkerUtil {
 		}
 		
 		protected void run(IJavaElement element, IWorkspaceRunnable runnable) {
+			if (element == null || element.getJavaProject() == null) {
+				return;
+			}
 			run(element.getJavaProject().getProject(), runnable);
 		}
 		
 		protected void run(IProject project, IWorkspaceRunnable runnable) {
+			if (project == null || runnable == null) {
+				return;
+			}
 			try {
 				project.getWorkspace().run(runnable, null);
 			} catch (CoreException e) {
@@ -118,6 +124,15 @@ public class SqlMarkerUtil {
 		
 		protected int getEnd(IMarker marker) {
 			return marker.getAttribute(IMarker.CHAR_END, -1);
+		}
+		
+		protected boolean isInInterface(IMethod method) {
+			try {
+				return method != null && method.getDeclaringType().isInterface();
+			} catch (JavaModelException e) {
+				S2DaoPlugin.log(e);
+				return false;
+			}
 		}
 		
 	}
@@ -166,7 +181,7 @@ public class SqlMarkerUtil {
 		}
 
 		public void mark(IMethod method) {
-			if (method == null) {
+			if (method == null || !isInInterface(method)) {
 				return;
 			}
 			if (hasSql(method)) {
@@ -196,7 +211,7 @@ public class SqlMarkerUtil {
 		}
 
 		public void unmark(IType type) {
-			if (type == null) {
+			if (type == null || type.isBinary()) {
 				return;
 			}
 			try {
@@ -208,7 +223,7 @@ public class SqlMarkerUtil {
 		}
 
 		public void unmark(IMethod method) {
-			if (method == null) {
+			if (method == null || method.isBinary()) {
 				return;
 			}
 			IMarker[] markers = null;

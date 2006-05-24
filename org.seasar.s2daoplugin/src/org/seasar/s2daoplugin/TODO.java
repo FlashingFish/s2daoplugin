@@ -24,7 +24,7 @@ interface TODO {
 	 * 
 	 * TODO: プラグインの有無変更とkijimunaとの関係を見直す
 	 *
-	 * TODO: キャッシュ機能を刷新する
+	 * FIXME: キャッシュ機能を刷新する
 	 * 
 	 * TODO: マーカだけを無効にする
 	 * 
@@ -38,6 +38,8 @@ interface TODO {
 	 * TODO: kijimunaを使わないで使える設定を作る
 	 * 
 	 * TODO: スレッドセーフに
+	 * 
+	 * TODO: ITypeが消えるとキーに使用しているキャッシュが消せなくなる
 	 * 
 	 */
 
