@@ -130,7 +130,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 			return;
 		}
 		ModelManager model = nature.getModel();
-		buildContainerMap(model);
+		buildContainers(model);
 		model.addRecordChangeListener(this);
 		initialized = true;
 	}
@@ -140,6 +140,12 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		youngContainerMap1.clear();
 		oldContainerMap2.clear();
 		youngContainerMap2.clear();
+	}
+	
+	private void buildContainers(ModelManager model) {
+		fireStartChangedAll();
+		buildContainerMap(model);
+		fireFinishChangedAll();
 	}
 	
 	private void buildContainerMap(ModelManager model) {
@@ -156,7 +162,6 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 			clearContainerMap();
 			buildContainerMap(model);
 		}
-		fireFinishChangedAll();
 	}
 	
 	private void mashUpContainerMap(IContainerElement[] containers,
@@ -223,12 +228,22 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireInitialEvent(IDiconChangeListener listener) {
-		listener.initialize();
+		fireStartChanged(listener);
 		IContainerElement[] containers = getAllContainers();
 		for (int i = 0; i < containers.length; i++) {
 			fireAdded(listener, containers[i]);
 		}
 		fireFinishChanged(listener);
+	}
+	
+	private void fireStartChangedAll() {
+		for (Iterator it = listeners.values().iterator(); it.hasNext();) {
+			fireStartChanged((IDiconChangeListener) it.next());
+		}
+	}
+	
+	private void fireStartChanged(IDiconChangeListener listener) {
+		listener.startChanged();
 	}
 	
 	private void fireAddedAll(IContainerElement container) {

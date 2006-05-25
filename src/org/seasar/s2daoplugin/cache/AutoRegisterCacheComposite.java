@@ -16,178 +16,85 @@
 package org.seasar.s2daoplugin.cache;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
-import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
+import org.seasar.s2daoplugin.util.StringUtil;
 
+// ANDCache
+// FIXME: AutoRegisterÇÃèáèòÇîªíËÇ∑ÇÈ
 public class AutoRegisterCacheComposite extends AbstractCacheComposite {
 
-	private List componentAutoCaches = new ArrayList();
-	private List componentTargetAutoCaches = new ArrayList();
-	
-	public IComponentElement[] getComponents(IType type, IPath containerPath) {
-		if (type == null || containerPath == null) {
-			return CacheConstants.EMPTY_COMPONENTS;
-		}
-		Set result = new HashSet();
-		for (int i = 0; i < componentAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
-			IComponentElement[] components = cache.getComponents(type, containerPath);
-			if (components.length == 0) {
-				continue;
-			}
-			IComponentElement[] componentTargets =
-				getComponentTargetsByContainer(type, containerPath);
-			if (componentTargets.length == 0) {
-				continue;
-			}
-			result.addAll(Arrays.asList(components));
-			result.addAll(Arrays.asList(componentTargets));
-		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
-	}
+	private List caches = new ArrayList();
 	
 	public IType[] getAllAppliedTypes() {
 		Set result = new HashSet();
-		for (int i = 0; i < componentAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
-			IComponentElement[] components = cache.getAllComponents();
-			for (int j = 0; j < components.length; j++) {
-				List appliedTypes = AutoRegisterUtil.getAppliedTypes(
-						(IAutoRegisterElement) components[j]);
-				for (int k = 0; k < appliedTypes.size(); k++) {
-					IPath path = components[j].getStorage().getFullPath();
-					if (contains((IType) appliedTypes.get(k), path)) {
-						result.add(appliedTypes.get(k));
-					}
-				}
-			}
-		}
-		return (IType[]) result.toArray(new IType[result.size()]);
-	}
-	
-	public IType[] getAppliedTypes(IPath containerPath) {
-		Set result = new HashSet();
-		for (int i = 0; i < componentAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
-			IType[] types = cache.getAppliedTypes(containerPath);
-			for (int j = 0; j < types.length; j++) {
-				if (contains(types[j], containerPath)) {
-					result.add(types[j]);
-				}
-			}
-		}
-		return (IType[]) result.toArray(new IType[result.size()]);
-	}
-	
-	public boolean contains(IType type) {
-		if (type == null) {
-			return false;
-		}
-		for (int i = 0; i < componentAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
-			IPath[] paths = cache.getAllContainerPaths();
-			if (containsByContainers(type, paths, cache)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean contains(IType type, IPath containerPath) {
-		if (containerPath == null || type == null) {
-			return false;
-		}
-		for (int i = 0; i < componentAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentAutoCaches.get(i);
-			if (containsByContainers(type, new IPath[] {containerPath}, cache)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public AutoRegisterCacheComposite addComponentAutoRegisterCache(
-			AutoRegisterCache cache) {
-		if (cache == null) {
-			return this;
-		}
-		componentAutoCaches.add(cache);
-		return this;
-	}
-	
-	public AutoRegisterCacheComposite addComponentTargetAutoRegisterCache(
-			AutoRegisterCache cache) {
-		if (cache == null) {
-			return this;
-		}
-		componentTargetAutoCaches.add(cache);
-		return this;
-	}
-	
-	protected IComponentCache[] getAllCaches() {
-		List caches = new ArrayList(componentAutoCaches.size() +
-				componentTargetAutoCaches.size());
-		caches.addAll(componentAutoCaches);
-		caches.addAll(componentTargetAutoCaches);
-		return (IComponentCache[]) caches.toArray(new IComponentCache[caches.size()]);
-	}
-	
-	private boolean containsByContainers(IType type, IPath[] paths, IComponentCache cache) {
-		for (int i = 0; i < paths.length; i++) {
-			if (!cache.contains(type, paths[i])) {
+		Set temp = new HashSet();
+		IComponentCache[] caches = getAllCaches();
+		for (int i = 0; i < caches.length; i++) {
+			if (i == 0) {
+				add(result, caches[i].getAllAppliedTypes());
 				continue;
 			}
-			int lowest = getLowestComponentLineNumber(cache.getComponents(type, paths[i]));
-			if (containsComponentTargetAuto(type, paths[i], lowest)) {
-				return true;
+			IType[] types = caches[i].getAllAppliedTypes();
+			for (int j = 0; j < types.length; j++) {
+				if (result.contains(types[j])) {
+					temp.add(types[j]);
+				}
 			}
+			result.clear();
+			result.addAll(temp);
+			temp.clear();
 		}
-		return false;
+		return (IType[]) result.toArray(new IType[result.size()]);
 	}
 	
-	private boolean containsComponentTargetAuto(IType type, IPath containerPath, int lowest) {
-		for (int i = 0; i < componentTargetAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentTargetAutoCaches.get(i);
-			if (!cache.contains(type, containerPath)) {
-				return false;
-			}
-			if (lowest > getLowestComponentLineNumber(
-					cache.getComponents(type, containerPath))) {
+	public void setContainerPath(IPath containerPath) {
+		// do nothing
+	}
+
+	public IPath getContainerPath() {
+		return null;
+	}
+
+	public boolean contains(IType type) {
+		return type != null ? contains(type.getFullyQualifiedName()) : false;
+	}
+
+	public boolean contains(String fullyQualifiedClassName) {
+		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
+			return false;
+		}
+		IComponentCache[] caches = getAllCaches();
+		for (int i = 0; i < caches.length; i++) {
+			if (!caches[i].contains(fullyQualifiedClassName)) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
-	private int getLowestComponentLineNumber(IComponentElement[] components) {
-		int lowest = Integer.MAX_VALUE;
-		for (int i = 0; i < components.length; i++) {
-			int start = components[i].getStartLine();
-			lowest = lowest > start ? start : lowest;
-		}
-		return lowest;
+
+	public void clearCache() {
+		caches.clear();
+	}
+
+	public IComponentCache getComponentCache(IPath containerPath) {
+		return null;
 	}
 	
-	private IComponentElement[] getComponentTargetsByContainer(IType type,
-			IPath containerPath) {
-		Set result = new HashSet();
-		for (int i = 0; i < componentTargetAutoCaches.size(); i++) {
-			IComponentCache cache = (IComponentCache) componentTargetAutoCaches.get(i);
-			IComponentElement[] components = cache.getComponents(type, containerPath);
-			if (components.length == 0) {
-				return CacheConstants.EMPTY_COMPONENTS;
-			}
-			result.addAll(Arrays.asList(components));
+	public AutoRegisterCacheComposite addAutoRegisterCache(AutoRegisterCache cache) {
+		if (cache == null) {
+			return this;
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		caches.add(cache);
+		return this;
+	}
+
+	protected IComponentCache[] getAllCaches() {
+		return (IComponentCache[]) caches.toArray(new IComponentCache[caches.size()]);
 	}
 
 }

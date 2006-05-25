@@ -142,11 +142,11 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			return null;
 		}
 		if (!manager.hasListener(S2DAO_COMPONENT_CACHE_KEY)) {
-			SequentializedListenerChain chain = new SequentializedListenerChain();
-			chain.addListener(new SqlMarkerUnmarkingListener());
-			chain.addListener(cache);
-			chain.addListener(new SqlMarkerMarkingListener());
-			manager.addDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY, chain);
+//			SequentializedListenerChain chain = new SequentializedListenerChain();
+//			chain.addListener(new SqlMarkerUnmarkingListener());
+//			chain.addListener(cache);
+//			chain.addListener(new SqlMarkerMarkingListener());
+			manager.addDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY, cache);
 		}
 		return cache;
 	}
@@ -170,8 +170,8 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
 							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
 					.addComponentCache(new AutoRegisterCacheComposite()
-							.addComponentAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
-							.addComponentTargetAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
+							.addAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
+							.addAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
 		}
 	}
 

@@ -58,6 +58,10 @@ public abstract class AbstractComponentCache implements IComponentCache {
 		}
 	}
 
+	public void startChanged() {
+		initialize();
+	}
+	
 	public void diconAdded(IContainerElement container) {
 		builder.build(wrap(container));
 	}

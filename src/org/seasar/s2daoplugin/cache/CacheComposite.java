@@ -16,91 +16,74 @@
 package org.seasar.s2daoplugin.cache;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.util.StringUtil;
 
+// ORCache
 public class CacheComposite extends AbstractCacheComposite {
 
-	private static final IType[] EMPTY_TYPES = new IType[0];
-	private static final IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
-	
 	private List caches = new ArrayList();
-	
-	public IComponentElement[] getComponents(IType type, IPath containerPath) {
-		Set result = new HashSet();
-		if (type == null || containerPath == null) {
-			return EMPTY_COMPONENTS;
-		}
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			result.addAll(Arrays.asList(caches[i].getComponents(type, containerPath)));
-		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
-	}
+	private IPath containerPath;
 	
 	public IType[] getAllAppliedTypes() {
 		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
-			result.addAll(Arrays.asList(caches[i].getAllAppliedTypes()));
+			add(result, caches[i].getAllAppliedTypes());
 		}
 		return (IType[]) result.toArray(new IType[result.size()]);
 	}
 	
-	public IType[] getAppliedTypes(IPath containerPath) {
-		if (containerPath == null) {
-			return EMPTY_TYPES;
-		}
-		Set result = new HashSet();
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			result.addAll(Arrays.asList(caches[i].getAppliedTypes(containerPath)));
-		}
-		return (IType[]) result.toArray(new IType[result.size()]);
+	public void setContainerPath(IPath containerPath) {
+		this.containerPath = containerPath;
+	}
+	
+	public IPath getContainerPath() {
+		return containerPath;
 	}
 	
 	public boolean contains(IType type) {
-		if (type == null) {
+		return type != null ? contains(type.getFullyQualifiedName()) : false;
+	}
+
+	public boolean contains(String fullyQualifiedClassName) {
+		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
 			return false;
 		}
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			if (caches[i].contains(type)) {
+		for (int i = 0; i < caches.size(); i++) {
+			if (((IComponentCache) caches.get(i)).contains(fullyQualifiedClassName)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	public boolean contains(IType type, IPath containerPath) {
-		if (type == null || containerPath == null) {
-			return false;
+
+	public void clearCache() {
+		for (int i = 0; i < caches.size(); i++) {
+			((IComponentCache) caches.get(i)).clearCache();
 		}
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			if (caches[i].contains(type, containerPath)) {
-				return true;
-			}
-		}
-		return false;
+		caches.clear();
 	}
-	
+
+	public IComponentCache getComponentCache(IPath containerPath) {
+		return this.containerPath.equals(containerPath) ? this : null; 
+	}
+
+	protected IComponentCache[] getAllCaches() {
+		return (IComponentCache[]) caches.toArray(new IComponentCache[caches.size()]);
+	}
+
 	public CacheComposite addComponentCache(IComponentCache cache) {
 		if (cache == null) {
 			return this;
 		}
 		caches.add(cache);
 		return this;
-	}
-	
-	protected IComponentCache[] getAllCaches() {
-		return (IComponentCache[]) caches.toArray(new IComponentCache[caches.size()]);
 	}
 
 }

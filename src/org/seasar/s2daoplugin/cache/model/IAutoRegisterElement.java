@@ -26,7 +26,7 @@ public interface IAutoRegisterElement extends IComponentElement {
 	
 	boolean isApplied(IType type);
 	
-	boolean isApplied(String packageName, String shortClassName);
+	boolean isApplied(String fullyQualifiedClassName);
 	
 	int getAutoRegisterType();
 	

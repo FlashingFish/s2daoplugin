@@ -21,26 +21,30 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public interface IComponentCache extends IDiconChangeListener {
 
+	IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
+	
 	IComponentElement[] getComponents(IType type);
 	
-	IComponentElement[] getComponents(IType type, IPath containerPath);
+	IComponentElement[] getComponents(String fullyQualifiedClassName);
 	
 	IComponentElement[] getAllComponents();
 	
-	IPath[] getAllContainerPaths();
+	void setContainerPath(IPath containerPath);
+	
+	IPath getContainerPath();
 	
 	IType[] getAllAppliedTypes();
 	
-	IType[] getAppliedTypes(IPath containerPath);
-	
 	boolean contains(IType type);
 	
-	boolean contains(IType type, IPath containerPath);
+	boolean contains(String fullyQualifiedClassName);
 	
 	void addComponent(IComponentElement component);
 	
 	void removeComponent(IComponentElement component);
 	
 	void clearCache();
+	
+	IComponentCache getComponentCache(IPath containerPath);
 
 }

@@ -52,9 +52,7 @@ public class AutoAspectedComponentCacheBuilder extends
 		// “¯ˆêDicon“à‚Å‚©‚ÂA‘ÎÛ‚ªAutoRegister‚æ‚èŒã‚ÉoŒ»‚·‚é‚±‚Æ
 		if (target.getStorage().getFullPath().equals(autoRegister.getStorage().getFullPath()) &&
 				target.getStartLine() > autoRegister.getStartLine() &&
-				autoRegister.isApplied(
-						rtti.getType().getPackageFragment().getElementName(),
-						rtti.getType().getElementName())) {
+				autoRegister.isApplied(rtti.getType())) {
 			return true;
 		}
 		return false;
