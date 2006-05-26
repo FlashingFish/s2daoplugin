@@ -168,10 +168,15 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			return new CacheComposite()
 					.addComponentCache(new ComponentCache(new CacheBuilderChain()
 							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
-							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
-					.addComponentCache(new AutoRegisterCacheComposite()
-							.addAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
-							.addAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
+							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))));
+			
+//			return new CacheComposite()
+//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
+//							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
+//							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
+//					.addComponentCache(new AutoRegisterCacheComposite()
+//							.addAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
+//							.addAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
 		}
 	}
 

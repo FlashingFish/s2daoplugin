@@ -18,6 +18,7 @@ package org.seasar.s2daoplugin.cache.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
@@ -28,27 +29,29 @@ import org.seasar.s2daoplugin.cache.DiconUtil;
 
 public final class AspectUtil {
 
-	public static boolean containsInterceptor(IAspectElement aspect, IComponentElement interceptor) {
+	public static boolean containsInterceptorType(IAspectElement aspect, IType type) {
 		IComponentElement component = DiconUtil.getAvailableComponent(aspect);
-		return hasInterceptor(component, interceptor);
+		return hasInterceptor(component, type);
 	}
 	
-	public static boolean hasInterceptor(IComponentElement component, IComponentElement interceptor) {
-		if (component == null || interceptor == null) {
+	public static boolean hasInterceptor(IComponentElement component, IType type) {
+		if (component == null || type == null) {
 			return false;
 		}
 		if (isInterceptorChain(component)) {
 			IComponentElement[] interceptors = getInterceptors(component);
 			for (int i = 0; i < interceptors.length; i++) {
-				if (hasInterceptor(interceptors[i], interceptor)) {
+				if (hasInterceptor(interceptors[i], type)) {
 					return true;
 				}
 			}
 			return false;
 		} else {
-			IRtti interceptorRtti = (IRtti) interceptor.getAdapter(IRtti.class);
-			return interceptorRtti != null ?
-					interceptorRtti.equals(component.getAdapter(IRtti.class)) : false;
+			IRtti rtti = (IRtti) component.getAdapter(IRtti.class);
+			return rtti != null ? type.equals(rtti.getType()) : false;
+//			IRtti interceptorRtti = (IRtti) interceptor.getAdapter(IRtti.class);
+//			return interceptorRtti != null ?
+//					interceptorRtti.equals(component.getAdapter(IRtti.class)) : false;
 		}
 	}
 	

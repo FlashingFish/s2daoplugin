@@ -15,14 +15,19 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.rtti.IRtti;
 
 public class ComponentCacheBuilder extends AbstractCacheBuilder {
 
-	private IComponentFilter componentFilter;
+	private final Set targetClassNames;
 	
 	public ComponentCacheBuilder() {
-		this("");
+		this(new String[0]);
 	}
 	
 	public ComponentCacheBuilder(String targetClassName) {
@@ -33,40 +38,33 @@ public class ComponentCacheBuilder extends AbstractCacheBuilder {
 		if (targetClassNames == null) {
 			throw new IllegalArgumentException();
 		}
-		componentFilter = new ComponentFilter(targetClassNames);
+		this.targetClassNames = new HashSet(Arrays.asList(targetClassNames));
 	}
 	
 	public void initialize() {
-		initializeFilter(componentFilter);
-	}
-	
-	public void build(IComponentElement[] components) {
-		IComponentElement[] comp = filtering(components);
-		for (int i = 0; i < comp.length; i++) {
-			addComponent(comp[i]);
-		}
-	}
-	
-	public void clear(IComponentElement[] components) {
-		if (components == null) {
-			return;
-		}
-		for (int i = 0; i < components.length; i++) {
-			removeComponent(components[i]);
-		}
-	}
-	
-	public void finishBuild() {
 		// do nothing
 	}
-	
-	protected void initializeFilter(IComponentFilter filter) {
-		filter.setDiconModelManager(getManager());
-		filter.initialize();
+
+	public void build(IComponentElement[] components) {
+		for (int i = 0; i < components.length; i++) {
+			String className = components[i].getComponentClassName();
+			if (!targetClassNames.isEmpty() &&
+					!targetClassNames.contains(className)) {
+				continue;
+			}
+			IRtti rtti = getManager().getRtti(className);
+			if (rtti != null && rtti.getType() != null) {
+				addComponent(components[i]);
+			}
+		}
 	}
-	
-	protected IComponentElement[] filtering(IComponentElement[] components) {
-		return componentFilter.filtering(components);
+
+	public void clear(IComponentElement[] components) {
+		removeComponents(components);
+	}
+
+	public void finishBuild() {
+		// do nothing
 	}
 
 }

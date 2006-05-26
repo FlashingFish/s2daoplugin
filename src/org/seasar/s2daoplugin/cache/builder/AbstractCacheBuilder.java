@@ -15,6 +15,9 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
@@ -33,17 +36,45 @@ public abstract class AbstractCacheBuilder implements ICacheBuilder {
 	protected DiconModelManager getManager() {
 		return cache.getManager();
 	}
+
+	protected void addComponents(IComponentElement[] components) {
+		addComponents(Arrays.asList(components));
+	}
+	
+	protected void addComponents(List components) {
+		if (components == null) {
+			return;
+		}
+		for (int i = 0; i < components.size(); i++) {
+			Object obj = components.get(i);
+			if (obj instanceof IComponentElement) {
+				addComponent((IComponentElement) obj);
+			}
+		}
+	}
 	
 	protected void addComponent(IComponentElement component) {
 		cache.addComponent(component);
 	}
 	
-	protected void removeComponent(IComponentElement component) {
-		cache.removeComponent(component);
+	protected void removeComponents(IComponentElement[] components) {
+		removeComponents(Arrays.asList(components));
 	}
 	
-	protected void clearCacheAll() {
-		cache.clearCache();
+	protected void removeComponents(List components) {
+		if (components == null) {
+			return;
+		}
+		for (int i = 0; i < components.size(); i++) {
+			Object obj = components.get(i);
+			if (obj instanceof IComponentElement) {
+				removeComponent((IComponentElement) obj);
+			}
+		}
+	}
+	
+	protected void removeComponent(IComponentElement component) {
+		cache.removeComponent(component);
 	}
 
 }

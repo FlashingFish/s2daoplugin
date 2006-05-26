@@ -42,6 +42,7 @@ public final class DiconUtil {
 				.toArray(new IContainerElement[collection.size()]);
 	}
 	
+	// FIXME: IDiconElement‚ðIComponentHolderElement‚Ö
 	public static IComponentElement getAvailableComponent(IDiconElement element) {
 		if (element == null) {
 			return null;

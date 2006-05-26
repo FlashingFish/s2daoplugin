@@ -46,9 +46,8 @@ public class AutoRegisterUtil implements CacheConstants {
 		autoRegisterNames.addAll(Arrays.asList(ASPECT_AUTO_REGISTERS));
 	}
 	
-	public static boolean hasInterceptor(IAutoRegisterElement autoRegister,
-			IComponentElement interceptor) {
-		if (autoRegister == null || interceptor == null) {
+	public static boolean hasInterceptor(IAutoRegisterElement autoRegister, IType type) {
+		if (autoRegister == null || type == null) {
 			return false;
 		}
 		if (autoRegister.getAutoRegisterType() !=
@@ -60,7 +59,7 @@ public class AutoRegisterUtil implements CacheConstants {
 			IPropertyElement prop = (IPropertyElement) props.get(i);
 			if ("interceptor".equals(prop.getPropertyName())) {
 				return AspectUtil.hasInterceptor(DiconUtil.getAvailableComponent(prop),
-						interceptor);
+						type);
 			}
 		}
 		return false;

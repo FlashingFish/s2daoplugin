@@ -15,28 +15,25 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.util.StringUtil;
 
 public class ComponentFilter implements IComponentFilter {
 
-	private String[] targetClassNames;
-	private Set targetClassTypeSet = new HashSet();
+	private Set targetClassNames;
 	private DiconModelManager manager;
 	
 	public ComponentFilter(String[] targetClassNames) {
 		if (targetClassNames == null) {
 			throw new IllegalArgumentException();
 		}
-		this.targetClassNames = targetClassNames;
+		this.targetClassNames = new HashSet(Arrays.asList(targetClassNames));
 	}
 	
 	public void setDiconModelManager(DiconModelManager manager) {
@@ -47,20 +44,23 @@ public class ComponentFilter implements IComponentFilter {
 	}
 	
 	public void initialize() {
-		buildTargetClassTypes();
+//		buildTargetClassTypes();
 	}
 	
 	public IComponentElement[] filtering(IComponentElement[] components) {
 		if (components == null) {
 			return CacheConstants.EMPTY_COMPONENTS;
 		}
-		List result = new LinkedList();
+		Set result = new HashSet();
 		for (int i = 0; i < components.length; i++) {
-			IComponentElement component = components[i];
-			IRtti componentRtti = getManager().getRtti(component.getComponentClassName());
-			// targetClassが空ならすべてのコンポーネントが対象
-			if (StringUtil.isEmpty(targetClassNames[0]) || isTarget(componentRtti)) {
-				result.add(component);
+			String className = components[i].getComponentClassName();
+			if (!targetClassNames.isEmpty() &&
+					!targetClassNames.contains(className)) {
+				continue;
+			}
+			IRtti rtti = getManager().getRtti(className);
+			if (rtti != null && rtti.getType() != null) {
+				result.add(components[i]);
 			}
 		}
 		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
@@ -68,27 +68,6 @@ public class ComponentFilter implements IComponentFilter {
 	
 	protected DiconModelManager getManager() {
 		return manager;
-	}
-	
-	private void buildTargetClassTypes() {
-		for (int i = 0; i < targetClassNames.length; i++) {
-			IRtti rtti = getManager().getRtti(targetClassNames[i]);
-			addType(rtti);
-		}
-	}
-	
-	private void addType(IRtti rtti) {
-		if (rtti == null) {
-			return;
-		}
-		targetClassTypeSet.add(rtti.getType());
-	}
-	
-	private boolean isTarget(IRtti rtti) {
-		if (rtti == null) {
-			return false;
-		}
-		return targetClassTypeSet.contains(rtti.getType());
 	}
 
 }

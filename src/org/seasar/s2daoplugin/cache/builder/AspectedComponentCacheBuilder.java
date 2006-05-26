@@ -15,40 +15,61 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.rtti.IRtti;
 
-public class AspectedComponentCacheBuilder extends AbstractComponentTargetCacheBuilder {
+public class AspectedComponentCacheBuilder extends AbstractCacheBuilder {
 
-	private final IComponentHolder aspectHolder;
+	private final String[] targetClassNames;
 	
 	public AspectedComponentCacheBuilder(String targetClassName) {
 		this(new String[] {targetClassName});
 	}
 	
 	public AspectedComponentCacheBuilder(String[] targetClassNames) {
-		aspectHolder = createHolder(targetClassNames);
+		if (targetClassNames == null) {
+			throw new IllegalArgumentException();
+		}
+		this.targetClassNames = targetClassNames;
 	}
 	
-	protected List findAdditionalComponents(IComponentElement[] components) {
-		List result = new LinkedList();
+	public void initialize() {
+		// do nothing
+	}
+	
+	public void build(IComponentElement[] components) {
 		for (int i = 0; i < components.length; i++) {
-			IComponentElement component = (IComponentElement) components[i];
-			List aspects = component.getAspectList();
+			List aspects = components[i].getAspectList();
 			for (int j = 0; j < aspects.size(); j++) {
-				IComponentElement[] aspectComponents = aspectHolder.getComponents();
-				for (int k = 0; k < aspectComponents.length; k++) {
-					if (AspectUtil.containsInterceptor(
-							(IAspectElement) aspects.get(j), aspectComponents[k])) {
-						result.add(component);
-					}
+				if (isTargetAspected((IAspectElement) aspects.get(j))) {
+					addComponent(components[i]);
+					break;
 				}
 			}
 		}
-		return result;
+	}
+
+	public void clear(IComponentElement[] components) {
+		removeComponents(components);
+	}
+
+	public void finishBuild() {
+		// do nothing
+	}
+	
+	private boolean isTargetAspected(IAspectElement aspect) {
+		for (int i = 0; i < targetClassNames.length; i++) {
+			IRtti rtti = getManager().getRtti(targetClassNames[i]);
+			if (rtti != null) {
+				if (AspectUtil.containsInterceptorType(aspect, rtti.getType())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

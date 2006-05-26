@@ -117,7 +117,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	public void finishChanged() {
 		DiconNature nature = DiconNature.getInstance(project);
 		if (nature != null) {
-			buildContainerMap(nature.getModel());
+			buildContainers(nature.getModel());
 		}
 	}
 	
