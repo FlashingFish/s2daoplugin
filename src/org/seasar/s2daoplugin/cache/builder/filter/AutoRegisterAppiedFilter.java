@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 
 public class AutoRegisterAppiedFilter extends AbstractDecorationFilter implements

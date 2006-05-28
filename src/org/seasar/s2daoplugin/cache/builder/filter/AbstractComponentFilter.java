@@ -17,7 +17,6 @@ package org.seasar.s2daoplugin.cache.builder.filter;
 
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
 public abstract class AbstractComponentFilter implements IComponentFilter {
 

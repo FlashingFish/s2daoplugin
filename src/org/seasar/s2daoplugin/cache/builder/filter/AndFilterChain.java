@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
 // AndƒtƒBƒ‹ƒ^
 public class AndFilterChain implements IExtractionComponentFilter {

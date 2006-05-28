@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
 public class ExtractionFilter extends AbstractDecorationFilter implements
 		IExtractionComponentFilter {

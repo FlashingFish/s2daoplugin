@@ -16,7 +16,6 @@
 package org.seasar.s2daoplugin.cache.builder.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
 public interface IExtractionComponentFilter extends IComponentFilter {
 

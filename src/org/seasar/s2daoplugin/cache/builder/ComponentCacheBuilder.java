@@ -17,6 +17,7 @@ package org.seasar.s2daoplugin.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.builder.filter.ClassNameFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
 
 public class ComponentCacheBuilder extends AbstractCacheBuilder {
 

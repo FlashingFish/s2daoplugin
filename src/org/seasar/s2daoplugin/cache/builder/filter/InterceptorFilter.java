@@ -17,7 +17,6 @@ package org.seasar.s2daoplugin.cache.builder.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.builder.AspectUtil;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
 public class InterceptorFilter extends AbstractComponentFilter {
 

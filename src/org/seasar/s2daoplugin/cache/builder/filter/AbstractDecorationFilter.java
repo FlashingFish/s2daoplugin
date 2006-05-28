@@ -15,7 +15,6 @@
  */
 package org.seasar.s2daoplugin.cache.builder.filter;
 
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
 public abstract class AbstractDecorationFilter extends AbstractComponentFilter {
 

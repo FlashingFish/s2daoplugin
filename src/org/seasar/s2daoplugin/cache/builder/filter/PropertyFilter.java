@@ -20,7 +20,6 @@ import java.util.List;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.s2daoplugin.cache.DiconUtil;
-import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class PropertyFilter extends AbstractDecorationFilter {
