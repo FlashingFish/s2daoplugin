@@ -93,10 +93,10 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 		return manager;
 	}
 
-	public void startChanged() {
+	public void initialize() {
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
-			caches[i].startChanged();
+			caches[i].initialize();
 		}
 	}
 

@@ -43,8 +43,10 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 		return manager;
 	}
 	
-	public void startChanged() {
-		// do nothing
+	public void initialize() {
+		for (int i = 0; i < listeners.size(); i++) {
+			((IDiconChangeListener) listeners.get(i)).initialize();
+		}
 	}
 	
 	public void diconAdded(IContainerElement container) {
@@ -72,7 +74,6 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 		try {
 			for (int i = 0; i < listeners.size(); i++) {
 				IDiconChangeListener listener = (IDiconChangeListener) listeners.get(i);
-				listener.startChanged();
 				fireAdded(listener);
 				fireUpdated(listener);
 				fireRemoved(listener);

@@ -143,7 +143,6 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void buildContainers(ModelManager model) {
-		fireStartChangedAll();
 		buildContainerMap(model);
 		fireFinishChangedAll();
 	}
@@ -228,22 +227,12 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	private void fireInitialEvent(IDiconChangeListener listener) {
-		fireStartChanged(listener);
+		listener.initialize();
 		IContainerElement[] containers = getAllContainers();
 		for (int i = 0; i < containers.length; i++) {
 			fireAdded(listener, containers[i]);
 		}
 		fireFinishChanged(listener);
-	}
-	
-	private void fireStartChangedAll() {
-		for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-			fireStartChanged((IDiconChangeListener) it.next());
-		}
-	}
-	
-	private void fireStartChanged(IDiconChangeListener listener) {
-		listener.startChanged();
 	}
 	
 	private void fireAddedAll(IContainerElement container) {

@@ -41,7 +41,9 @@ interface TODO {
 	 * 
 	 * TODO: ITypeが消えるとキーに使用しているキャッシュが消せなくなる
 	 * 
-	 * TODO: ComponentAutoとAspectAutoの順序をチェックする
+	 * FIXME: ComponentAutoとAspectAutoの順序をチェックする
+	 * 
+	 * TODO: キャッシュビルダ用のネイチャを作る
 	 * 
 	 */
 

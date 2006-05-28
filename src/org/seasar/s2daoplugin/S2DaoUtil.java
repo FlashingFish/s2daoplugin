@@ -27,6 +27,7 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.SequentializedListenerChain;
 import org.seasar.s2daoplugin.cache.builder.CacheBuilderChain;
 import org.seasar.s2daoplugin.cache.builder.ComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.ExtractionCacheBuilder;
@@ -40,6 +41,8 @@ import org.seasar.s2daoplugin.cache.builder.filter.InterceptorFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.PropertyFilter;
 import org.seasar.s2daoplugin.cache.factory.ComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
@@ -144,11 +147,11 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			return null;
 		}
 		if (!manager.hasListener(S2DAO_COMPONENT_CACHE_KEY)) {
-//			SequentializedListenerChain chain = new SequentializedListenerChain();
-//			chain.addListener(new SqlMarkerUnmarkingListener());
-//			chain.addListener(cache);
-//			chain.addListener(new SqlMarkerMarkingListener());
-			manager.addDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY, cache);
+			SequentializedListenerChain chain = new SequentializedListenerChain();
+			chain.addListener(new SqlMarkerUnmarkingListener());
+			chain.addListener(cache);
+			chain.addListener(new SqlMarkerMarkingListener());
+			manager.addDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY, chain);
 		}
 		return cache;
 	}

@@ -23,9 +23,7 @@ public interface IDiconChangeListener {
 	
 	DiconModelManager getManager();
 	
-//	void initialize();
-	
-	void startChanged();
+	void initialize();
 	
 	void diconAdded(IContainerElement container);
 	

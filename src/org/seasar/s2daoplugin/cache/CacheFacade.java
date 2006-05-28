@@ -132,9 +132,9 @@ public class CacheFacade implements IComponentCache {
 		return manager;
 	}
 	
-	public void startChanged() {
+	public void initialize() {
 		for (Iterator it = cacheByContainerPath.values().iterator(); it.hasNext();) {
-			((IComponentCache) it.next()).startChanged();
+			((IComponentCache) it.next()).initialize();
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class CacheFacade implements IComponentCache {
 		IComponentCache cache = factory.createComponentCache();
 		// atomic begin
 		cache.setManager(manager);
-		cache.startChanged();
+		cache.initialize();
 		cache.diconAdded(container);
 		// atomic end
 		cacheByContainerPath.put(path, cache);
@@ -170,7 +170,6 @@ public class CacheFacade implements IComponentCache {
 		if (cache == null) {
 			return;
 		}
-		// diconRemoved‚Ì’†‚Åcache.clearCache()
 		cache.diconRemoved(container);
 		cacheByContainerPath.remove(path);
 	}
