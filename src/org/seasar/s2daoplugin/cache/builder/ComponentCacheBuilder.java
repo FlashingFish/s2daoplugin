@@ -21,8 +21,6 @@ import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
 
 public class ComponentCacheBuilder extends AbstractCacheBuilder {
 
-	private IComponentFilter filter;
-	
 	public ComponentCacheBuilder(String className) {
 		this(new String[] {className});
 	}
@@ -32,28 +30,17 @@ public class ComponentCacheBuilder extends AbstractCacheBuilder {
 	}
 	
 	public ComponentCacheBuilder(IComponentFilter filter) {
-		if (filter == null) {
-			throw new IllegalArgumentException();
-		}
-		this.filter = filter;
+		super(filter);
 	}
 	
-	public void initialize() {
-		filter.setManager(getManager());
-	}
-
 	public void build(IComponentElement[] components) {
 		for (int i = 0; i < components.length; i++) {
-			if (filter.isPassable(components[i])) {
+			if (getFilter().isPassable(components[i])) {
 				addComponent(components[i]);
 			}
 		}
 	}
-
-	public void clear(IComponentElement[] components) {
-		removeComponents(components);
-	}
-
+	
 	public void finishBuild() {
 		// do nothing
 	}

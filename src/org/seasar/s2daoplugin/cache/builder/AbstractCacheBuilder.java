@@ -21,16 +21,37 @@ import java.util.List;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
 
 public abstract class AbstractCacheBuilder implements ICacheBuilder {
 
+	private IComponentFilter filter;
 	private IComponentCache cache;
+	
+	public AbstractCacheBuilder(IComponentFilter filter) {
+		if (filter == null) {
+			throw new IllegalArgumentException();
+		}
+		this.filter = filter;
+	}
 	
 	public void setComponentCache(IComponentCache cache) {
 		if (cache == null) {
 			throw new IllegalArgumentException();
 		}
 		this.cache = cache;
+	}
+	
+	public void initialize() {
+		filter.setManager(getManager());
+	}
+	
+	public void clear(IComponentElement[] components) {
+		removeComponents(components);
+	}
+	
+	protected IComponentFilter getFilter() {
+		return filter;
 	}
 	
 	protected DiconModelManager getManager() {

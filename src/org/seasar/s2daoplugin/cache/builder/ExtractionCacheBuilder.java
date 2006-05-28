@@ -16,37 +16,32 @@
 package org.seasar.s2daoplugin.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.IExtractionComponentFilter;
 
-// 抜き出したコンポーネントを条件に合致してればそのまま追加する
 public class ExtractionCacheBuilder extends AbstractCacheBuilder {
 
-	private IExtractionComponentFilter filter;
-	
 	public ExtractionCacheBuilder(IExtractionComponentFilter filter) {
-		if (filter == null) {
-			throw new IllegalArgumentException();
-		}
-		this.filter = filter;
+		super(filter);
 	}
 	
-	public void initialize() {
-		filter.setManager(getManager());
-	}
-
 	public void build(IComponentElement[] components) {
 		for (int i = 0; i < components.length; i++) {
-			filter.addComponentIfNecessary(components[i]);
+			getExtractionFilter().addComponentIfNecessary(components[i]);
 		}
 	}
-
-	public void clear(IComponentElement[] components) {
-		removeComponents(components);
-	}
-
+	
 	public void finishBuild() {
-		addComponents(filter.getComponents());
-		filter.clearComponents();
+		addComponents(getExtractionFilter().getComponents());
+		getExtractionFilter().clearComponents();
+	}
+	
+	private IExtractionComponentFilter getExtractionFilter() {
+		IComponentFilter filter = getFilter();
+		if (filter instanceof IExtractionComponentFilter) {
+			return (IExtractionComponentFilter) filter;
+		}
+		throw new IllegalStateException();
 	}
 
 }
