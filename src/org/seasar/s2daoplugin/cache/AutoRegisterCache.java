@@ -76,13 +76,16 @@ public class AutoRegisterCache extends AbstractComponentCache {
 		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
 			return false;
 		}
+		if (autoRegisters.isEmpty()) {
+			return false;
+		}
 		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
 			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
-			if (auto.isApplied(fullyQualifiedClassName)) {
-				return true;
+			if (!auto.isApplied(fullyQualifiedClassName)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 	public void addComponent(IComponentElement component) {

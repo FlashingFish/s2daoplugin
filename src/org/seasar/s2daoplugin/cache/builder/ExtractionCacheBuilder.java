@@ -16,21 +16,14 @@
 package org.seasar.s2daoplugin.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.filter.ClassNameFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.IExtractionComponentFilter;
 
-public class ComponentCacheBuilder extends AbstractCacheBuilder {
+// 抜き出したコンポーネントを条件に合致してればそのまま追加する
+public class ExtractionCacheBuilder extends AbstractCacheBuilder {
 
-	private IComponentFilter filter;
+	private IExtractionComponentFilter filter;
 	
-	public ComponentCacheBuilder(String className) {
-		this(new String[] {className});
-	}
-	
-	public ComponentCacheBuilder(String[] classNames) {
-		this(new ClassNameFilter(classNames));
-	}
-	
-	public ComponentCacheBuilder(IComponentFilter filter) {
+	public ExtractionCacheBuilder(IExtractionComponentFilter filter) {
 		if (filter == null) {
 			throw new IllegalArgumentException();
 		}
@@ -43,9 +36,7 @@ public class ComponentCacheBuilder extends AbstractCacheBuilder {
 
 	public void build(IComponentElement[] components) {
 		for (int i = 0; i < components.length; i++) {
-			if (filter.isPassable(components[i])) {
-				addComponent(components[i]);
-			}
+			filter.addComponentIfNecessary(components[i]);
 		}
 	}
 
@@ -54,7 +45,8 @@ public class ComponentCacheBuilder extends AbstractCacheBuilder {
 	}
 
 	public void finishBuild() {
-		// do nothing
+		addComponents(filter.getComponents());
+		filter.clearComponents();
 	}
 
 }

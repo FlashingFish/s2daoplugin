@@ -20,9 +20,7 @@ import org.seasar.s2daoplugin.cache.DiconModelManager;
 
 public interface IComponentFilter {
 
-	void setDiconModelManager(DiconModelManager manager);
+	void setManager(DiconModelManager manager);
 	
-	void initialize();
-	
-	IComponentElement[] filtering(IComponentElement[] components);
+	boolean isPassable(IComponentElement component);
 }

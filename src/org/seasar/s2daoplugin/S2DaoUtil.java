@@ -22,22 +22,24 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.seasar.s2daoplugin.cache.AutoRegisterCache;
-import org.seasar.s2daoplugin.cache.AutoRegisterCacheComposite;
 import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.cache.SequentializedListenerChain;
-import org.seasar.s2daoplugin.cache.builder.AspectAutoRegisterCacheBuilder;
-import org.seasar.s2daoplugin.cache.builder.AspectedComponentCacheBuilder;
-import org.seasar.s2daoplugin.cache.builder.AutoAspectedComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.CacheBuilderChain;
 import org.seasar.s2daoplugin.cache.builder.ComponentCacheBuilder;
+import org.seasar.s2daoplugin.cache.builder.ExtractionCacheBuilder;
+import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.AndFilterChain;
+import org.seasar.s2daoplugin.cache.builder.filter.AspectFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.AutoRegisterAppiedFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.ClassNameFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.ExtractionFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.InterceptorFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.PropertyFilter;
 import org.seasar.s2daoplugin.cache.factory.ComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
-import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
-import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
@@ -164,11 +166,44 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	
 	private static class S2DaoComponentCacheFactory implements IComponentCacheFactory {
 
+		private IComponentFilter createAspectAutoRegisterFilter() {
+			return new AndFilterChain()
+					.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
+					.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))));
+		}
+
 		public IComponentCache createComponentCache() {
 			return new CacheComposite()
 					.addComponentCache(new ComponentCache(new CacheBuilderChain()
-							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
-							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))));
+							.addBuilder(new ComponentCacheBuilder(new AspectFilter(new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR)))))
+							.addBuilder(new ExtractionCacheBuilder(new AutoRegisterAppiedFilter(new ExtractionFilter(createAspectAutoRegisterFilter()))))))
+					.addComponentCache(new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
+							.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
+							.addFilter(new ExtractionFilter(createAspectAutoRegisterFilter())))));
+			
+//			return new ComponentCache(new ExtractionCacheBuilder(new AutoRegisterAppiedFilter(
+//					new ExtractionFilter(new AndFilterChain()
+//							.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
+//							.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))))))));
+			
+			// for AutoRegister
+//			return new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
+//					.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
+//					.addFilter(new ExtractionFilter(new AndFilterChain()
+//							.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
+//							.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))))))));
+			
+//			return new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR));
+//			return new ComponentCache(new ComponentCacheBuilder(new AspectedFilter(S2DAO_INTERCEPTOR)));
+//			return new ComponentCache(new DependingCacheBuilder(new AutoAspectedFilter(S2DAO_INTERCEPTOR)));
+//			return new CacheComposite()
+//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
+//							.addBuilder(new ComponentCacheBuilder(new AspectedFilter(S2DAO_INTERCEPTOR)))
+//							.addBuilder(new DependingCacheBuilder(new AutoAspectedFilter(S2DAO_INTERCEPTOR)))));
+//			return new CacheComposite()
+//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
+//							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
+//							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))));
 			
 //			return new CacheComposite()
 //					.addComponentCache(new ComponentCache(new CacheBuilderChain()

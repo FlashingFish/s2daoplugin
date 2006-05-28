@@ -13,48 +13,35 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.builder.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.filter.ClassNameFilter;
+import org.seasar.s2daoplugin.cache.builder.AspectUtil;
+import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
-public class ComponentCacheBuilder extends AbstractCacheBuilder {
+public class InterceptorFilter extends AbstractComponentFilter {
 
 	private IComponentFilter filter;
 	
-	public ComponentCacheBuilder(String className) {
-		this(new String[] {className});
-	}
-	
-	public ComponentCacheBuilder(String[] classNames) {
-		this(new ClassNameFilter(classNames));
-	}
-	
-	public ComponentCacheBuilder(IComponentFilter filter) {
+	public InterceptorFilter(IComponentFilter filter) {
 		if (filter == null) {
 			throw new IllegalArgumentException();
 		}
 		this.filter = filter;
 	}
 	
-	public void initialize() {
-		filter.setManager(getManager());
-	}
-
-	public void build(IComponentElement[] components) {
-		for (int i = 0; i < components.length; i++) {
-			if (filter.isPassable(components[i])) {
-				addComponent(components[i]);
+	public boolean isPassable(IComponentElement component) {
+		IComponentElement[] interceptors = AspectUtil.getAllInterceptors(component);
+		for (int i = 0; i < interceptors.length; i++) {
+			if (filter.isPassable(interceptors[i])) {
+				return true;
 			}
 		}
+		return false;
 	}
-
-	public void clear(IComponentElement[] components) {
-		removeComponents(components);
-	}
-
-	public void finishBuild() {
-		// do nothing
+	
+	protected void onManagerSet() {
+		filter.setManager(getManager());
 	}
 
 }

@@ -16,12 +16,16 @@
 package org.seasar.s2daoplugin.cache.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
@@ -49,10 +53,30 @@ public final class AspectUtil {
 		} else {
 			IRtti rtti = (IRtti) component.getAdapter(IRtti.class);
 			return rtti != null ? type.equals(rtti.getType()) : false;
-//			IRtti interceptorRtti = (IRtti) interceptor.getAdapter(IRtti.class);
-//			return interceptorRtti != null ?
-//					interceptorRtti.equals(component.getAdapter(IRtti.class)) : false;
 		}
+	}
+	
+	public static IComponentElement[] getAllInterceptors(IComponentHolderElement aspect) {
+		if (aspect == null) {
+			return new IComponentElement[0];
+		}
+		return getAllInterceptors(DiconUtil.getAvailableComponent(aspect));
+	}
+	
+	public static IComponentElement[] getAllInterceptors(IComponentElement interceptor) {
+		if (interceptor == null) {
+			return new IComponentElement[0];
+		}
+		Set result = new HashSet();
+		if (isInterceptorChain(interceptor)) {
+			IComponentElement[] interceptors = getInterceptors(interceptor);
+			for (int i = 0; i < interceptors.length; i++) {
+				result.addAll(Arrays.asList(getAllInterceptors(interceptors[i])));
+			}
+		} else {
+			result.add(interceptor);
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 	
 	private static boolean isInterceptorChain(IComponentElement ognlComponent) {
