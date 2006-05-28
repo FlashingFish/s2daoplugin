@@ -21,27 +21,24 @@ import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 
-public class AutoRegisterAppiedFilter extends AbstractComponentFilter implements
+public class AutoRegisterAppiedFilter extends AbstractDecorationFilter implements
 		IExtractionComponentFilter {
 
-	private IExtractionComponentFilter filter;
 	private Set components = new HashSet();
 	
 	public AutoRegisterAppiedFilter(IExtractionComponentFilter filter) {
-		if (filter == null) {
-			throw new IllegalArgumentException();
-		}
-		this.filter = filter;
+		super(filter);
 	}
 	
 	public boolean isPassable(IComponentElement component) {
-		return filter.isPassable(component);
+		return getExtractionFilter().isPassable(component);
 	}
 	
 	public boolean addComponentIfNecessary(IComponentElement component) {
-		if (!filter.addComponentIfNecessary(component)) {
+		if (!getExtractionFilter().addComponentIfNecessary(component)) {
 			components.add(component);
 		}
 		return true;
@@ -49,12 +46,12 @@ public class AutoRegisterAppiedFilter extends AbstractComponentFilter implements
 	
 	public void clearComponents() {
 		components.clear();
-		filter.clearComponents();
+		getExtractionFilter().clearComponents();
 	}
 	
 	public IComponentElement[] getComponents() {
 		Set result = new HashSet();
-		IComponentElement[] autos = filter.getComponents();
+		IComponentElement[] autos = getExtractionFilter().getComponents();
 		for (int i = 0; i < autos.length; i++) {
 			if (!(autos[i] instanceof IAutoRegisterElement)) {
 				continue;
@@ -70,8 +67,12 @@ public class AutoRegisterAppiedFilter extends AbstractComponentFilter implements
 		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 	
-	protected void onManagerSet() {
-		filter.setManager(getManager());
+	protected IExtractionComponentFilter getExtractionFilter() {
+		IComponentFilter filter = getFilter();
+		if (filter instanceof IExtractionComponentFilter) {
+			return (IExtractionComponentFilter) filter;
+		}
+		throw new IllegalStateException();
 	}
 	
 	private boolean isApplied(IAutoRegisterElement autoRegister, IComponentElement target) {

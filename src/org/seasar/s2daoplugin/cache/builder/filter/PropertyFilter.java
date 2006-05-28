@@ -23,17 +23,16 @@ import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-public class PropertyFilter extends AbstractComponentFilter {
+public class PropertyFilter extends AbstractDecorationFilter {
 
-	private IComponentFilter filter;
 	private String propertyName;
 	
 	public PropertyFilter(String propertyName, IComponentFilter filter) {
-		if (StringUtil.isEmpty(propertyName) || filter == null) {
+		super(filter);
+		if (StringUtil.isEmpty(propertyName)) {
 			throw new IllegalArgumentException();
 		}
 		this.propertyName = propertyName;
-		this.filter = filter;
 	}
 	
 	public boolean isPassable(IComponentElement component) {
@@ -42,16 +41,12 @@ public class PropertyFilter extends AbstractComponentFilter {
 			IPropertyElement prop = (IPropertyElement) props.get(i);
 			if (propertyName.equals(prop.getPropertyName())) {
 				IComponentElement comp = DiconUtil.getAvailableComponent(prop);
-				if (filter.isPassable(comp)) {
+				if (getFilter().isPassable(comp)) {
 					return true;
 				}
 			}
 		}
 		return false;
-	}
-	
-	protected void onManagerSet() {
-		filter.setManager(getManager());
 	}
 
 }

@@ -22,10 +22,8 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
-public class AspectFilter extends AbstractComponentFilter {
+public class AspectFilter extends AbstractDecorationFilter {
 
-	private IComponentFilter filter;
-	
 	public AspectFilter(String interceptorClassName) {
 		this(new String[] {interceptorClassName});
 	}
@@ -35,10 +33,7 @@ public class AspectFilter extends AbstractComponentFilter {
 	}
 	
 	public AspectFilter(IComponentFilter filter) {
-		if (filter == null) {
-			throw new IllegalArgumentException();
-		}
-		this.filter = filter;
+		super(filter);
 	}
 	
 	public boolean isPassable(IComponentElement component) {
@@ -46,15 +41,11 @@ public class AspectFilter extends AbstractComponentFilter {
 		for (int i = 0; i < aspects.size(); i++) {
 			IComponentElement interceptor =
 				DiconUtil.getAvailableComponent((IAspectElement) aspects.get(i));
-			if (filter.isPassable(interceptor)) {
+			if (getFilter().isPassable(interceptor)) {
 				return true;
 			}
 		}
 		return false;
-	}
-	
-	protected void onManagerSet() {
-		filter.setManager(getManager());
 	}
 
 }

@@ -21,21 +21,17 @@ import java.util.Set;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.builder.IComponentFilter;
 
-public class ExtractionFilter extends AbstractComponentFilter implements
+public class ExtractionFilter extends AbstractDecorationFilter implements
 		IExtractionComponentFilter {
 
-	private IComponentFilter filter;
 	private Set extractedComponents = new HashSet();
 	
 	public ExtractionFilter(IComponentFilter filter) {
-		if (filter == null) {
-			throw new IllegalArgumentException();
-		}
-		this.filter = filter;
+		super(filter);
 	}
 	
 	public boolean isPassable(IComponentElement component) {
-		return filter.isPassable(component);
+		return getFilter().isPassable(component);
 	}
 	
 	public boolean addComponentIfNecessary(IComponentElement component) {
@@ -53,10 +49,6 @@ public class ExtractionFilter extends AbstractComponentFilter implements
 	public IComponentElement[] getComponents() {
 		return (IComponentElement[]) extractedComponents
 				.toArray(new IComponentElement[extractedComponents.size()]);
-	}
-	
-	protected void onManagerSet() {
-		filter.setManager(getManager());
 	}
 
 }

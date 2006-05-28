@@ -180,38 +180,6 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 					.addComponentCache(new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
 							.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
 							.addFilter(new ExtractionFilter(createAspectAutoRegisterFilter())))));
-			
-//			return new ComponentCache(new ExtractionCacheBuilder(new AutoRegisterAppiedFilter(
-//					new ExtractionFilter(new AndFilterChain()
-//							.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
-//							.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))))))));
-			
-			// for AutoRegister
-//			return new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
-//					.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
-//					.addFilter(new ExtractionFilter(new AndFilterChain()
-//							.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
-//							.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))))))));
-			
-//			return new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR));
-//			return new ComponentCache(new ComponentCacheBuilder(new AspectedFilter(S2DAO_INTERCEPTOR)));
-//			return new ComponentCache(new DependingCacheBuilder(new AutoAspectedFilter(S2DAO_INTERCEPTOR)));
-//			return new CacheComposite()
-//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
-//							.addBuilder(new ComponentCacheBuilder(new AspectedFilter(S2DAO_INTERCEPTOR)))
-//							.addBuilder(new DependingCacheBuilder(new AutoAspectedFilter(S2DAO_INTERCEPTOR)))));
-//			return new CacheComposite()
-//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
-//							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
-//							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))));
-			
-//			return new CacheComposite()
-//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
-//							.addBuilder(new AspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))
-//							.addBuilder(new AutoAspectedComponentCacheBuilder(S2DAO_INTERCEPTOR))))
-//					.addComponentCache(new AutoRegisterCacheComposite()
-//							.addAutoRegisterCache(new AutoRegisterCache(new ComponentCacheBuilder(COMPONENT_AUTO_REGISTERS)))
-//							.addAutoRegisterCache(new AutoRegisterCache(new AspectAutoRegisterCacheBuilder(S2DAO_INTERCEPTOR))));
 		}
 	}
 

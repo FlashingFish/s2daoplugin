@@ -41,6 +41,8 @@ interface TODO {
 	 * 
 	 * TODO: ITypeが消えるとキーに使用しているキャッシュが消せなくなる
 	 * 
+	 * TODO: ComponentAutoとAspectAutoの順序をチェックする
+	 * 
 	 */
 
 }
