@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.seasar.s2daoplugin.cache.CacheFacade;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.util.StringUtil;
 
@@ -78,7 +79,7 @@ public class ComponentCacheFactory {
 			if (factory == null) {
 				return null;
 			}
-			IComponentCache cache = factory.createComponentCache();
+			IComponentCache cache = new CacheFacade(factory);
 			componentCacheMap.put(key, cache);
 			return cache;
 		}

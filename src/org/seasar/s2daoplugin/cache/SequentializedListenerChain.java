@@ -42,13 +42,13 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 	public DiconModelManager getManager() {
 		return manager;
 	}
-
+	
 	public void initialize() {
 		for (int i = 0; i < listeners.size(); i++) {
 			((IDiconChangeListener) listeners.get(i)).initialize();
 		}
 	}
-
+	
 	public void diconAdded(IContainerElement container) {
 		if (container == null) {
 			return;

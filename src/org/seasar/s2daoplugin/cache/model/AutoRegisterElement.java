@@ -31,6 +31,7 @@ import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.util.StringUtil;
 
 public class AutoRegisterElement implements IAutoRegisterElement {
 
@@ -55,7 +56,15 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 				type.getElementName());
 	}
 	
-	public boolean isApplied(String packageName, String shortClassName) {
+	public boolean isApplied(String fullyQualifiedClassName) {
+		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
+			return false;
+		}
+		return isApplied(getPackageName(fullyQualifiedClassName),
+				getClassName(fullyQualifiedClassName));
+	}
+	
+	private boolean isApplied(String packageName, String shortClassName) {
 		return autoRegister.match(packageName, shortClassName);
 	}
 	
@@ -252,6 +261,16 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 			}
 		}
 		return false;
+	}
+	
+	private String getPackageName(String fullyQualifiedClassName) {
+		int index = fullyQualifiedClassName.lastIndexOf('.');
+		return index > 0 ? fullyQualifiedClassName.substring(0, index) : null;
+	}
+	
+	private String getClassName(String fullyQualifiedClassName) {
+		int index = fullyQualifiedClassName.lastIndexOf('.');
+		return index > 0 ? fullyQualifiedClassName.substring(index + 1) : null;
 	}
 	
 	

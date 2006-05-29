@@ -13,16 +13,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.builder.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 
 public interface IComponentFilter {
 
-	void setDiconModelManager(DiconModelManager manager);
+	void setManager(DiconModelManager manager);
 	
-	void initialize();
-	
-	IComponentElement[] filtering(IComponentElement[] components);
+	boolean isPassable(IComponentElement component);
 }

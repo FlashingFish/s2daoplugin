@@ -16,33 +16,32 @@
 package org.seasar.s2daoplugin.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.filter.ClassNameFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.IExtractionComponentFilter;
 
-public class ComponentCacheBuilder extends AbstractCacheBuilder {
+public class ExtractionCacheBuilder extends AbstractCacheBuilder {
 
-	public ComponentCacheBuilder(String className) {
-		this(new String[] {className});
-	}
-	
-	public ComponentCacheBuilder(String[] classNames) {
-		this(new ClassNameFilter(classNames));
-	}
-	
-	public ComponentCacheBuilder(IComponentFilter filter) {
+	public ExtractionCacheBuilder(IExtractionComponentFilter filter) {
 		super(filter);
 	}
 	
 	public void build(IComponentElement[] components) {
 		for (int i = 0; i < components.length; i++) {
-			if (getFilter().isPassable(components[i])) {
-				addComponent(components[i]);
-			}
+			getExtractionFilter().addComponentIfNecessary(components[i]);
 		}
 	}
 	
 	public void finishBuild() {
-		// do nothing
+		addComponents(getExtractionFilter().getComponents());
+		getExtractionFilter().clearComponents();
+	}
+	
+	private IExtractionComponentFilter getExtractionFilter() {
+		IComponentFilter filter = getFilter();
+		if (filter instanceof IExtractionComponentFilter) {
+			return (IExtractionComponentFilter) filter;
+		}
+		throw new IllegalStateException();
 	}
 
 }

@@ -13,25 +13,24 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.model;
+package org.seasar.s2daoplugin.cache;
 
-import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+public abstract class AbstractCache implements IComponentCache {
 
-public interface IAutoRegisterElement extends IComponentElement {
-
-	int TYPE_UNKNOWN = 0;
-	int TYPE_COMPONENT = 1;
-	int TYPE_COMPONENT_TARGET = 2;
+	private DiconModelManager manager;
 	
-	boolean isApplied(IType type);
+	public void setManager(DiconModelManager manager) {
+		if (manager == null) {
+			throw new IllegalArgumentException();
+		}
+		this.manager = manager;
+	}
 	
-	boolean isApplied(String fullyQualifiedClassName);
-	
-	int getAutoRegisterType();
-	
-	String getPackageName();
-	
-	String getIgnorePackageName();
+	public DiconModelManager getManager() {
+		if (manager == null) {
+			throw new IllegalStateException();
+		}
+		return manager;
+	}
 
 }

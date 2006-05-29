@@ -13,21 +13,25 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
-
-import java.util.List;
+package org.seasar.s2daoplugin.cache.builder.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.builder.AspectUtil;
 
-public class AspectAutoRegisterCacheBuilder extends
-		AbstractAspectAutoCacheBuilder {
+public class InterceptorFilter extends AbstractDecorationFilter {
 
-	public AspectAutoRegisterCacheBuilder(String interceptorClassName) {
-		super(interceptorClassName);
+	public InterceptorFilter(IComponentFilter filter) {
+		super(filter);
 	}
 	
-	protected List findAdditionalComponents(IComponentElement[] components) {
-		return findTargetAutoRegisters();
+	public boolean isPassable(IComponentElement component) {
+		IComponentElement[] interceptors = AspectUtil.getAllInterceptors(component);
+		for (int i = 0; i < interceptors.length; i++) {
+			if (getFilter().isPassable(interceptors[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

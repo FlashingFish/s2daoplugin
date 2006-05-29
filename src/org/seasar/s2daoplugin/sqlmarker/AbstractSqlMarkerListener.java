@@ -61,7 +61,8 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		if (cache == null) {
 			return EMPTY_TYPES;
 		}
-		return cache.getAppliedTypes(container.getStorage().getFullPath());
+		cache = cache.getComponentCache(container.getStorage().getFullPath());
+		return cache != null ? cache.getAllAppliedTypes() : EMPTY_TYPES;
 	}
 
 }

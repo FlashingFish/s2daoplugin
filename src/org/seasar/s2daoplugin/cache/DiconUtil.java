@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.kijimuna.core.dicon.model.IDiconElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 
 public final class DiconUtil {
@@ -42,7 +42,7 @@ public final class DiconUtil {
 				.toArray(new IContainerElement[collection.size()]);
 	}
 	
-	public static IComponentElement getAvailableComponent(IDiconElement element) {
+	public static IComponentElement getAvailableComponent(IComponentHolderElement element) {
 		if (element == null) {
 			return null;
 		}
