@@ -16,62 +16,53 @@
 package org.seasar.s2daoplugin.cache;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.s2daoplugin.util.StringUtil;
 
-public abstract class AbstractCacheComposite implements IComponentCache {
-
-	private DiconModelManager manager;
-	
-	public void setManager(DiconModelManager manager) {
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			caches[i].setManager(manager);
-		}
-		this.manager = manager;
-	}
-	
-	public DiconModelManager getManager() {
-		return manager;
-	}
+public abstract class AbstractCacheComposite extends AbstractCache {
 
 	public IComponentElement[] getComponents(IType type) {
+		return type != null ?
+				getComponents(type.getFullyQualifiedName()) : EMPTY_COMPONENTS;
+	}
+
+	public IComponentElement[] getComponents(String fullyQualifiedClassName) {
+		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
+			return EMPTY_COMPONENTS;
+		}
 		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
-			result.addAll(Arrays.asList(caches[i].getComponents(type)));
+			add(result, caches[i].getComponents(fullyQualifiedClassName));
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		return toComponentArray(result);
+	}
+	
+	protected IComponentElement[] toComponentArray(Collection collection) {
+		return collection != null ? (IComponentElement[]) collection.toArray(
+				new IComponentElement[collection.size()]) : EMPTY_COMPONENTS;
+	}
+	
+	protected void add(Collection collection, Object[] array) {
+		if (collection == null || array == null || array.length == 0) {
+			return;
+		}
+		collection.addAll(Arrays.asList(array));
 	}
 
 	public IComponentElement[] getAllComponents() {
 		Set result = new HashSet();
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
-			result.addAll(Arrays.asList(caches[i].getAllComponents()));
+			add(result, caches[i].getAllComponents());
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
-	}
-	
-	public IPath[] getAllContainerPaths() {
-		Set result = new HashSet();
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			result.addAll(Arrays.asList(caches[i].getAllContainerPaths()));
-		}
-		return (IPath[]) result.toArray(new IPath[result.size()]);
-	}
-	
-	public void initialize() {
-		IComponentCache[] caches = getAllCaches();
-		for (int i = 0; i < caches.length; i++) {
-			caches[i].initialize();
-		}
+		return toComponentArray(result);
 	}
 	
 	public void addComponent(IComponentElement component) {
@@ -81,15 +72,26 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	public void removeComponent(IComponentElement component) {
 		throw new UnsupportedOperationException();
 	}
-
-	public void clearCache() {
+	
+	public void setManager(DiconModelManager manager) {
+		super.setManager(manager);
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
-			caches[i].clearCache();
+			caches[i].setManager(manager);
 		}
 	}
-	
+
+	public void initialize() {
+		IComponentCache[] caches = getAllCaches();
+		for (int i = 0; i < caches.length; i++) {
+			caches[i].initialize();
+		}
+	}
+
 	public void diconAdded(IContainerElement container) {
+		if (container == null) {
+			return;
+		}
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			caches[i].diconAdded(container);
@@ -97,6 +99,9 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	}
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
+		if (old == null || young == null) {
+			return;
+		}
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			caches[i].diconUpdated(old, young);
@@ -104,6 +109,9 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	}
 
 	public void diconRemoved(IContainerElement container) {
+		if (container == null) {
+			return;
+		}
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			caches[i].diconRemoved(container);
@@ -116,7 +124,7 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 			caches[i].finishChanged();
 		}
 	}
-	
+
 	protected abstract IComponentCache[] getAllCaches();
 
 }

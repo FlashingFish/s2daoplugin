@@ -117,7 +117,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	public void finishChanged() {
 		DiconNature nature = DiconNature.getInstance(project);
 		if (nature != null) {
-			buildContainerMap(nature.getModel());
+			buildContainers(nature.getModel());
 		}
 	}
 	
@@ -130,7 +130,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 			return;
 		}
 		ModelManager model = nature.getModel();
-		buildContainerMap(model);
+		buildContainers(model);
 		model.addRecordChangeListener(this);
 		initialized = true;
 	}
@@ -140,6 +140,11 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		youngContainerMap1.clear();
 		oldContainerMap2.clear();
 		youngContainerMap2.clear();
+	}
+	
+	private void buildContainers(ModelManager model) {
+		buildContainerMap(model);
+		fireFinishChangedAll();
 	}
 	
 	private void buildContainerMap(ModelManager model) {
@@ -156,7 +161,6 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 			clearContainerMap();
 			buildContainerMap(model);
 		}
-		fireFinishChangedAll();
 	}
 	
 	private void mashUpContainerMap(IContainerElement[] containers,

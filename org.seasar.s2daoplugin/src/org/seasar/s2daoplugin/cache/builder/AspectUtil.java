@@ -15,55 +15,85 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 
 public final class AspectUtil {
 
-	public static boolean containsInterceptor(IAspectElement aspect, IComponentElement interceptor) {
+	public static boolean containsInterceptorType(IAspectElement aspect, IType type) {
 		IComponentElement component = DiconUtil.getAvailableComponent(aspect);
-		return hasInterceptor(component, interceptor);
+		return hasInterceptor(component, type);
 	}
 	
-	public static boolean hasInterceptor(IComponentElement component, IComponentElement interceptor) {
-		if (component == null || interceptor == null) {
+	public static boolean hasInterceptor(IComponentElement component, IType type) {
+		if (component == null || type == null) {
 			return false;
 		}
 		if (isInterceptorChain(component)) {
 			IComponentElement[] interceptors = getInterceptors(component);
 			for (int i = 0; i < interceptors.length; i++) {
-				if (hasInterceptor(interceptors[i], interceptor)) {
+				if (hasInterceptor(interceptors[i], type)) {
 					return true;
 				}
 			}
 			return false;
 		} else {
-			IRtti interceptorRtti = (IRtti) interceptor.getAdapter(IRtti.class);
-			return interceptorRtti != null ?
-					interceptorRtti.equals(component.getAdapter(IRtti.class)) : false;
+			IRtti rtti = component.getRttiLoader().loadRtti(component.getComponentClassName());
+			return rtti != null ? type.equals(rtti.getType()) : false;
 		}
+	}
+	
+	public static IComponentElement[] getAllInterceptors(IComponentHolderElement aspect) {
+		if (aspect == null) {
+			return new IComponentElement[0];
+		}
+		return getAllInterceptors(DiconUtil.getAvailableComponent(aspect));
+	}
+	
+	public static IComponentElement[] getAllInterceptors(IComponentElement interceptor) {
+		if (interceptor == null) {
+			return new IComponentElement[0];
+		}
+		Set result = new HashSet();
+		if (isInterceptorChain(interceptor)) {
+			IComponentElement[] interceptors = getInterceptors(interceptor);
+			for (int i = 0; i < interceptors.length; i++) {
+				result.addAll(Arrays.asList(getAllInterceptors(interceptors[i])));
+			}
+		} else {
+			result.add(interceptor);
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 	
 	private static boolean isInterceptorChain(IComponentElement ognlComponent) {
-		IRtti interceptorChainRtti =
-			ognlComponent.getRttiLoader().loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
-		if (interceptorChainRtti == null) {
+		RttiLoader loader = ognlComponent.getRttiLoader();
+		IRtti interceptorChainRtti = loader.loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
+		if (interceptorChainRtti == null || interceptorChainRtti.getType() == null) {
 			return false;
 		}
-		IRtti componentRtti = (IRtti) ognlComponent.getAdapter(IRtti.class);
-		return interceptorChainRtti.equals(componentRtti);
+		IRtti componentRtti = loader.loadRtti(ognlComponent.getComponentClassName());
+		if (componentRtti == null) {
+			return false;
+		}
+		return interceptorChainRtti.getType().equals(componentRtti.getType());
 	}
 	
 	private static IComponentElement[] getInterceptors(IComponentElement interceptorChain) {
-		List result = new ArrayList();
+		Set result = new HashSet();
 		List initMethods = interceptorChain.getInitMethodList();
 		for (int i = 0; i < initMethods.size(); i++) {
 			IInitMethodElement initMethod = (IInitMethodElement) initMethods.get(i);
