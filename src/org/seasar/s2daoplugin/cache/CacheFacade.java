@@ -30,11 +30,10 @@ import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 // TODO: 最終的にはこのクラスで<String, IComponentElement>のキャッシュを作る
-public class CacheFacade implements IComponentCache {
+public class CacheFacade extends AbstractCache {
 
 	private Map cacheByContainerPath = new HashMap();
 	private IComponentCacheFactory factory;
-	private DiconModelManager manager;
 	
 	public CacheFacade(IComponentCacheFactory factory) {
 		if (factory == null) {
@@ -117,20 +116,6 @@ public class CacheFacade implements IComponentCache {
 	public IComponentCache getComponentCache(IPath containerPath) {
 		return (IComponentCache) cacheByContainerPath.get(containerPath);
 	}
-
-	public void setManager(DiconModelManager manager) {
-		if (manager == null) {
-			throw new IllegalArgumentException();
-		}
-		this.manager = manager;
-	}
-
-	public DiconModelManager getManager() {
-		if (manager == null) {
-			throw new IllegalStateException();
-		}
-		return manager;
-	}
 	
 	public void initialize() {
 		for (Iterator it = cacheByContainerPath.values().iterator(); it.hasNext();) {
@@ -145,7 +130,8 @@ public class CacheFacade implements IComponentCache {
 		IPath path = container.getStorage().getFullPath();
 		IComponentCache cache = factory.createComponentCache();
 		// atomic begin
-		cache.setManager(manager);
+		cache.setManager(getManager());
+		cache.setContainerPath(path);
 		cache.initialize();
 		cache.diconAdded(container);
 		// atomic end

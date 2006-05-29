@@ -74,9 +74,8 @@ public class ComponentCache extends AbstractComponentCache {
 		for (Iterator it = componentsByFqcn.values().iterator(); it.hasNext();) {
 			for (Iterator jt = ((Set) it.next()).iterator(); jt.hasNext();) {
 				IComponentElement component = (IComponentElement) jt.next();
-				IRtti rtti = getRtti(component);
-				if (rtti != null && rtti.getType() != null) {
-					result.add(rtti.getType());
+				if (existsType(component)) {
+					result.add(getRtti(component).getType());
 				}
 			}
 		}
@@ -94,8 +93,7 @@ public class ComponentCache extends AbstractComponentCache {
 		}
 		for (Iterator it = components.iterator(); it.hasNext();) {
 			IComponentElement component = (IComponentElement) it.next();
-			IRtti rtti = getRtti(component);
-			if (rtti != null && rtti.getType() != null) {
+			if (existsType(component)) {
 				return true;
 			}
 		}
@@ -149,6 +147,11 @@ public class ComponentCache extends AbstractComponentCache {
 		if (components.isEmpty()) {
 			componentsByFqcn.remove(fqcn);
 		}
+	}
+	
+	private boolean existsType(IComponentElement component) {
+		IRtti rtti = getRtti(component);
+		return rtti != null && rtti.getType() != null;
 	}
 
 }

@@ -17,6 +17,7 @@ package org.seasar.s2daoplugin.cache;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
@@ -37,12 +38,10 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	}
 	
 	public IComponentElement[] getComponents(IType type) {
-		// FIXME: ŽÀ‘•
 		return EMPTY_COMPONENTS;
 	}
 
 	public IComponentElement[] getComponents(String fullyQualifiedClassName) {
-		// FIXME: ŽÀ‘•
 		return EMPTY_COMPONENTS;
 	}
 
@@ -61,9 +60,24 @@ public class AutoRegisterCache extends AbstractComponentCache {
 
 	public IType[] getAllAppliedTypes() {
 		Set result = new HashSet();
+		Set temp = new HashSet();
+		boolean first = true;
 		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
 			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
-			result.addAll(AutoRegisterUtil.getAppliedTypes(auto));
+			List types = AutoRegisterUtil.getAppliedTypes(auto);
+			if (first) {
+				first = false;
+				result.addAll(types);
+				continue;
+			}
+			for (int i = 0; i < types.size(); i++) {
+				if (result.contains(types.get(i))) {
+					temp.add(types.get(i));
+				}
+			}
+			result.clear();
+			result.addAll(temp);
+			temp.clear();
 		}
 		return (IType[]) result.toArray(new IType[result.size()]);
 	}

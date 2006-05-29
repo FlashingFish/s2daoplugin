@@ -23,7 +23,6 @@ import java.util.Set;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 
-// AndƒtƒBƒ‹ƒ^
 public class AndFilterChain implements IExtractionComponentFilter {
 
 	private Set filters = new HashSet();

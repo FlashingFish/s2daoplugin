@@ -13,25 +13,24 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder.filter;
+package org.seasar.s2daoplugin.cache;
 
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.AspectUtil;
+public abstract class AbstractCache implements IComponentCache {
 
-public class InterceptorFilter extends AbstractDecorationFilter {
-
-	public InterceptorFilter(IComponentFilter filter) {
-		super(filter);
+	private DiconModelManager manager;
+	
+	public void setManager(DiconModelManager manager) {
+		if (manager == null) {
+			throw new IllegalArgumentException();
+		}
+		this.manager = manager;
 	}
 	
-	public boolean isPassable(IComponentElement component) {
-		IComponentElement[] interceptors = AspectUtil.getAllInterceptors(component);
-		for (int i = 0; i < interceptors.length; i++) {
-			if (getFilter().isPassable(interceptors[i])) {
-				return true;
-			}
+	public DiconModelManager getManager() {
+		if (manager == null) {
+			throw new IllegalStateException();
 		}
-		return false;
+		return manager;
 	}
 
 }

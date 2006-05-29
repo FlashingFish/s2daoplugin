@@ -25,10 +25,9 @@ import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
 import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.model.AutoRegisterElement;
 
-public abstract class AbstractComponentCache implements IComponentCache {
+public abstract class AbstractComponentCache extends AbstractCache {
 
 	private ICacheBuilder builder;
-	private DiconModelManager manager;
 	private boolean initialized;
 	
 	public AbstractComponentCache(ICacheBuilder builder) {
@@ -39,27 +38,12 @@ public abstract class AbstractComponentCache implements IComponentCache {
 		this.builder = builder;
 	}
 	
-	public void setManager(DiconModelManager manager) {
-		if (manager == null) {
-			throw new IllegalArgumentException();
-		}
-		this.manager = manager;
-	}
-	
-	public DiconModelManager getManager() {
-		return manager;
-	}
-	
 	public void initialize() {
 		if (!initialized) {
 			clearCache();
 			builder.initialize();
 			initialized = true;
 		}
-	}
-
-	public void startChanged() {
-		initialize();
 	}
 	
 	public void diconAdded(IContainerElement container) {

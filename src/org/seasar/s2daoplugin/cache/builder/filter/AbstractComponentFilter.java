@@ -28,7 +28,6 @@ public abstract class AbstractComponentFilter implements IComponentFilter {
 		}
 		if (this.manager == null) {
 			this.manager = manager;
-			onManagerSet();
 		}
 	}
 	
@@ -37,9 +36,6 @@ public abstract class AbstractComponentFilter implements IComponentFilter {
 			throw new IllegalStateException();
 		}
 		return manager;
-	}
-	
-	protected void onManagerSet() {
 	}
 	
 	protected IRtti getRtti(String fullyQualifiedClassName) {

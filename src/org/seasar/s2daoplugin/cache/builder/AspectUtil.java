@@ -15,7 +15,6 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 
@@ -51,7 +51,7 @@ public final class AspectUtil {
 			}
 			return false;
 		} else {
-			IRtti rtti = (IRtti) component.getAdapter(IRtti.class);
+			IRtti rtti = component.getRttiLoader().loadRtti(component.getComponentClassName());
 			return rtti != null ? type.equals(rtti.getType()) : false;
 		}
 	}
@@ -80,17 +80,20 @@ public final class AspectUtil {
 	}
 	
 	private static boolean isInterceptorChain(IComponentElement ognlComponent) {
-		IRtti interceptorChainRtti =
-			ognlComponent.getRttiLoader().loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
-		if (interceptorChainRtti == null) {
+		RttiLoader loader = ognlComponent.getRttiLoader();
+		IRtti interceptorChainRtti = loader.loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
+		if (interceptorChainRtti == null || interceptorChainRtti.getType() == null) {
 			return false;
 		}
-		IRtti componentRtti = (IRtti) ognlComponent.getAdapter(IRtti.class);
-		return interceptorChainRtti.equals(componentRtti);
+		IRtti componentRtti = loader.loadRtti(ognlComponent.getComponentClassName());
+		if (componentRtti == null) {
+			return false;
+		}
+		return interceptorChainRtti.getType().equals(componentRtti.getType());
 	}
 	
 	private static IComponentElement[] getInterceptors(IComponentElement interceptorChain) {
-		List result = new ArrayList();
+		Set result = new HashSet();
 		List initMethods = interceptorChain.getInitMethodList();
 		for (int i = 0; i < initMethods.size(); i++) {
 			IInitMethodElement initMethod = (IInitMethodElement) initMethods.get(i);

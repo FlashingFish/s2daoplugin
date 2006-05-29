@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-// ORCache
 public class CacheComposite extends AbstractCacheComposite {
 
 	private List caches = new ArrayList();

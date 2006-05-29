@@ -67,9 +67,7 @@ public class AutoRegisterUtil implements CacheConstants {
 	
 	public static List getAppliedTypes(IAutoRegisterElement autoRegister) {
 		List result = new ArrayList();
-		if (autoRegister == null ||
-				autoRegister.getAutoRegisterType() !=
-					IAutoRegisterElement.TYPE_COMPONENT) {
+		if (autoRegister == null) {
 			return result;
 		}
 		IJavaProject project = JavaCore.create(autoRegister.getProject());

@@ -25,10 +25,8 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-public abstract class AbstractCacheComposite implements IComponentCache {
+public abstract class AbstractCacheComposite extends AbstractCache {
 
-	private DiconModelManager manager;
-	
 	public IComponentElement[] getComponents(IType type) {
 		return type != null ?
 				getComponents(type.getFullyQualifiedName()) : EMPTY_COMPONENTS;
@@ -76,21 +74,11 @@ public abstract class AbstractCacheComposite implements IComponentCache {
 	}
 	
 	public void setManager(DiconModelManager manager) {
-		if (manager == null) {
-			throw new IllegalArgumentException();
-		}
+		super.setManager(manager);
 		IComponentCache[] caches = getAllCaches();
 		for (int i = 0; i < caches.length; i++) {
 			caches[i].setManager(manager);
 		}
-		this.manager = manager;
-	}
-
-	public DiconModelManager getManager() {
-		if (manager == null) {
-			throw new IllegalStateException();
-		}
-		return manager;
 	}
 
 	public void initialize() {
