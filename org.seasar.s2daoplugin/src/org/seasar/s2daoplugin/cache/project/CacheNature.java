@@ -56,7 +56,7 @@ public class CacheNature implements IProjectNature {
 		this.project = project;
 	}
 	
-	public synchronized DiconModelManager getDiconModelManager() {
+	public DiconModelManager getDiconModelManager() {
 		if (manager == null) {
 			manager = new DiconModelManager(getProject());
 		}

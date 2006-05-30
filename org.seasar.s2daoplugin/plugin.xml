@@ -46,7 +46,7 @@
    <extension
    		point="org.eclipse.core.resources.builders"
    		id="sqlmarkerbuilder"
-   		name="%plugin.builder">
+   		name="%plugin.builder.sqlmarker">
    		<builder>
    			<run class="org.seasar.s2daoplugin.sqlmarker.SqlMarkerBuilder"/>
    		</builder>
@@ -62,7 +62,7 @@
    <extension
    		point="org.eclipse.core.resources.builders"
    		id="cachebuilder"
-   		name="S2 Cache Builder">
+   		name="%plugin.builder.cache">
    		<builder>
    			<run class="org.seasar.s2daoplugin.cache.project.CacheBuilder"/>
    		</builder>

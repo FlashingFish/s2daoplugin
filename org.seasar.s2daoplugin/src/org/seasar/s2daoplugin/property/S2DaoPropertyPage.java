@@ -84,7 +84,7 @@ public class S2DaoPropertyPage extends PropertyPage {
 	
 	private boolean hasS2DaoNature() {
 		try {
-			return getProject().hasNature(S2DaoConstants.S2DAO_NATURE);
+			return getProject().hasNature(S2DaoConstants.ID_S2DAO_NATURE);
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 			return false;

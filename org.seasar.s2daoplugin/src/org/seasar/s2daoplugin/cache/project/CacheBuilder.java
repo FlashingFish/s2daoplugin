@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-// TODO: kijimuna‚ÌModelManager‚©‚çDiconƒ‚ƒfƒ‹‚ðŽæ“¾‚µ‚Äcache‚ðƒrƒ‹ƒh
 public class CacheBuilder extends IncrementalProjectBuilder {
 
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
