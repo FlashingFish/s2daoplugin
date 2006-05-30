@@ -13,31 +13,25 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.cache.project;
+
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
-import org.seasar.s2daoplugin.util.ProjectUtil;
+import org.eclipse.core.runtime.IProgressMonitor;
 
-public class S2DaoNature implements IProjectNature {
+// TODO: kijimuna‚ÌModelManager‚©‚çDiconƒ‚ƒfƒ‹‚ðŽæ“¾‚µ‚Äcache‚ðƒrƒ‹ƒh
+public class CacheBuilder extends IncrementalProjectBuilder {
 
-	private IProject project;
-	
-	public void configure() throws CoreException {
-		ProjectUtil.addBuilder(getProject(), S2DaoConstants.SQL_MARKER_BUILDER);
-	}
-
-	public void deconfigure() throws CoreException {
-		ProjectUtil.removeBuilder(getProject(), S2DaoConstants.SQL_MARKER_BUILDER);
-	}
-
-	public IProject getProject() {
-		return project;
-	}
-
-	public void setProject(IProject project) {
-		this.project = project;
+	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
+			throws CoreException {
+		CacheNature nature = CacheNature.getInstance(getProject());
+		if (nature != null) {
+			nature.getDiconModelManager().buildModel();
+		}
+		return null;
 	}
 
 }

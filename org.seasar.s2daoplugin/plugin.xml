@@ -51,6 +51,22 @@
    			<run class="org.seasar.s2daoplugin.sqlmarker.SqlMarkerBuilder"/>
    		</builder>
    </extension>
+   <extension
+   		point="org.eclipse.core.resources.natures"
+   		id="cachenature">
+   		<runtime>
+   			<run class="org.seasar.s2daoplugin.cache.project.CacheNature"/>
+   		</runtime>
+   		<builder id="org.seasar.s2daoplugin.cachebuilder"/>
+   </extension>
+   <extension
+   		point="org.eclipse.core.resources.builders"
+   		id="cachebuilder"
+   		name="S2 Cache Builder">
+   		<builder>
+   			<run class="org.seasar.s2daoplugin.cache.project.CacheBuilder"/>
+   		</builder>
+   </extension>
    
    <!-- project property page -->
    <extension

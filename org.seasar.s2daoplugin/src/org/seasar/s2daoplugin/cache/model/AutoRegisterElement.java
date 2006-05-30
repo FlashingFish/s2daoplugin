@@ -30,7 +30,6 @@ import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
-import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class AutoRegisterElement implements IAutoRegisterElement {
@@ -248,13 +247,10 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 	}
 	
 	private boolean isType(String[] classNames, IComponentElement component) {
-		DiconModelManager manager = DiconModelManager.getInstance(component.getProject());
-		if (manager == null) {
-			throw new IllegalStateException();
-		}
+		RttiLoader loader = component.getRttiLoader();
 		for (int i = 0; i < classNames.length; i++) {
-			IRtti rtti1 = manager.getRtti(component.getComponentClassName());
-			IRtti rtti2 = manager.getRtti(classNames[i]);
+			IRtti rtti1 = loader.loadRtti(component.getComponentClassName());
+			IRtti rtti2 = loader.loadRtti(classNames[i]);
 			if (rtti1 != null && rtti2 != null &&
 					rtti1.getType().equals(rtti2.getType())) {
 				return true;

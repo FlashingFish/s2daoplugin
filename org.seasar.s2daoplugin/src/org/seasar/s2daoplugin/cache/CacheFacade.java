@@ -110,6 +110,9 @@ public class CacheFacade extends AbstractCache {
 	}
 
 	public void clearCache() {
+		for (Iterator it = cacheByContainerPath.values().iterator(); it.hasNext();) {
+			((IComponentCache) it.next()).clearCache();
+		}
 		cacheByContainerPath.clear();
 	}
 
