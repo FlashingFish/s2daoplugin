@@ -29,7 +29,6 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-// TODO: 最終的にはこのクラスで<String, IComponentElement>のキャッシュを作る
 public class CacheFacade extends AbstractCache {
 
 	private Map cacheByContainerPath = new HashMap();

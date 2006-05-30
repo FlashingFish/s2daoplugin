@@ -28,7 +28,6 @@ import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-// TODO: fqcnのキャッシュを用意する？
 public class AutoRegisterCache extends AbstractComponentCache {
 
 	private Set autoRegisters = new HashSet();

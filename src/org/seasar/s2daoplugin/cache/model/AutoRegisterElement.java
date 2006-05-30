@@ -248,6 +248,9 @@ public class AutoRegisterElement implements IAutoRegisterElement {
 	
 	private boolean isType(String[] classNames, IComponentElement component) {
 		RttiLoader loader = component.getRttiLoader();
+		if (loader == null) {
+			return false;
+		}
 		for (int i = 0; i < classNames.length; i++) {
 			IRtti rtti1 = loader.loadRtti(component.getComponentClassName());
 			IRtti rtti2 = loader.loadRtti(classNames[i]);

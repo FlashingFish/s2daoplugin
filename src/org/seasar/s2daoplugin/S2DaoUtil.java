@@ -51,9 +51,9 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	private static final String EXTENSION = ".sql";
 	
 	static {
-		if (!CacheRegistry.isRegistered(S2DAO_COMPONENT_CACHE_KEY)) {
+		if (!CacheRegistry.isRegistered(S2DAO_CACHE_KEY)) {
 			CacheRegistry.registerFactory(
-					S2DAO_COMPONENT_CACHE_KEY, new S2DaoComponentCacheFactory());
+					S2DAO_CACHE_KEY, new S2DaoComponentCacheFactory());
 		}
 	}
 	
@@ -142,17 +142,17 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			return null;
 		}
 		CacheRegistry registry = nature.getCacheRegistry();
-		IComponentCache cache = registry.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		IComponentCache cache = registry.getComponentCache(S2DAO_CACHE_KEY);
 		if (cache == null) {
 			return null;
 		}
 		DiconModelManager manager = nature.getDiconModelManager();
-		if (!manager.hasListener(S2DAO_COMPONENT_CACHE_KEY)) {
+		if (!manager.hasListener(S2DAO_CACHE_KEY)) {
 			SequentializedListenerChain chain = new SequentializedListenerChain();
 			chain.addListener(new SqlMarkerUnmarkingListener());
 			chain.addListener(cache);
 			chain.addListener(new SqlMarkerMarkingListener());
-			manager.addDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY, chain);
+			manager.addDiconChangeListener(S2DAO_CACHE_KEY, chain);
 		}
 		return cache;
 	}
@@ -163,9 +163,9 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			return;
 		}
 		CacheRegistry registry = nature.getCacheRegistry();
-		registry.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		registry.removeComponentCache(S2DAO_CACHE_KEY);
 		DiconModelManager manager = nature.getDiconModelManager();
-		manager.removeDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY);
+		manager.removeDiconChangeListener(S2DAO_CACHE_KEY);
 	}
 	
 	

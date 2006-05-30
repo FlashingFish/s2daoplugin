@@ -92,7 +92,7 @@ public class SqlMarkerUtil {
 				return null;
 			}
 			try {
-				IMarker marker = method.getResource().createMarker(S2DaoConstants.SQL_MARKER);
+				IMarker marker = method.getResource().createMarker(S2DaoConstants.ID_SQL_MARKER);
 				marker.setAttributes(createMarkerAttributes(method));
 				return marker;
 			} catch (CoreException e) {
@@ -194,7 +194,7 @@ public class SqlMarkerUtil {
 				return;
 			}
 			try {
-				project.deleteMarkers(S2DaoConstants.SQL_MARKER,
+				project.deleteMarkers(S2DaoConstants.ID_SQL_MARKER,
 						false, IResource.DEPTH_INFINITE);
 			} catch (CoreException e) {
 				S2DaoPlugin.log(e);
@@ -215,7 +215,7 @@ public class SqlMarkerUtil {
 				return;
 			}
 			try {
-				type.getResource().deleteMarkers(S2DaoConstants.SQL_MARKER,
+				type.getResource().deleteMarkers(S2DaoConstants.ID_SQL_MARKER,
 						false, IResource.DEPTH_ZERO);
 			} catch (CoreException e) {
 				S2DaoPlugin.log(e);
@@ -229,7 +229,7 @@ public class SqlMarkerUtil {
 			IMarker[] markers = null;
 			try {
 				markers = method.getResource().findMarkers(
-						S2DaoConstants.SQL_MARKER, false, IResource.DEPTH_ZERO);
+						S2DaoConstants.ID_SQL_MARKER, false, IResource.DEPTH_ZERO);
 			} catch (CoreException e) {
 				S2DaoPlugin.log(e);
 				return;

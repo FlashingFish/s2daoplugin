@@ -22,8 +22,6 @@ interface TODO {
 	 * マーカを操作すると消すべきでないマーカまで消してしまう。diconファイルの変更では
 	 * 全てのマーカをリマークするかITypeの被参照数をカウントするか
 	 * 
-	 * TODO: プラグインの有無変更とkijimunaとの関係を見直す
-	 *
 	 * TODO: マーカだけを無効にする
 	 * 
 	 * TODO: Daoを継承しているときのSQLファイルを探す順序
@@ -35,8 +33,6 @@ interface TODO {
 	 * TODO: スレッドセーフに
 	 * 
 	 * FIXME: ComponentAutoとAspectAutoの順序をチェックする
-	 * 
-	 * TODO: キャッシュビルダ用のネイチャを作る
 	 * 
 	 * TODO: テストコード書く
 	 * 

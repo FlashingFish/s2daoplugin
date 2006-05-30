@@ -19,6 +19,13 @@ import org.eclipse.core.resources.IFile;
 
 public interface S2DaoConstants {
 
+	String ID_PLUGIN = "org.seasar.s2daoplugin";
+	String ID_S2DAO_NATURE = ID_PLUGIN + ".s2daonature";
+	String ID_SQL_MARKER_BUILDER = ID_PLUGIN + ".sqlmarkerbuilder";
+	String ID_SQL_MARKER = ID_PLUGIN + ".sqlmarker";
+
+	String S2DAO_CACHE_KEY = ID_PLUGIN + ".s2dao";
+	
 	String SUFFIX_DEFAULT = "";
 	String SUFFIX_ORACLE = "_oracle";
 	String SUFFIX_DB2 = "_db2";
@@ -33,14 +40,8 @@ public interface S2DaoConstants {
 			SUFFIX_MYSQL, SUFFIX_POSTGRESQL, SUFFIX_FIREBIRD, SUFFIX_HSQLDB,
 	};
 	
-	String S2DAO_COMPONENT_CACHE_KEY = "org.seasar.s2daoplugin.s2dao";
 	String S2DAO_INTERCEPTOR = "org.seasar.dao.interceptors.S2DaoInterceptor";
 	
 	IFile[] EMPTY_FILES = new IFile[0];
-	
-	String SQL_MARKER = "org.seasar.s2daoplugin.sqlmarker";
-	
-	String S2DAO_NATURE = "org.seasar.s2daoplugin.s2daonature";
-	String SQL_MARKER_BUILDER = "org.seasar.s2daoplugin.sqlmarkerbuilder";
 
 }

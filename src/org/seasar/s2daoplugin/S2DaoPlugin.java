@@ -41,12 +41,12 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 	
 	public void addS2DaoNature(IProject project) throws CoreException {
 		ProjectUtil.addNature(project, CacheConstants.ID_CACHE_NATURE);
-		ProjectUtil.addNature(project, S2DaoConstants.S2DAO_NATURE);
+		ProjectUtil.addNature(project, S2DaoConstants.ID_S2DAO_NATURE);
 	}
 	
 	public void removeS2DaoNature(IProject project) throws CoreException {
 		ProjectUtil.removeNature(project, CacheConstants.ID_CACHE_NATURE);
-		ProjectUtil.removeNature(project, S2DaoConstants.S2DAO_NATURE);
+		ProjectUtil.removeNature(project, S2DaoConstants.ID_S2DAO_NATURE);
 	}
 	
 	public static S2DaoPlugin getDefault() {
@@ -54,7 +54,7 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 	}
 	
 	public static boolean isEnabled(IProject project) throws CoreException {
-		return project.hasNature(S2DaoConstants.S2DAO_NATURE);
+		return project.hasNature(S2DaoConstants.ID_S2DAO_NATURE);
 	}
 	
 	public static void log(CoreException e) {

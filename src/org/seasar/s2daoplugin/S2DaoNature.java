@@ -25,11 +25,11 @@ public class S2DaoNature implements IProjectNature {
 	private IProject project;
 	
 	public void configure() throws CoreException {
-		ProjectUtil.addBuilder(getProject(), S2DaoConstants.SQL_MARKER_BUILDER);
+		ProjectUtil.addBuilder(getProject(), S2DaoConstants.ID_SQL_MARKER_BUILDER);
 	}
 
 	public void deconfigure() throws CoreException {
-		ProjectUtil.removeBuilder(getProject(), S2DaoConstants.SQL_MARKER_BUILDER);
+		ProjectUtil.removeBuilder(getProject(), S2DaoConstants.ID_SQL_MARKER_BUILDER);
 	}
 
 	public IProject getProject() {
