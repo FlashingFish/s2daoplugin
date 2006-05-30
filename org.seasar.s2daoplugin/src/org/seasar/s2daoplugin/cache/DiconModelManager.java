@@ -96,8 +96,10 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 			for (int i = 0; i < containers.length; i++) {
 				fireRemovedAll(containers[i]);
 			}
-			fireFinishChangedAll();
-			clearContainerMap();
+			if (containers.length != 0) {
+				fireFinishChangedAll();
+				clearContainerMap();
+			}
 		}
 	}
 	
