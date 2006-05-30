@@ -16,41 +16,17 @@
 package org.seasar.s2daoplugin.cache.factory;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.core.resources.IProject;
 import org.seasar.s2daoplugin.cache.CacheFacade;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-public class ComponentCacheFactory {
+public class CacheRegistry {
 
-	private static Map factoryMap = new HashMap();
 	private static FactoryDef factoryDef = new FactoryDef();
 	
 	private Map componentCacheMap = new HashMap();
-	
-	private ComponentCacheFactory() {
-	}
-	
-	public static ComponentCacheFactory getInstance(IProject project) {
-		if (project == null) {
-			return null;
-		}
-		if (factoryMap.containsKey(project)) {
-			return (ComponentCacheFactory) factoryMap.get(project);
-		} else {
-			synchronized (factoryMap) {
-				if (factoryMap.containsKey(project)) {
-					return (ComponentCacheFactory) factoryMap.get(project);
-				}
-				ComponentCacheFactory factory = new ComponentCacheFactory();
-				factoryMap.put(project, factory);
-				return factory;
-			}
-		}
-	}
 	
 	public static boolean isRegistered(String key) {
 		return factoryDef.isRegistered(key);
@@ -106,15 +82,7 @@ public class ComponentCacheFactory {
 		}
 		
 		public void unregister(String key) {
-			if (factoryDefMap.remove(key) == null) {
-				return;
-			}
-			synchronized (factoryMap) {
-				for (Iterator it = factoryMap.values().iterator(); it.hasNext();) {
-					ComponentCacheFactory factory = (ComponentCacheFactory) it.next();
-					factory.removeComponentCache(key);
-				}
-			}
+			factoryDefMap.remove(key);
 		}
 		
 		public IComponentCacheFactory getFactory(String key) {

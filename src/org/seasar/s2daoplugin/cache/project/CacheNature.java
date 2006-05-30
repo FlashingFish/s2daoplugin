@@ -13,23 +13,39 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.cache.project;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.seasar.s2daoplugin.S2DaoPlugin;
+import org.seasar.s2daoplugin.cache.CacheConstants;
+import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
-public class S2DaoNature implements IProjectNature {
+public class CacheNature implements IProjectNature {
 
 	private IProject project;
+	private DiconModelManager manager;
+	private CacheRegistry registry = new CacheRegistry();
+	
+	public static CacheNature getInstance(IProject project) {
+		IProjectNature nature = null;
+		try {
+			nature = ProjectUtil.getNature(project, CacheConstants.ID_CACHE_NATURE);
+		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
+		}
+		return nature instanceof CacheNature ? (CacheNature) nature : null;
+	}
 	
 	public void configure() throws CoreException {
-		ProjectUtil.addBuilder(getProject(), S2DaoConstants.SQL_MARKER_BUILDER);
+		ProjectUtil.addBuilder(getProject(), CacheConstants.ID_CACHE_BUILDER);
 	}
 
 	public void deconfigure() throws CoreException {
-		ProjectUtil.removeBuilder(getProject(), S2DaoConstants.SQL_MARKER_BUILDER);
+		ProjectUtil.removeBuilder(getProject(), CacheConstants.ID_CACHE_BUILDER);
 	}
 
 	public IProject getProject() {
@@ -38,6 +54,17 @@ public class S2DaoNature implements IProjectNature {
 
 	public void setProject(IProject project) {
 		this.project = project;
+	}
+	
+	public synchronized DiconModelManager getDiconModelManager() {
+		if (manager == null) {
+			manager = new DiconModelManager(getProject());
+		}
+		return manager;
+	}
+	
+	public CacheRegistry getCacheRegistry() {
+		return registry;
 	}
 
 }

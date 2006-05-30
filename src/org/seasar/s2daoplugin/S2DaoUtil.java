@@ -39,8 +39,9 @@ import org.seasar.s2daoplugin.cache.builder.filter.ExtractionFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.InterceptorFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.PropertyFilter;
-import org.seasar.s2daoplugin.cache.factory.ComponentCacheFactory;
+import org.seasar.s2daoplugin.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
+import org.seasar.s2daoplugin.cache.project.CacheNature;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
 import org.seasar.s2daoplugin.util.StringUtil;
@@ -50,8 +51,8 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	private static final String EXTENSION = ".sql";
 	
 	static {
-		if (!ComponentCacheFactory.isRegistered(S2DAO_COMPONENT_CACHE_KEY)) {
-			ComponentCacheFactory.registerFactory(
+		if (!CacheRegistry.isRegistered(S2DAO_COMPONENT_CACHE_KEY)) {
+			CacheRegistry.registerFactory(
 					S2DAO_COMPONENT_CACHE_KEY, new S2DaoComponentCacheFactory());
 		}
 	}
@@ -136,16 +137,16 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	}
 	
 	public static synchronized IComponentCache getS2DaoComponentCache(IProject project) {
-		DiconModelManager manager = DiconModelManager.getInstance(project);
-		ComponentCacheFactory factory = ComponentCacheFactory.getInstance(project);
-		if (manager == null) {
-			factory.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		CacheNature nature = CacheNature.getInstance(project);
+		if (nature == null) {
 			return null;
 		}
-		IComponentCache cache = factory.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		CacheRegistry registry = nature.getCacheRegistry();
+		IComponentCache cache = registry.getComponentCache(S2DAO_COMPONENT_CACHE_KEY);
 		if (cache == null) {
 			return null;
 		}
+		DiconModelManager manager = nature.getDiconModelManager();
 		if (!manager.hasListener(S2DAO_COMPONENT_CACHE_KEY)) {
 			SequentializedListenerChain chain = new SequentializedListenerChain();
 			chain.addListener(new SqlMarkerUnmarkingListener());
@@ -157,12 +158,13 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	}
 	
 	public static synchronized void removeS2DaoComponentCache(IProject project) {
-		ComponentCacheFactory factory = ComponentCacheFactory.getInstance(project);
-		factory.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
-		DiconModelManager manager = DiconModelManager.getInstance(project);
-		if (manager == null) {
+		CacheNature nature = CacheNature.getInstance(project);
+		if (nature == null) {
 			return;
 		}
+		CacheRegistry registry = nature.getCacheRegistry();
+		registry.removeComponentCache(S2DAO_COMPONENT_CACHE_KEY);
+		DiconModelManager manager = nature.getDiconModelManager();
 		manager.removeDiconChangeListener(S2DAO_COMPONENT_CACHE_KEY);
 	}
 	

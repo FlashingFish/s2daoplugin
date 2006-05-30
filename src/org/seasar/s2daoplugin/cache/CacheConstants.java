@@ -39,4 +39,7 @@ public interface CacheConstants {
 	IContainerElement[] EMPTY_CONTAINERS = new IContainerElement[0];
 	IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
 
+	String ID_CACHE_NATURE = "org.seasar.s2daoplugin.cachenature";
+	String ID_CACHE_BUILDER = "org.seasar.s2daoplugin.cachebuilder";
+
 }

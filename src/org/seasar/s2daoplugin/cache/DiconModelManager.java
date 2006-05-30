@@ -29,10 +29,7 @@ import org.seasar.s2daoplugin.util.StringUtil;
 
 public class DiconModelManager implements IProjectRecordChangeListener {
 
-	private static final Map managerMap = new HashMap();
-	
 	private IProject project;
-	private boolean initialized;
 	// youngは更新されたdicon、oldは更新されていないdicon
 	private Map oldContainerMap1 = new HashMap();
 	private Map youngContainerMap1 = new HashMap();
@@ -40,47 +37,20 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	private Map youngContainerMap2 = new HashMap();
 	private Map listeners = new HashMap();
 	
-	private DiconModelManager(IProject project) {
+	public DiconModelManager(IProject project) {
 		this.project = project;
-		initialize();
-	}
-	
-	public static DiconModelManager getInstance(IProject project) { 
-		if (project == null) {
-			return null;
-		}
-		if (DiconNature.getInstance(project) == null) {
-			if (managerMap.containsKey(project)) {
-				managerMap.remove(project);
-			}
-			return null;
-		}
-		if (managerMap.containsKey(project)) {
-			return (DiconModelManager) managerMap.get(project);
-		} else {
-			synchronized (managerMap) {
-				if (managerMap.containsKey(project)) {
-					return (DiconModelManager) managerMap.get(project);
-				}
-				DiconModelManager manager = new DiconModelManager(project);
-				managerMap.put(project, manager);
-				return manager;
-			}
-		}
+		buildModel();
 	}
 	
 	public IContainerElement[] getAllContainers() {
-		initialize();
 		return DiconUtil.toContainerArray(getAllContainerMap().values());
 	}
 	
 	public IContainerElement[] getAffectedContainers() {
-		initialize();
 		return DiconUtil.toContainerArray(getAffectedContainerMap().values());
 	}
 	
 	public IContainerElement[] getUnaffectedContainers() {
-		initialize();
 		return DiconUtil.toContainerArray(getUnaffectedContainerMap().values());
 	}
 	
@@ -92,7 +62,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
 			return null;
 		}
-		DiconNature nature = DiconNature.getInstance(project);
+		DiconNature nature = DiconNature.getInstance(getProject());
 		return nature != null ?
 				nature.getRttiLoader().loadRtti(fullyQualifiedClassName) : null;
 	}
@@ -114,25 +84,18 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		listeners.remove(key);
 	}
 	
-	public void finishChanged() {
+	public void buildModel() {
 		DiconNature nature = DiconNature.getInstance(project);
 		if (nature != null) {
 			buildContainers(nature.getModel());
 		}
 	}
 	
-	private void initialize() {
-		if (initialized) {
-			return;
-		}
-		DiconNature nature = DiconNature.getInstance(project);
-		if (nature == null) {
-			return;
-		}
-		ModelManager model = nature.getModel();
-		buildContainers(model);
-		model.addRecordChangeListener(this);
-		initialized = true;
+	public void finishChanged() {
+//		DiconNature nature = DiconNature.getInstance(project);
+//		if (nature != null) {
+//			buildContainers(nature.getModel());
+//		}
 	}
 	
 	private void clearContainerMap() {
