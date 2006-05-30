@@ -38,6 +38,9 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	private Map listeners = new HashMap();
 	
 	public DiconModelManager(IProject project) {
+		if (project == null) {
+			throw new IllegalArgumentException();
+		}
 		this.project = project;
 		buildModel();
 	}
@@ -85,7 +88,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	}
 	
 	public void buildModel() {
-		DiconNature nature = DiconNature.getInstance(project);
+		DiconNature nature = DiconNature.getInstance(getProject());
 		if (nature != null) {
 			buildContainers(nature.getModel());
 		} else {
