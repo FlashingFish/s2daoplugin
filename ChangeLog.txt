@@ -1,4 +1,4 @@
-* 0.0. []
+* 0.1.0 []
 - ライセンスを Common Public License Version 1.0 から Apache License, Version 2.0 へ変更
 - InterceptorChainおよび、<component>の直接指定によるS2DaoInterceptorのアスペクトに対応
 - プロジェクトのクリーンを行うとS2Daoのコンポーネントが正しく判断できない問題を修正
