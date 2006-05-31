@@ -72,7 +72,6 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage {
 	}
 	
 	public boolean finish() {
-		// TODO: ファイル名を手動で修正できてしまうのでファイル作成前に正しい名称に変換する
 		IFile newFile = createNewFile();
 		if (newFile == null) {
 			return false;
