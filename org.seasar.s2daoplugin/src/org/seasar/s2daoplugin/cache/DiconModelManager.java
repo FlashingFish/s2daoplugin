@@ -30,6 +30,7 @@ import org.seasar.s2daoplugin.util.StringUtil;
 public class DiconModelManager implements IProjectRecordChangeListener {
 
 	private IProject project;
+	private boolean modelInitialized;
 	// youngは更新されたdicon、oldは更新されていないdicon
 	private Map oldContainerMap1 = new HashMap();
 	private Map youngContainerMap1 = new HashMap();
@@ -90,7 +91,12 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 	public void buildModel() {
 		DiconNature nature = DiconNature.getInstance(getProject());
 		if (nature != null) {
-			buildContainers(nature.getModel());
+			ModelManager model = nature.getModel();
+			if (!modelInitialized && !model.isDirty()) {
+				model.init(null);
+			}
+			modelInitialized = true;
+			buildContainers(model);
 		} else {
 			IContainerElement[] containers = getAffectedContainers();
 			for (int i = 0; i < containers.length; i++) {
