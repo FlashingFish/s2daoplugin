@@ -23,12 +23,12 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 
-public class AutoRegisterAppiedFilter extends AbstractDecorationFilter implements
+public class AutoRegisterAppliedFilter extends AbstractDecorationFilter implements
 		IExtractionComponentFilter {
 
 	private Set components = new HashSet();
 	
-	public AutoRegisterAppiedFilter(IExtractionComponentFilter filter) {
+	public AutoRegisterAppliedFilter(IExtractionComponentFilter filter) {
 		super(filter);
 	}
 	
