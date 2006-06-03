@@ -15,9 +15,10 @@
  */
 package org.seasar.s2daoplugin.cache;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
@@ -30,7 +31,8 @@ import org.seasar.s2daoplugin.util.StringUtil;
 
 public class AutoRegisterCache extends AbstractComponentCache {
 
-	private Set autoRegisters = new HashSet();
+	private Set componentAutos = new HashSet();
+	private Map componentTargetAutos = new HashMap();
 	
 	public AutoRegisterCache(ICacheBuilder builder) {
 		super(builder);
@@ -45,8 +47,11 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	}
 
 	public IComponentElement[] getAllComponents() {
-		return (IComponentElement[]) autoRegisters
-				.toArray(new IComponentElement[autoRegisters.size()]);
+		Set result = new HashSet(componentAutos);
+		for (Iterator it = componentTargetAutos.values().iterator(); it.hasNext();) {
+			result.addAll((Set) it.next());
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 
 	public void setContainerPath(IPath containerPath) {
@@ -60,25 +65,36 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	public IType[] getAllAppliedTypes() {
 		Set result = new HashSet();
 		Set temp = new HashSet();
-		boolean first = true;
-		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
+		for (Iterator it = componentAutos.iterator(); it.hasNext();) {
 			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
-			List types = AutoRegisterUtil.getAppliedTypes(auto);
-			if (first) {
-				first = false;
-				result.addAll(types);
-				continue;
-			}
-			for (int i = 0; i < types.size(); i++) {
-				if (result.contains(types.get(i))) {
-					temp.add(types.get(i));
-				}
-			}
-			result.clear();
+			temp.addAll(AutoRegisterUtil.getAppliedTypes(auto));
+			sift(temp, auto.getStartLine());
 			result.addAll(temp);
 			temp.clear();
 		}
 		return (IType[]) result.toArray(new IType[result.size()]);
+	}
+	
+	private void sift(Set types, int lineNumber) {
+		Set temp = new HashSet(types);
+		for (Iterator it = componentTargetAutos.values().iterator(); it.hasNext();) {
+			Set autoRegisters = (Set) it.next();
+			for (Iterator jt = autoRegisters.iterator(); jt.hasNext();) {
+				IAutoRegisterElement auto = (IAutoRegisterElement) jt.next();
+				if (lineNumber > auto.getStartLine()) {
+					continue;
+				}
+				for (Iterator kt = types.iterator(); kt.hasNext();) {
+					IType type = (IType) kt.next();
+					if (auto.isApplied(type)) {
+						temp.remove(type);
+					}
+				}
+			}
+			types.removeAll(temp);
+			temp.clear();
+			temp.addAll(types);
+		}
 	}
 
 	public boolean contains(IType type) {
@@ -89,34 +105,93 @@ public class AutoRegisterCache extends AbstractComponentCache {
 		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
 			return false;
 		}
-		if (autoRegisters.isEmpty()) {
+		if (componentAutos.isEmpty() || componentTargetAutos.isEmpty()) {
 			return false;
 		}
-		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
-			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
-			if (!auto.isApplied(fullyQualifiedClassName)) {
+		for (Iterator it = componentAutos.iterator(); it.hasNext();) {
+			IAutoRegisterElement cauto = (IAutoRegisterElement) it.next();
+			if (!cauto.isApplied(fullyQualifiedClassName)) {
+				continue;
+			}
+			if (containsTarget(fullyQualifiedClassName, cauto.getStartLine())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean containsTarget(String fullyQualifiedClassName,  int lineNumber) {
+		for (Iterator it = componentTargetAutos.values().iterator(); it.hasNext();) {
+			Set autoRegisters = (Set) it.next();
+			if (!containsComponentTarget(autoRegisters, fullyQualifiedClassName, lineNumber)) {
 				return false;
 			}
 		}
 		return true;
+	}
+	
+	private boolean containsComponentTarget(Set autoRegisters, String fullyQualifiedClassName, int lineNumber) {
+		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (auto.isApplied(fullyQualifiedClassName) &&
+					lineNumber < auto.getStartLine()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void addComponent(IComponentElement component) {
 		if (!AutoRegisterUtil.isAutoRegister(component)) {
 			return;
 		}
-		autoRegisters.add(component);
+		int type = ((IAutoRegisterElement) component).getAutoRegisterType();
+		if (type == IAutoRegisterElement.TYPE_COMPONENT) {
+			componentAutos.add(component);
+		} else if (type == IAutoRegisterElement.TYPE_COMPONENT_TARGET) {
+			addComponentTarget(component);
+		}
 	}
 
+	private void addComponentTarget(IComponentElement component) {
+		String key = component.getComponentClassName();
+		if (componentTargetAutos.containsKey(key)) {
+			Set components = (Set) componentTargetAutos.get(key);
+			components.add(component);
+		} else {
+			Set components = new HashSet();
+			components.add(component);
+			componentTargetAutos.put(key, components);
+		}
+	}
+	
 	public void removeComponent(IComponentElement component) {
 		if (!AutoRegisterUtil.isAutoRegister(component)) {
 			return;
 		}
-		autoRegisters.remove(component);
+		int type = ((IAutoRegisterElement) component).getAutoRegisterType();
+		if (type == IAutoRegisterElement.TYPE_COMPONENT) {
+			componentAutos.remove(component);
+		} else if (type == IAutoRegisterElement.TYPE_COMPONENT_TARGET) {
+			removeComponentTarget(component);
+		}
+	}
+	
+	private void removeComponentTarget(IComponentElement component) {
+		String key = component.getComponentClassName();
+		Set components = (Set) componentTargetAutos.get(key);
+		if (components == null) {
+			return;
+		}
+		components.remove(component);
+		if (components.isEmpty()) {
+			componentTargetAutos.remove(key);
+		}
 	}
 
 	public void clearCache() {
-		autoRegisters.clear();
+		componentAutos.clear();
+		componentTargetAutos.clear();
 	}
 
 	public IComponentCache getComponentCache(IPath containerPath) {

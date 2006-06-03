@@ -32,8 +32,6 @@ interface TODO {
 	 * 
 	 * TODO: スレッドセーフに
 	 * 
-	 * FIXME: ComponentAutoとAspectAutoの順序をチェックする
-	 * 
 	 * TODO: テストコード書く
 	 * 
 	 */
