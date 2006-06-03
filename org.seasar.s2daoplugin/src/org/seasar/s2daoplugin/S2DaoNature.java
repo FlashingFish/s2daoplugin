@@ -31,7 +31,7 @@ import org.seasar.s2daoplugin.cache.builder.ComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.ExtractionCacheBuilder;
 import org.seasar.s2daoplugin.cache.builder.filter.AndFilterChain;
 import org.seasar.s2daoplugin.cache.builder.filter.AspectFilter;
-import org.seasar.s2daoplugin.cache.builder.filter.AutoRegisterAppiedFilter;
+import org.seasar.s2daoplugin.cache.builder.filter.AutoRegisterAppliedFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.ClassNameFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.ExtractionFilter;
 import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
@@ -131,7 +131,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 			return new CacheComposite()
 					.addComponentCache(new ComponentCache(new CacheBuilderChain()
 							.addBuilder(new ComponentCacheBuilder(new AspectFilter(new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR)))))
-							.addBuilder(new ExtractionCacheBuilder(new AutoRegisterAppiedFilter(new ExtractionFilter(createAspectAutoRegisterFilter()))))))
+							.addBuilder(new ExtractionCacheBuilder(new AutoRegisterAppliedFilter(new ExtractionFilter(createAspectAutoRegisterFilter()))))))
 					.addComponentCache(new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
 							.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
 							.addFilter(new ExtractionFilter(createAspectAutoRegisterFilter())))));
