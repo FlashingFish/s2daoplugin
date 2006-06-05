@@ -32,7 +32,20 @@ interface TODO {
 	 * 
 	 * TODO: スレッドセーフに
 	 * 
+	 * TODO: <aspect>とAspectAutoRegisterのpointcutに対応する
+	 * 
 	 * TODO: テストコード書く
+	 * 
+	 * TODO: Hot Deploy(ComponentDefCustomizer)対応
+	 * 
+	 * TODO: 三度キャッシュ作り直し
+	 *       - IComponentElementに依存しないComponent定義を作る
+	 *       - AutoRegister(Hot Deploy)もComponent定義に展開する
+	 *       -- Component定義は直接ITypeを参照しない
+	 *       -- diconビルド時に展開
+	 *       - Component定義が参照するITypeなどのリソースキャッシュみたいのを作る
+	 *       -- dicon以外のリソース変更時に更新
+	 *       -- AutoRegisterのComponent定義をビルド
 	 * 
 	 */
 
