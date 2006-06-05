@@ -87,6 +87,14 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 		if (method == null) {
 			return;
 		}
+		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
+		if (cache == null) {
+			return;
+		}
+		IType type = method.getDeclaringType();
+		if (!cache.contains(type)) {
+			return;
+		}
 		switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 				marker.mark(method);
