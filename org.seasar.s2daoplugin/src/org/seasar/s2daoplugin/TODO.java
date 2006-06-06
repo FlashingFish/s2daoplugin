@@ -30,15 +30,15 @@ interface TODO {
 	 * 
 	 * TODO: kijimunaを使わないで使える設定を作る
 	 * 
-	 * TODO: スレッドセーフに
+	 * TODO: 各種AutoRegisterの挙動を実装
 	 * 
-	 * TODO: <aspect>とAspectAutoRegisterのpointcutに対応する
+	 * TODO: スレッドセーフに
 	 * 
 	 * TODO: テストコード書く
 	 * 
 	 * TODO: Hot Deploy(ComponentDefCustomizer)対応
 	 * 
-	 * TODO: 三度キャッシュ作り直し
+	 * TODO: キャッシュノシクミヲツクリナオシ
 	 *       - IComponentElementに依存しないComponent定義を作る
 	 *       - AutoRegister(Hot Deploy)もComponent定義に展開する
 	 *       -- Component定義は直接ITypeを参照しない

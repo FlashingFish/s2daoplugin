@@ -20,13 +20,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.seasar.kijimuna.core.dicon.info.IAspectInfo;
+import org.seasar.kijimuna.core.dicon.info.IPointcut;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.IRttiMethodDesctiptor;
 import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
@@ -77,6 +81,33 @@ public final class AspectUtil {
 			result.add(interceptor);
 		}
 		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+	}
+	
+	public static boolean isApplied(IAspectElement aspect, IMethod method) {
+		if (aspect == null || method == null) {
+			return false;
+		}
+		IAspectInfo info = (IAspectInfo) aspect.getAdapter(IAspectInfo.class);
+		if (info != null && matchPointcut(info.getPointcuts(), method)) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean matchPointcut(IPointcut[] pointcuts, IMethod method) {
+		for (int i = 0; i < pointcuts.length; i++) {
+			if (pointcuts[i].isAutoApply()) {
+				return true;
+			}
+			IRttiMethodDesctiptor[] descs = pointcuts[i].getApplyMethods();
+			for (int j = 0; j < descs.length; j++) {
+				IMethod appliedMethod = (IMethod) descs[j].getMember();
+				if (method.equals(appliedMethod)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	private static boolean isInterceptorChain(IComponentElement ognlComponent) {

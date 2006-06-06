@@ -20,11 +20,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
@@ -34,6 +37,7 @@ import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
+import org.seasar.s2daoplugin.util.StringUtil;
 
 public class AutoRegisterUtil implements CacheConstants {
 
@@ -84,6 +88,42 @@ public class AutoRegisterUtil implements CacheConstants {
 			return true;
 		}
 		return autoRegisterNames.contains(component.getComponentClassName());
+	}
+	
+	public static boolean isApplied(IAutoRegisterElement autoRegister, IMethod method) {
+		if (autoRegister == null || method == null) {
+			return false;
+		}
+		String pointcut = ".*";
+		List props = autoRegister.getPropertyList();
+		for (int j = 0; j < props.size(); j++) {
+			IPropertyElement prop = (IPropertyElement) props.get(j);
+			if ("pointcut".equals(prop.getPropertyName())) {
+				pointcut = prop.getBody();
+				break;
+			}
+		}
+		String[] pointcuts = StringUtil.split(trimQuote(pointcut), ",");
+		for (int j = 0; j < pointcuts.length; j++) {
+			try {
+				Pattern pattern = Pattern.compile(pointcuts[j].trim());
+				if (pattern.matcher(method.getElementName()).matches()) {
+					return true;
+				}
+			} catch (PatternSyntaxException ignore) {
+			}
+		}
+		return false;
+	}
+	
+	private static String trimQuote(String value) {
+		String newValue = value.trim();
+		if (newValue.startsWith("\"") && newValue.endsWith("\"")) {
+			int s = newValue.indexOf('"');
+			int e = newValue.lastIndexOf('"');
+			return newValue.substring(s + 1, e);
+		}
+		return newValue;
 	}
 	
 	

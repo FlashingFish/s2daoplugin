@@ -15,6 +15,10 @@
  */
 package org.seasar.s2daoplugin.sqlopener;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -24,6 +28,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -36,11 +41,9 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.seasar.s2daoplugin.Messages;
-import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
-import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizard;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
@@ -78,10 +81,8 @@ public abstract class AbstractSqlOpenAction
 			if (!isPluginEnabled(member.getJavaProject().getProject())) {
 				return;
 			}
-			if (!isS2DaoComponent(member)) {
-				return;
-			}
-			IDEUtil.openEditors(findSqlFiles(member));
+			IMethod[] methods = findS2DaoInterceptorAppliedMethods(member);
+			IDEUtil.openEditors(findSqlFiles(methods));
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 		}
@@ -99,34 +100,38 @@ public abstract class AbstractSqlOpenAction
 		return true;
 	}
 	
-	private IFile[] findSqlFiles(IMember member) {
-		IFile[] sqlFiles = S2DaoConstants.EMPTY_FILES;
-		if (member instanceof IMethod) {
-			sqlFiles = finder.findSqlFiles((IMethod) member);
-			if (sqlFiles.length == 0) {
-				if (confirmCreation()) {
-					openSqlCreationWizard((IMethod) member);
-				}
+	private IFile[] findSqlFiles(IMethod[] methods) {
+		Set sqlFiles = new HashSet();
+		for (int i = 0; i < methods.length; i++) {
+			sqlFiles.addAll(Arrays.asList(finder.findSqlFiles(methods[i])));
+		}
+		// TODO: sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
+		if (methods.length == 1 && sqlFiles.isEmpty()) {
+			if (confirmCreation()) {
+				openSqlCreationWizard(methods[0]);
 			}
-		} else if (member instanceof IType) {
-			sqlFiles = finder.findSqlFiles((IType) member);
 		}
-		return sqlFiles;
+		return (IFile[]) sqlFiles.toArray(new IFile[sqlFiles.size()]);
 	}
 	
-	private boolean isS2DaoComponent(IMember member) throws CoreException {
-		IProject project = member.getJavaProject().getProject();
-		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
-		if (cache == null) {
-			return false;
+	private IMethod[] findS2DaoInterceptorAppliedMethods(IMember member) throws JavaModelException {
+		IMethod[] methods = getMethods(member);
+		Set appliedMethods = new HashSet();
+		for (int i = 0; i < methods.length; i++) {
+			if (S2DaoUtil.isS2DaoInterceptorAppliedMethod(methods[i])) {
+				appliedMethods.add(methods[i]);
+			}
 		}
-		IType type = getType(member);
-		return type != null && type.isInterface() ? cache.contains(type) : false;
+		return (IMethod[]) appliedMethods.toArray(new IMethod[appliedMethods.size()]);
 	}
 	
-	private IType getType(IMember member) {
-		return member instanceof IType ? (IType) member :
-			member instanceof IMethod ? member.getDeclaringType() : null;
+	private IMethod[] getMethods(IMember member) throws JavaModelException {
+		if (member instanceof IType) {
+			return ((IType) member).getMethods();
+		} if (member instanceof IMethod) {
+			return new IMethod[] {(IMethod) member};
+		}
+		return new IMethod[0];
 	}
 	
 	private IMember getSelectedJavaMember() throws CoreException {
