@@ -15,14 +15,22 @@
  */
 package org.seasar.s2daoplugin;
 
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.seasar.kijimuna.core.dicon.model.IAspectElement;
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IDiconElement;
+import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.builder.AspectUtil;
+import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
+import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
@@ -111,6 +119,45 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	public static IComponentCache getS2DaoComponentCache(IProject project) {
 		S2DaoNature nature = S2DaoNature.getInstance(project);
 		return nature != null ? nature.getComponentCache() : null;
+	}
+	
+	public static boolean isS2DaoInterceptorAppliedMethod(IMethod method) {
+		if (method == null) {
+			return false;
+		}
+		IComponentCache cache = getS2DaoComponentCache(method.getJavaProject().getProject());
+		if (cache == null) {
+			return false;
+		}
+		IComponentElement[] components = cache.getComponents(method.getDeclaringType());
+		for (int i = 0; i < components.length; i++) {
+			if (AutoRegisterUtil.isAutoRegister(components[i])) {
+				IAutoRegisterElement auto = (IAutoRegisterElement) components[i];
+				if (!AutoRegisterUtil.hasInterceptor(auto, getS2DaoInterceptorType(auto))) {
+					continue;
+				}
+				if (AutoRegisterUtil.isApplied(auto, method)) {
+					return true;
+				}
+			} else {
+				List aspects = components[i].getAspectList();
+				for (int j = 0; j < aspects.size(); j++) {
+					IAspectElement aspect = (IAspectElement) aspects.get(j);
+					if (!AspectUtil.containsInterceptorType(aspect, getS2DaoInterceptorType(aspect))) {
+						continue;
+					}
+					if (AspectUtil.isApplied(aspect, method)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	private static IType getS2DaoInterceptorType(IDiconElement element) {
+		IRtti rtti = element.getRttiLoader().loadRtti(S2DAO_INTERCEPTOR);
+		return rtti != null ? rtti.getType() : null;
 	}
 
 }

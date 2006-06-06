@@ -184,7 +184,8 @@ public class SqlMarkerUtil {
 			if (method == null || !isInInterface(method)) {
 				return;
 			}
-			if (hasSql(method)) {
+			if (hasSql(method) &&
+					S2DaoUtil.isS2DaoInterceptorAppliedMethod(method)) {
 				createMarker(method);
 			}
 		}

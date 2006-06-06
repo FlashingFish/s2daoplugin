@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,11 +40,58 @@ public class AutoRegisterCache extends AbstractComponentCache {
 	}
 	
 	public IComponentElement[] getComponents(IType type) {
-		return EMPTY_COMPONENTS;
+		return type != null ? getComponents(type.getFullyQualifiedName()) :
+				EMPTY_COMPONENTS;
 	}
 
 	public IComponentElement[] getComponents(String fullyQualifiedClassName) {
-		return EMPTY_COMPONENTS;
+		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
+			return EMPTY_COMPONENTS;
+		}
+		if (componentAutos.isEmpty() || componentTargetAutos.isEmpty()) {
+			return EMPTY_COMPONENTS;
+		}
+		Set result = new HashSet();
+		for (Iterator it = componentAutos.iterator(); it.hasNext();) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (!auto.isApplied(fullyQualifiedClassName)) {
+				continue;
+			}
+			IComponentElement[] components =
+				getTargets(fullyQualifiedClassName, auto.getStartLine());
+			if (components.length != 0) {
+				result.add(auto);
+				result.addAll(Arrays.asList(components));
+			}
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+	}
+	
+	private IComponentElement[] getTargets(String fullyQualifiedClassName, int lineNumber) {
+		Set result = new HashSet();
+		for (Iterator it = componentTargetAutos.values().iterator(); it.hasNext();) {
+			Set autoRegisters = (Set) it.next();
+			IComponentElement[] components =
+				getTargetComponents(autoRegisters, fullyQualifiedClassName, lineNumber);
+			if (components.length == 0) {
+				return EMPTY_COMPONENTS;
+			}
+			result.addAll(Arrays.asList(components));
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+	}
+	
+	private IComponentElement[] getTargetComponents(Set autoRegisters,
+			String fullyQualifiedClassName, int lineNumber) {
+		Set result = new HashSet();
+		for (Iterator it = autoRegisters.iterator(); it.hasNext();) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (auto.isApplied(fullyQualifiedClassName) &&
+					auto.getStartLine() > lineNumber) {
+				result.add(auto);
+			}
+		}
+		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
 	}
 
 	public IComponentElement[] getAllComponents() {
@@ -109,11 +157,11 @@ public class AutoRegisterCache extends AbstractComponentCache {
 			return false;
 		}
 		for (Iterator it = componentAutos.iterator(); it.hasNext();) {
-			IAutoRegisterElement cauto = (IAutoRegisterElement) it.next();
-			if (!cauto.isApplied(fullyQualifiedClassName)) {
+			IAutoRegisterElement auto = (IAutoRegisterElement) it.next();
+			if (!auto.isApplied(fullyQualifiedClassName)) {
 				continue;
 			}
-			if (containsTarget(fullyQualifiedClassName, cauto.getStartLine())) {
+			if (containsTarget(fullyQualifiedClassName, auto.getStartLine())) {
 				return true;
 			}
 		}
