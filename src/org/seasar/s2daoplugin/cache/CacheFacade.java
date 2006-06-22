@@ -25,7 +25,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.util.StringUtil;
 
@@ -125,40 +124,40 @@ public class CacheFacade extends AbstractCache {
 		}
 	}
 	
-	public void diconAdded(IContainerElement container) {
-		if (container == null) {
+	public void diconAdded(IComponentElement[] components) {
+		if (components.length == 0) {
 			return;
 		}
-		IPath path = container.getStorage().getFullPath();
+		IPath path = components[0].getStorage().getFullPath();
 		IComponentCache cache = factory.createComponentCache();
 		// atomic begin
 		cache.setManager(getManager());
 		cache.setContainerPath(path);
 		cache.initialize();
-		cache.diconAdded(container);
+		cache.diconAdded(components);
 		// atomic end
 		cacheByContainerPath.put(path, cache);
 	}
 
-	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		if (old == null || young == null) {
+	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
+		if (olds.length == 0 || youngs.length == 0) {
 			return;
 		}
-		IPath path = old.getStorage().getFullPath();
+		IPath path = olds[0].getStorage().getFullPath();
 		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
-		cache.diconUpdated(old, young);
+		cache.diconUpdated(olds, youngs);
 	}
 
-	public void diconRemoved(IContainerElement container) {
-		if (container == null) {
+	public void diconRemoved(IComponentElement[] components) {
+		if (components.length == 0) {
 			return;
 		}
-		IPath path = container.getStorage().getFullPath();
+		IPath path = components[0].getStorage().getFullPath();
 		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
 		if (cache == null) {
 			return;
 		}
-		cache.diconRemoved(container);
+		cache.diconRemoved(components);
 		cacheByContainerPath.remove(path);
 	}
 

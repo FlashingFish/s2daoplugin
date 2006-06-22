@@ -13,27 +13,9 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.sqlmarker;
+package org.seasar.s2daoplugin.cache.builder;
 
-import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+public interface IComponentDeployer {
 
-public class SqlMarkerMarkingListener extends AbstractSqlMarkerListener {
-
-	public void diconAdded(IComponentElement[] components) {
-		mark(components);
-	}
-
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		mark(youngs);
-	}
-
-	public void diconRemoved(IComponentElement[] components) {
-	}
-	
-	private void mark(IComponentElement[] components) {
-		IType[] types = getAppliedTypes(components);
-		getMarker().mark(types);
-	}
-
+	void deploy();
 }

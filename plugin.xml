@@ -86,7 +86,7 @@
    		id="sqlmarker"
    		name="SQL">
    		<super type="org.eclipse.core.resources.textmarker"/>
-   		<persistent value="true"/>
+   		<persistent value="false"/>
    </extension>
    <extension
   		point="org.eclipse.ui.ide.markerImageProviders">

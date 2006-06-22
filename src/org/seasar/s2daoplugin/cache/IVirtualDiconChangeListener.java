@@ -13,28 +13,24 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.sqlmarker;
+package org.seasar.s2daoplugin.cache;
 
-import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
-public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
+public interface IVirtualDiconChangeListener {
 
-	public void diconAdded(IComponentElement[] components) {
-	}
-
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		unmark(olds);
-	}
-
-	public void diconRemoved(IComponentElement[] components) {
-		unmark(components);
-	}
+	void setManager(DiconModelManager manager);
 	
-	private void unmark(IComponentElement[] components) {
-		IType[] types = getAppliedTypes(components);
-		getMarker().unmark(types);
-	}
+	DiconModelManager getManager();
+	
+	void initialize();
+	
+	void diconAdded(IComponentElement[] components);
+	
+	void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs);
+	
+	void diconRemoved(IComponentElement[] components);
+	
+	void finishChanged();
 
 }

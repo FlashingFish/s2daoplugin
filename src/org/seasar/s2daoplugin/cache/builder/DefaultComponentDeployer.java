@@ -13,28 +13,26 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.sqlmarker;
+package org.seasar.s2daoplugin.cache.builder;
 
-import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.s2daoplugin.cache.model.ComponentElementWrapper;
 
-public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
+public class DefaultComponentDeployer implements IComponentDeployer {
 
-	public void diconAdded(IComponentElement[] components) {
-	}
-
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		unmark(olds);
-	}
-
-	public void diconRemoved(IComponentElement[] components) {
-		unmark(components);
+	private IComponentContainer container;
+	private IComponentElement component;
+	
+	public DefaultComponentDeployer(IComponentContainer container, IComponentElement component) {
+		if (container == null || component == null) {
+			throw new IllegalArgumentException();
+		}
+		this.container = container;
+		this.component = component;
 	}
 	
-	private void unmark(IComponentElement[] components) {
-		IType[] types = getAppliedTypes(components);
-		getMarker().unmark(types);
+	public void deploy() {
+		container.addPreparedComponent(new ComponentElementWrapper(component));
 	}
 
 }

@@ -23,8 +23,11 @@ import org.seasar.s2daoplugin.cache.CacheComposite;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.cache.DebugPrintCache;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
+import org.seasar.s2daoplugin.cache.IVirtualDiconChangeListener;
+import org.seasar.s2daoplugin.cache.IVirtualDiconModelRegistry;
 import org.seasar.s2daoplugin.cache.SequentializedListenerChain;
 import org.seasar.s2daoplugin.cache.builder.CacheBuilderChain;
 import org.seasar.s2daoplugin.cache.builder.ComponentCacheBuilder;
@@ -83,20 +86,36 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	}
 	
 	public IComponentCache getComponentCache() {
+//		CacheNature nature = CacheNature.getInstance(project);
+//		if (nature == null) {
+//			return null;
+//		}
+//		CacheRegistry registry = nature.getCacheRegistry();
+//		IComponentCache cache = registry.getComponentCache(S2DAO_CACHE_KEY);
+//		if (cache == null) {
+//			return null;
+//		}
+//		addListenerIfNecessary(nature, cache);
+//		return cache;
 		CacheNature nature = CacheNature.getInstance(project);
 		if (nature == null) {
 			return null;
 		}
-		CacheRegistry registry = nature.getCacheRegistry();
-		IComponentCache cache = registry.getComponentCache(S2DAO_CACHE_KEY);
+		IComponentCache cache = nature.getCacheRegistry().getComponentCache(
+				S2DAO_CACHE_KEY);
 		if (cache == null) {
 			return null;
 		}
-		DiconModelManager manager = nature.getDiconModelManager();
-		if (!manager.hasListener(S2DAO_CACHE_KEY)) {
-			manager.addDiconChangeListener(S2DAO_CACHE_KEY, createListener(cache));
-		}
+		addListenerIfNecessary(nature, cache);
 		return cache;
+	}
+	
+	private void addListenerIfNecessary(CacheNature nature, IComponentCache cache) {
+		IVirtualDiconModelRegistry registry = nature.getVirtualDiconModelRegistry();
+		if (!registry.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
+			registry.addListener(S2DAO_CACHE_KEY, createListener(cache));
+//			registry.addListener(S2DAO_CACHE_KEY, cache);
+		}
 	}
 	
 	public void removeComponentCache() {
@@ -110,7 +129,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 		manager.removeDiconChangeListener(S2DAO_CACHE_KEY);
 	}
 	
-	private IDiconChangeListener createListener(IComponentCache cache) {
+	private IVirtualDiconChangeListener createListener(IComponentCache cache) {
 		SequentializedListenerChain listener = new SequentializedListenerChain();
 		listener.addListener(new SqlMarkerUnmarkingListener());
 		listener.addListener(cache);
@@ -121,20 +140,25 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	
 	private static class S2DaoComponentCacheFactory implements IComponentCacheFactory {
 
-		private IComponentFilter createAspectAutoRegisterFilter() {
-			return new AndFilterChain()
-					.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
-					.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))));
-		}
+//		private IComponentFilter createAspectAutoRegisterFilter() {
+//			return new AndFilterChain()
+//					.addFilter(new ClassNameFilter(CacheConstants.ASPECT_AUTO_REGISTERS))
+//					.addFilter(new PropertyFilter("interceptor", new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR))));
+//		}
 
+//		public IComponentCache createComponentCache() {
+//			return new CacheComposite()
+//					.addComponentCache(new ComponentCache(new CacheBuilderChain()
+//							.addBuilder(new ComponentCacheBuilder(new AspectFilter(new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR)))))
+//							.addBuilder(new ExtractionCacheBuilder(new AutoRegisterAppliedFilter(new ExtractionFilter(createAspectAutoRegisterFilter()))))))
+//					.addComponentCache(new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
+//							.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
+//							.addFilter(new ExtractionFilter(createAspectAutoRegisterFilter())))));
+//		}
 		public IComponentCache createComponentCache() {
-			return new CacheComposite()
-					.addComponentCache(new ComponentCache(new CacheBuilderChain()
-							.addBuilder(new ComponentCacheBuilder(new AspectFilter(new InterceptorFilter(new ClassNameFilter(S2DAO_INTERCEPTOR)))))
-							.addBuilder(new ExtractionCacheBuilder(new AutoRegisterAppliedFilter(new ExtractionFilter(createAspectAutoRegisterFilter()))))))
-					.addComponentCache(new AutoRegisterCache(new ExtractionCacheBuilder(new AndFilterChain()
-							.addFilter(new ExtractionFilter(new ClassNameFilter(CacheConstants.COMPONENT_AUTO_REGISTERS)))
-							.addFilter(new ExtractionFilter(createAspectAutoRegisterFilter())))));
+			return new ComponentCache(new ComponentCacheBuilder(
+					new AspectFilter(S2DAO_INTERCEPTOR)));
+//			return new DebugPrintCache();
 		}
 	}
 

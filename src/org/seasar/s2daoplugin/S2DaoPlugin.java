@@ -17,6 +17,8 @@ package org.seasar.s2daoplugin;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.seasar.s2daoplugin.cache.CacheConstants;
@@ -59,6 +61,11 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 	
 	public static void log(CoreException e) {
 		getDefault().getLog().log(e.getStatus());
+	}
+	
+	public static void log(Throwable t) {
+		getDefault().getLog().log(
+				new Status(IStatus.ERROR, "org.seasar.s2daoplugin", IStatus.OK, t.getMessage(), t));
 	}
 
 }

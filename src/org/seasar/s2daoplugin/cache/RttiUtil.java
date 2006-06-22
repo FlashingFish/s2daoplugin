@@ -13,27 +13,25 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.sqlmarker;
+package org.seasar.s2daoplugin.cache;
 
-import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import java.util.HashSet;
+import java.util.Set;
 
-public class SqlMarkerMarkingListener extends AbstractSqlMarkerListener {
+import org.seasar.kijimuna.core.rtti.IRtti;
 
-	public void diconAdded(IComponentElement[] components) {
-		mark(components);
-	}
+public class RttiUtil {
 
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		mark(youngs);
-	}
-
-	public void diconRemoved(IComponentElement[] components) {
-	}
-	
-	private void mark(IComponentElement[] components) {
-		IType[] types = getAppliedTypes(components);
-		getMarker().mark(types);
+	public static IRtti[] getAllClasses(IRtti rtti) {
+		if (rtti == null) {
+			return new IRtti[0];
+		}
+		Set result = new HashSet();
+		do {
+			result.add(rtti);
+			rtti = rtti.getSuperClass();
+		} while (rtti != null);
+		return (IRtti[]) result.toArray(new IRtti[result.size()]);
 	}
 
 }

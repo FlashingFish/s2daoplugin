@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.cache.IVirtualDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.VirtualDiconModelRegistry;
 import org.seasar.s2daoplugin.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
@@ -28,6 +30,8 @@ public class CacheNature implements IProjectNature {
 
 	private IProject project;
 	private DiconModelManager manager;
+	private IVirtualDiconModelRegistry virtualModelRegistry =
+		new VirtualDiconModelRegistry();
 	private CacheRegistry registry = new CacheRegistry();
 	
 	public static CacheNature getInstance(IProject project) {
@@ -56,15 +60,26 @@ public class CacheNature implements IProjectNature {
 		this.project = project;
 	}
 	
+	public IVirtualDiconModelRegistry getVirtualDiconModelRegistry() {
+		createDiconModelManagerIfNecessary();
+		return virtualModelRegistry;
+	}
+	
 	public DiconModelManager getDiconModelManager() {
-		if (manager == null) {
-			manager = new DiconModelManager(getProject());
-		}
+		createDiconModelManagerIfNecessary();
 		return manager;
 	}
 	
 	public CacheRegistry getCacheRegistry() {
+		createDiconModelManagerIfNecessary();
 		return registry;
+	}
+	
+	private synchronized void createDiconModelManagerIfNecessary() {
+		if (manager == null) {
+			manager = new DiconModelManager(getProject());
+			manager.addDiconChangeListener("virtual", virtualModelRegistry);
+		}
 	}
 
 }

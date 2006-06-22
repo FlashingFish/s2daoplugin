@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
-public interface IComponentCache extends IDiconChangeListener {
+public interface IComponentCache extends IVirtualDiconChangeListener {
 
 	IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
 	

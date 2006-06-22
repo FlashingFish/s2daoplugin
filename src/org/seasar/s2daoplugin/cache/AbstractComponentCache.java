@@ -46,17 +46,17 @@ public abstract class AbstractComponentCache extends AbstractCache {
 		}
 	}
 	
-	public void diconAdded(IContainerElement container) {
-		builder.build(wrap(container));
+	public void diconAdded(IComponentElement[] components) {
+		builder.build(components);
 	}
 
-	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		builder.clear(wrap(old));
-		builder.build(wrap(young));
+	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
+		builder.clear(olds);
+		builder.build(youngs);
 	}
 
-	public void diconRemoved(IContainerElement container) {
-		builder.clear(wrap(container));
+	public void diconRemoved(IComponentElement[] components) {
+		builder.clear(components);
 	}
 
 	public void finishChanged() {

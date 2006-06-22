@@ -57,5 +57,27 @@ public class JavaUtil {
 		return resource != null &&
 				"java".equalsIgnoreCase(resource.getFileExtension());
 	}
+	
+    public static String getPackageName(String className) {
+    	if (StringUtil.isEmpty(className)) {
+    		return null;
+    	}
+        int pos = className.lastIndexOf('.');
+        if (pos > 0) {
+            return className.substring(0, pos);
+        }
+        return null;
+    }
+
+    public static String getShortClassName(String className) {
+    	if (StringUtil.isEmpty(className)) {
+    		return null;
+    	}
+        int i = className.lastIndexOf('.');
+        if (i > 0) {
+            return className.substring(i + 1);
+        }
+        return className;
+    }
 
 }

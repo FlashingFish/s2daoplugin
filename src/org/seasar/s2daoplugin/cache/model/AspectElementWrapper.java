@@ -13,28 +13,34 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.sqlmarker;
+package org.seasar.s2daoplugin.cache.model;
 
-import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 
-public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
+public class AspectElementWrapper extends DiconElementWrapper implements
+		IAspectElement {
 
-	public void diconAdded(IComponentElement[] components) {
-	}
-
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		unmark(olds);
-	}
-
-	public void diconRemoved(IComponentElement[] components) {
-		unmark(components);
+	private IAspectElement aspect;
+	
+	public AspectElementWrapper(IAspectElement aspect) {
+		super(aspect);
+		this.aspect = aspect;
 	}
 	
-	private void unmark(IComponentElement[] components) {
-		IType[] types = getAppliedTypes(components);
-		getMarker().unmark(types);
+	public String getPointcut() {
+		return aspect.getPointcut();
+	}
+
+	public void setLocking(boolean lock) {
+		aspect.setLocking(lock);
+	}
+
+	public String getExpression() {
+		return aspect.getExpression();
+	}
+
+	public boolean isOGNL() {
+		return aspect.isOGNL();
 	}
 
 }

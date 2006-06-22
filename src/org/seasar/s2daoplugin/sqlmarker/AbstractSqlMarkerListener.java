@@ -15,16 +15,20 @@
  */
 package org.seasar.s2daoplugin.sqlmarker;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
+import org.seasar.s2daoplugin.cache.IVirtualDiconChangeListener;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 
-public abstract class AbstractSqlMarkerListener implements IDiconChangeListener {
+public abstract class AbstractSqlMarkerListener implements IVirtualDiconChangeListener {
 
 	protected static final IType[] EMPTY_TYPES = new IType[0];
 	
@@ -53,15 +57,15 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		return marker;
 	}
 	
-	protected IType[] getAppliedTypes(IContainerElement container) {
-		if (container == null) {
+	protected IType[] getAppliedTypes(IComponentElement[] components) {
+		if (components.length == 0) {
 			return EMPTY_TYPES;
 		}
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(getProject());
 		if (cache == null) {
 			return EMPTY_TYPES;
 		}
-		cache = cache.getComponentCache(container.getStorage().getFullPath());
+		cache = cache.getComponentCache(components[0].getStorage().getFullPath());
 		return cache != null ? cache.getAllAppliedTypes() : EMPTY_TYPES;
 	}
 

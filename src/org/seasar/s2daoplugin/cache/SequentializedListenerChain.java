@@ -19,22 +19,23 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
-public class SequentializedListenerChain implements IDiconChangeListener {
+// FIXME: AffectedComponents‚ðŽg‚¤
+public class SequentializedListenerChain implements IVirtualDiconChangeListener {
 
 	private DiconModelManager manager;
 	private List listeners = new ArrayList();
-	private List addedContainers = new LinkedList();
-	private List updatedContainers = new LinkedList();
-	private List removedContainers = new LinkedList();
+	private List addedComponentsList = new LinkedList();
+	private List updatedComponentsList = new LinkedList();
+	private List removedComponentsList = new LinkedList();
 	
 	public void setManager(DiconModelManager manager) {
 		if (manager == null) {
 			return;
 		}
 		for (int i = 0; i < listeners.size(); i++) {
-			((IDiconChangeListener) listeners.get(i)).setManager(manager);
+			((IVirtualDiconChangeListener) listeners.get(i)).setManager(manager);
 		}
 		this.manager = manager;
 	}
@@ -45,35 +46,26 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 	
 	public void initialize() {
 		for (int i = 0; i < listeners.size(); i++) {
-			((IDiconChangeListener) listeners.get(i)).initialize();
+			((IVirtualDiconChangeListener) listeners.get(i)).initialize();
 		}
 	}
 	
-	public void diconAdded(IContainerElement container) {
-		if (container == null) {
-			return;
-		}
-		addedContainers.add(container);
+	public void diconAdded(IComponentElement[] components) {
+		addedComponentsList.add(components);
 	}
 
-	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		if (old == null || young == null) {
-			return;
-		}
-		updatedContainers.add(new UpdatedContainerPair(old, young));
+	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
+		updatedComponentsList.add(new UpdatedContainerPair(olds, youngs));
 	}
 
-	public void diconRemoved(IContainerElement container) {
-		if (container == null) {
-			return;
-		}
-		removedContainers.add(container);
+	public void diconRemoved(IComponentElement[] components) {
+		removedComponentsList.add(components);
 	}
 
 	public void finishChanged() {
 		try {
 			for (int i = 0; i < listeners.size(); i++) {
-				IDiconChangeListener listener = (IDiconChangeListener) listeners.get(i);
+				IVirtualDiconChangeListener listener = (IVirtualDiconChangeListener) listeners.get(i);
 				fireAdded(listener);
 				fireUpdated(listener);
 				fireRemoved(listener);
@@ -84,7 +76,7 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 		}
 	}
 	
-	public SequentializedListenerChain addListener(IDiconChangeListener listener) {
+	public SequentializedListenerChain addListener(IVirtualDiconChangeListener listener) {
 		if (listener == null) {
 			return this;
 		}
@@ -92,48 +84,48 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 		return this;
 	}
 	
-	private void fireAdded(IDiconChangeListener listener) {
-		for (int i = 0; i < addedContainers.size(); i++) {
-			listener.diconAdded((IContainerElement) addedContainers.get(i));
+	private void fireAdded(IVirtualDiconChangeListener listener) {
+		for (int i = 0; i < addedComponentsList.size(); i++) {
+			listener.diconAdded((IComponentElement[]) addedComponentsList.get(i));
 		}
 	}
 	
-	private void fireUpdated(IDiconChangeListener listener) {
-		for (int i = 0; i < updatedContainers.size(); i++) {
-			UpdatedContainerPair pair = (UpdatedContainerPair) updatedContainers.get(i);
-			listener.diconUpdated(pair.getOld(), pair.getYoung());
+	private void fireUpdated(IVirtualDiconChangeListener listener) {
+		for (int i = 0; i < updatedComponentsList.size(); i++) {
+			UpdatedContainerPair pair = (UpdatedContainerPair) updatedComponentsList.get(i);
+			listener.diconUpdated(pair.getOlds(), pair.getYoungs());
 		}
 	}
 	
-	private void fireRemoved(IDiconChangeListener listener) {
-		for (int i = 0; i < removedContainers.size(); i++) {
-			listener.diconRemoved((IContainerElement) removedContainers.get(i));
+	private void fireRemoved(IVirtualDiconChangeListener listener) {
+		for (int i = 0; i < removedComponentsList.size(); i++) {
+			listener.diconRemoved((IComponentElement[]) removedComponentsList.get(i));
 		}
 	}
 	
 	private void clearContainers() {
-		addedContainers.clear();
-		updatedContainers.clear();
-		removedContainers.clear();
+		addedComponentsList.clear();
+		updatedComponentsList.clear();
+		removedComponentsList.clear();
 	}
 	
 	
 	private static class UpdatedContainerPair {
 		
-		private IContainerElement old;
-		private IContainerElement young;
+		private IComponentElement[] olds;
+		private IComponentElement[] youngs;
 		
-		public UpdatedContainerPair(IContainerElement old, IContainerElement young) {
-			this.old = old;
-			this.young = young;
+		public UpdatedContainerPair(IComponentElement[] olds, IComponentElement[] youngs) {
+			this.olds = olds;
+			this.youngs = youngs;
 		}
 		
-		public IContainerElement getOld() {
-			return old;
+		public IComponentElement[] getOlds() {
+			return olds;
 		}
 		
-		public IContainerElement getYoung() {
-			return young;
+		public IComponentElement[] getYoungs() {
+			return youngs;
 		}
 		
 	}
