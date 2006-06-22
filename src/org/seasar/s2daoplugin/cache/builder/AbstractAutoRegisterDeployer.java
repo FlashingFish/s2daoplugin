@@ -15,21 +15,25 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.ConstCore;
+import org.seasar.kijimuna.core.dicon.DiconElementFactory;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.parser.IElement;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.model.ClassPattern;
-import org.seasar.s2daoplugin.cache.model.DiconElementWrapperFactory;
 
 public abstract class AbstractAutoRegisterDeployer implements
 		IComponentDeployer, CacheConstants, ConstCore {
 
+	private static final DiconElementFactory factory = new DiconElementFactory();
+	
 	private IComponentContainer container;
 	private IComponentElement autoRegister;
 	private List classPatterns = new ArrayList();
@@ -82,8 +86,8 @@ public abstract class AbstractAutoRegisterDeployer implements
     }
     
     protected IElement createElement(String elementName) {
-    	IElement element = DiconElementWrapperFactory.createElement(
-    			autoRegister.getProject(), autoRegister.getStorage(), elementName);
+    	IElement element = factory.createElement(autoRegister.getProject(),
+    			autoRegister.getStorage(), elementName);
 		element.setStartLocation(2, autoRegister.getStartLine(), 1);
 		element.setEndLocation(autoRegister.getEndLine(), 1);
 		element.setRootElement(autoRegister.getContainerElement());
@@ -100,6 +104,34 @@ public abstract class AbstractAutoRegisterDeployer implements
 				buildIgnoreClassPattern(im);
 			}
 		}
+	}
+	
+	protected void setParent(IElement child, IElement parent) {
+		Field field = findParentFiled(child.getClass());
+		if (field != null) {
+			try {
+				field.set(child, parent);
+			} catch (IllegalArgumentException e) {
+				S2DaoPlugin.log(e);
+			} catch (IllegalAccessException e) {
+				S2DaoPlugin.log(e);
+			}
+		}
+	}
+	
+	private Field findParentFiled(Class clazz) {
+		Field[] fields = clazz.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			fields[i].setAccessible(true);
+			if ("parent".equals(fields[i].getName())) {
+				return fields[i];
+			}
+		}
+		Class superClass = clazz.getSuperclass();
+		if (clazz != Object.class && superClass != null) {
+			return findParentFiled(superClass);
+		}
+		return null;
 	}
 	
 	private void buildClassPattern(IInitMethodElement initMethod) {

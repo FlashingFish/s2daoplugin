@@ -26,8 +26,6 @@ interface TODO {
 	 * 
 	 * TODO: Daoを継承しているときのSQLファイルを探す順序
 	 * 
-	 * TODO: 継承元も対象のクラスと判断するかどうか
-	 * 
 	 * TODO: kijimunaを使わないで使える設定を作る
 	 * 
 	 * TODO: 各種AutoRegisterの挙動を実装

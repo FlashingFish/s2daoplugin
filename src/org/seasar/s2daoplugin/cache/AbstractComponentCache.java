@@ -15,15 +15,10 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.kijimuna.core.rtti.HasErrorRtti;
 import org.seasar.kijimuna.core.rtti.IRtti;
-import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
 import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
-import org.seasar.s2daoplugin.cache.model.AutoRegisterElement;
 
 public abstract class AbstractComponentCache extends AbstractCache {
 
@@ -68,19 +63,8 @@ public abstract class AbstractComponentCache extends AbstractCache {
 	}
 	
 	protected IRtti getRtti(String fullyQualifiedClassName) {
-		return getManager().getRtti(fullyQualifiedClassName);
-	}
-	
-	private IComponentElement[] wrap(IContainerElement container) {
-		IComponentElement[] components = DiconUtil.getComponents(container);
-		Set result = new HashSet();
-		for (int i = 0; i < components.length; i++) {
-			IComponentElement component = AutoRegisterUtil.isAutoRegister(components[i]) ?
-					new AutoRegisterElement(components[i]) : components[i];
-			result.add(component);
-		}
-		return (IComponentElement[]) result
-				.toArray(new IComponentElement[result.size()]);
+		IRtti rtti = getManager().getRtti(fullyQualifiedClassName);
+		return rtti instanceof HasErrorRtti ? null : rtti;
 	}
 
 }

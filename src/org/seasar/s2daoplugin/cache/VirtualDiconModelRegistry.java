@@ -15,7 +15,6 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
-import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.parser.IElement;
@@ -33,8 +31,6 @@ import org.seasar.s2daoplugin.cache.builder.RegistryBuilder;
 
 public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 
-	private static final IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
-	
 	private RegistryBuilder builder;
 	private DiconModelManager manager;
 	private Map componentMap = new HashMap();
@@ -53,12 +49,10 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 	}
 	
 	public void addComponent(IComponentElement component) {
-//		System.out.println("add: " + component);
 		addComponentMap(component.getStorage().getFullPath(), component);
 	}
 	
 	public void removeComponent(IContainerElement container) {
-//		System.out.println("remove: " + container.getStorage().getFullPath());
 		removeComponentMap(container.getStorage().getFullPath());
 	}
 	
@@ -71,6 +65,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 	}
 
 	public void initialize() {
+		builder.initialize();
 	}
 
 	public void diconAdded(IContainerElement container) {
@@ -103,8 +98,12 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 //				}
 //			}
 //		}
-		// TODO: ここでリスナ（おそらくIComponentCache）をコールバック
+		builder.finishBuild();
 		affectedComponents.fireEvent();
+	}
+	
+	public boolean hasDiconChangeListener(String key) {
+		return affectedComponents.hasListener(key);
 	}
 	
 	public void addListener(String key, IVirtualDiconChangeListener listener) {
@@ -113,34 +112,21 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		fireInitialEvent(listener);
 	}
 	
+	public void removeListener(String key) {
+		affectedComponents.removeListener(key);
+	}
+	
 	private void fireInitialEvent(IVirtualDiconChangeListener listener) {
 		listener.initialize();
 		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
-			listener.diconAdded(toComponentArray((Set) it.next()));
+			listener.diconAdded(DiconUtil.toComponentArray((Set) it.next()));
 		}
 		listener.finishChanged();
 	}
 	
-	private IComponentElement[] getComponents(IContainerElement container) {
-		return toComponentArray(getComponentSet(container));
-	}
-	
-	private Set getComponentSet(IElement element) {
-		return (Set) componentMap.get(element.getStorage().getFullPath());
-	}
-	
-	private IComponentElement[] toComponentArray(Collection collection) {
-		return collection != null ? (IComponentElement[]) collection.toArray(
-				new IComponentElement[collection.size()]) : EMPTY_COMPONENTS;
-	}
-	
-	public boolean hasDiconChangeListener(String key) {
-		return affectedComponents.hasListener(key);
-	}
-	
 	private void addComponentMap(IPath containerPath, IComponentElement component) {
 		if (componentMap.containsKey(containerPath)) {
-			Set components = (Set) componentMap.get(containerPath);
+			Set components = getComponentSet(containerPath);
 			components.add(component);
 		} else {
 			Set components = new HashSet();
@@ -150,12 +136,24 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 	}
 	
 	private void removeComponentMap(IPath containerPath) {
-		Set components = (Set) componentMap.get(containerPath);
+		Set components = getComponentSet(containerPath);
 		if (components == null) {
 			return;
 		}
 		components.clear();
 		componentMap.remove(containerPath);
+	}
+	
+	private IComponentElement[] getComponents(IContainerElement container) {
+		return DiconUtil.toComponentArray(getComponentSet(container));
+	}
+	
+	private Set getComponentSet(IElement element) {
+		return getComponentSet(element.getStorage().getFullPath());
+	}
+	
+	private Set getComponentSet(IPath contaienrPath) {
+		return (Set) componentMap.get(contaienrPath);
 	}
 
 	
@@ -170,6 +168,10 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		
 		public void addListener(String key, IVirtualDiconChangeListener listener) {
 			listeners.put(key, listener);
+		}
+		
+		public void removeListener(String key) {
+			listeners.remove(key);
 		}
 		
 		public void addAddedComponents(final IComponentElement[] components) {

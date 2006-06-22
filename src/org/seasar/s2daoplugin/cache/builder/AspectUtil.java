@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -30,7 +32,6 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
-import org.seasar.kijimuna.core.rtti.IRttiMethodDesctiptor;
 import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
@@ -99,12 +100,13 @@ public final class AspectUtil {
 			if (pointcuts[i].isAutoApply()) {
 				return true;
 			}
-			IRttiMethodDesctiptor[] descs = pointcuts[i].getApplyMethods();
-			for (int j = 0; j < descs.length; j++) {
-				IMethod appliedMethod = (IMethod) descs[j].getMember();
-				if (method.equals(appliedMethod)) {
+			// Œp³Œ³‚à‹–‚·‚½‚ßIRttiMethodDescriptor‚Å”äŠr‚µ‚È‚¢
+			try {
+				Pattern p = Pattern.compile(pointcuts[i].getRegexp());
+				if (p.matcher(method.getElementName()).matches()) {
 					return true;
 				}
+			} catch (PatternSyntaxException ignore) {
 			}
 		}
 		return false;

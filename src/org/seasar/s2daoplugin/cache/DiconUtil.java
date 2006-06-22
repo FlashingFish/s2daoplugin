@@ -23,23 +23,16 @@ import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 
-public final class DiconUtil {
+public final class DiconUtil implements CacheConstants {
 
-	public static IComponentElement[] getComponents(IContainerElement container) {
-		if (container == null) {
-			return CacheConstants.EMPTY_COMPONENTS;
-		}
-		List components = container.getComponentList();
-		return (IComponentElement[]) components
-				.toArray(new IComponentElement[components.size()]);
+	public static IContainerElement[] toContainerArray(Collection collection) {
+		return collection != null ? (IContainerElement[]) collection.toArray(
+				new IContainerElement[collection.size()]) : EMPTY_CONTAINERS;
 	}
 	
-	public static IContainerElement[] toContainerArray(Collection collection) {
-		if (collection == null) {
-			return CacheConstants.EMPTY_CONTAINERS;
-		}
-		return (IContainerElement[]) collection
-				.toArray(new IContainerElement[collection.size()]);
+	public static IComponentElement[] toComponentArray(Collection collection) {
+		return collection != null ? (IComponentElement[]) collection.toArray(
+				new IComponentElement[collection.size()]) : EMPTY_COMPONENTS;
 	}
 	
 	public static IComponentElement getAvailableComponent(IComponentHolderElement element) {

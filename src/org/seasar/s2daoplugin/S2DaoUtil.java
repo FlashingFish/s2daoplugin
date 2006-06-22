@@ -29,8 +29,6 @@ import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.builder.AspectUtil;
-import org.seasar.s2daoplugin.cache.builder.AutoRegisterUtil;
-import org.seasar.s2daoplugin.cache.model.IAutoRegisterElement;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
@@ -131,24 +129,14 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		}
 		IComponentElement[] components = cache.getComponents(method.getDeclaringType());
 		for (int i = 0; i < components.length; i++) {
-			if (AutoRegisterUtil.isAutoRegister(components[i])) {
-				IAutoRegisterElement auto = (IAutoRegisterElement) components[i];
-				if (!AutoRegisterUtil.hasInterceptor(auto, getS2DaoInterceptorType(auto))) {
+			List aspects = components[i].getAspectList();
+			for (int j = 0; j < aspects.size(); j++) {
+				IAspectElement aspect = (IAspectElement) aspects.get(j);
+				if (!AspectUtil.containsInterceptorType(aspect, getS2DaoInterceptorType(aspect))) {
 					continue;
 				}
-				if (AutoRegisterUtil.isApplied(auto, method)) {
+				if (AspectUtil.isApplied(aspect, method)) {
 					return true;
-				}
-			} else {
-				List aspects = components[i].getAspectList();
-				for (int j = 0; j < aspects.size(); j++) {
-					IAspectElement aspect = (IAspectElement) aspects.get(j);
-					if (!AspectUtil.containsInterceptorType(aspect, getS2DaoInterceptorType(aspect))) {
-						continue;
-					}
-					if (AspectUtil.isApplied(aspect, method)) {
-						return true;
-					}
 				}
 			}
 		}

@@ -17,7 +17,6 @@ package org.seasar.s2daoplugin.sqlmarker;
 
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
 

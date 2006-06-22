@@ -19,12 +19,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public class RttiUtil {
 
+	private static final IRtti[] EMPTY_RTTIES = new IRtti[0];
+	
 	public static IRtti[] getAllClasses(IRtti rtti) {
 		if (rtti == null) {
-			return new IRtti[0];
+			return EMPTY_RTTIES;
 		}
 		Set result = new HashSet();
 		do {
@@ -32,6 +35,15 @@ public class RttiUtil {
 			rtti = rtti.getSuperClass();
 		} while (rtti != null);
 		return (IRtti[]) result.toArray(new IRtti[result.size()]);
+	}
+	
+	public static IRtti[] getAllTypes(IRtti rtti) {
+		IRtti[] classes = RttiUtil.getAllClasses(rtti);
+		IRtti[] types = EMPTY_RTTIES;
+		for (int i = 0; i < classes.length; i++) {
+			types = (IRtti[]) ArrayUtil.add(types, classes[i].getInterfaces());
+		}
+		return types;
 	}
 
 }

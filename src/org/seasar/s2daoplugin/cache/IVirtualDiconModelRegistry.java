@@ -27,4 +27,6 @@ public interface IVirtualDiconModelRegistry extends IDiconChangeListener {
 	boolean hasDiconChangeListener(String key);
 	
 	void addListener(String key, IVirtualDiconChangeListener listener);
+	
+	void removeListener(String key);
 }

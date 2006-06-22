@@ -15,11 +15,8 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -28,8 +25,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.parser.IElement;
-import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.model.ClassPattern;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
@@ -66,16 +61,9 @@ public class FileSystemComponentAutoRegisterDeployer extends AbstractAutoRegiste
 	}
 	
 	private IComponentElement createComponent(String packageName, String className) {
-		IComponentElement component =
-			(IComponentElement) createElement(DICON_TAG_COMPONENT);
-//		component.setStartLocation(2, autoRegister.getStartLine(), 1);
-//		component.setEndLocation(autoRegister.getEndLine(), 1);
+		IComponentElement component = (IComponentElement) createElement(
+				DICON_TAG_COMPONENT);
 		component.setAttributes(createAttributes(packageName, className));
-//		component.setBody("");
-//		component = new VirtualComponentElement(component);
-//		component.setRootElement(autoRegister.getContainerElement());
-		
-//		component.setParent(getAutoRegister().getParent());
 		setParent(component, getAutoRegister().getParent());
 		return component;
 	}
@@ -88,33 +76,6 @@ public class FileSystemComponentAutoRegisterDeployer extends AbstractAutoRegiste
 		return attribues;
 	}
 	
-	private void setParent(IElement child, IElement parent) {
-		Field field = findParentFiled(child.getClass());
-		if (field != null) {
-			try {
-				field.set(child, parent);
-			} catch (IllegalArgumentException e) {
-				S2DaoPlugin.log(e);
-			} catch (IllegalAccessException e) {
-				S2DaoPlugin.log(e);
-			}
-		}
-	}
-	
-	private Field findParentFiled(Class clazz) {
-		Field[] fields = clazz.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			fields[i].setAccessible(true);
-			if ("parent".equals(fields[i].getName())) {
-				return fields[i];
-			}
-		}
-		Class superClass = clazz.getSuperclass();
-		if (clazz != Object.class && superClass != null) {
-			return findParentFiled(superClass);
-		}
-		return null;
-	}
 	
 	private class ProcessVisitor implements IResourceVisitor {
 
