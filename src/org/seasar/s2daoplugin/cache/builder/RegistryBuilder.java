@@ -15,19 +15,21 @@
  */
 package org.seasar.s2daoplugin.cache.builder;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.IVirtualDiconModelRegistry;
 
 public class RegistryBuilder {
 
 	private static final Comparator comparator = new LineNumberComparator();
+	
 	private IVirtualDiconModelRegistry registry;
+	private IComponentContainer cc = new ComponentContainer(this);
 	
 	public void setRegistry(IVirtualDiconModelRegistry registry) {
 		this.registry = registry;
@@ -39,8 +41,7 @@ public class RegistryBuilder {
 	public void build(IContainerElement container) {
 		List components = container.getComponentList();
 		Collections.sort(components, comparator);
-		IComponentContainer cc = new ComponentContainer(components);
-		cc.deploy();
+		cc.deploy(DiconUtil.toComponentArray(components));
 	}
 
 	public void clear(IContainerElement container) {
@@ -50,51 +51,11 @@ public class RegistryBuilder {
 	public void finishBuild() {
 	}
 	
-	protected void addComponent(IComponentElement component) {
+	public void addComponent(IComponentElement component) {
 		registry.addComponent(component);
 	}
 
 
-	protected class ComponentContainer implements IComponentContainer {
-		
-		private ComponentDeployerFactory factory = new ComponentDeployerFactory(this);
-		private final List components;
-		private List preparedComponents = new ArrayList();
-		
-		public ComponentContainer(List components) {
-			this.components = components;
-		}
-		
-		public void deploy() {
-			prepare();
-			for (int i = 0; i < preparedComponents.size(); i++) {
-				addComponent((IComponentElement) preparedComponents.get(i));
-			}
-		}
-		
-		public void addPreparedComponent(IComponentElement component) {
-			preparedComponents.add(component);
-		}
-		
-		public IComponentElement[] getPreparedComponents() {
-			return (IComponentElement[]) preparedComponents.toArray(
-					new IComponentElement[preparedComponents.size()]);
-		}
-		
-		protected void addComponent(IComponentElement component) {
-			RegistryBuilder.this.addComponent(component);
-		}
-		
-		private void prepare() {
-			for (int i = 0; i < components.size(); i++) {
-				IComponentElement component = (IComponentElement) components.get(i);
-				IComponentDeployer deployer = factory.createComponentDeployer(component);
-				deployer.deploy();
-			}
-		}
-		
-	}
-	
 	private static class LineNumberComparator implements Comparator {
 
 		public int compare(Object o1, Object o2) {

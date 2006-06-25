@@ -36,7 +36,7 @@ import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 
-public final class AspectUtil {
+public final class AspectUtil implements CacheConstants {
 
 	public static boolean containsInterceptorType(IAspectElement aspect, IType type) {
 		IComponentElement component = DiconUtil.getAvailableComponent(aspect);
@@ -63,14 +63,14 @@ public final class AspectUtil {
 	
 	public static IComponentElement[] getAllInterceptors(IComponentHolderElement aspect) {
 		if (aspect == null) {
-			return new IComponentElement[0];
+			return EMPTY_COMPONENTS;
 		}
 		return getAllInterceptors(DiconUtil.getAvailableComponent(aspect));
 	}
 	
 	public static IComponentElement[] getAllInterceptors(IComponentElement interceptor) {
 		if (interceptor == null) {
-			return new IComponentElement[0];
+			return EMPTY_COMPONENTS;
 		}
 		Set result = new HashSet();
 		if (isInterceptorChain(interceptor)) {
@@ -81,7 +81,7 @@ public final class AspectUtil {
 		} else {
 			result.add(interceptor);
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		return DiconUtil.toComponentArray(result);
 	}
 	
 	public static boolean isApplied(IAspectElement aspect, IMethod method) {
@@ -145,7 +145,7 @@ public final class AspectUtil {
 				}
 			}
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		return DiconUtil.toComponentArray(result);
 	}
 
 }

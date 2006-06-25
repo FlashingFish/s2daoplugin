@@ -47,31 +47,26 @@ public class FileSystemComponentAutoRegisterDeployer extends AbstractAutoRegiste
 			JavaProjectUtil.visitSourceFolders(
 					project, cp.getPackageName(), new ProcessVisitor(cp));
 		}
+		deploy(getAutoRegister());
 	}
 	
-	private void process(ClassPattern cp, String packageName, String className) {
-		if (isIgnore(packageName, className)) {
-			return;
-		}
-		if (cp.isAppliedPackageName(packageName) &&
-				cp.isAppliedShortClassName(className)) {
-			IComponentElement component = createComponent(packageName, className);
-			addPreparedComponent(component);
-		}
+	private void process(IType type) {
+		IComponentElement component = createComponent(type.getFullyQualifiedName());
+		addPreparedComponent(component);
 	}
 	
-	private IComponentElement createComponent(String packageName, String className) {
+	private IComponentElement createComponent(String fqcn) {
 		IComponentElement component = (IComponentElement) createElement(
 				DICON_TAG_COMPONENT);
-		component.setAttributes(createAttributes(packageName, className));
+		component.setAttributes(createAttributes(fqcn));
 		setParent(component, getAutoRegister().getParent());
 		return component;
 	}
 	
-	private Map createAttributes(String packageName, String className) {
+	private Map createAttributes(String fqcn) {
 		Map attribues = new HashMap();
 		attribues.put(DICON_ATTR_INSTANCE, "singleton");
-		attribues.put(DICON_ATTR_CLASS, packageName + "." + className);
+		attribues.put(DICON_ATTR_CLASS, fqcn);
 		attribues.put(DICON_ATTR_AUTOBINDING, "auto");
 		return attribues;
 	}
@@ -90,12 +85,26 @@ public class FileSystemComponentAutoRegisterDeployer extends AbstractAutoRegiste
 				return true;
 			}
 			IType type = JavaUtil.findPrimaryType(resource);
-			if (type != null) {
-				String packageName = type.getPackageFragment().getElementName();
-				String className = type.getElementName();
-				process(cp, packageName, className);
+			if (isApplied(type)) {
+				process(type);
 			}
 			return true;
+		}
+		
+		private boolean isApplied(IType type) {
+			if (type == null) {
+				return false;
+			}
+			String packageName = type.getPackageFragment().getElementName();
+			String shortClassName = type.getElementName();
+			if (isIgnore(packageName, shortClassName)) {
+				return false;
+			}
+			if (cp.isAppliedPackageName(packageName) &&
+					cp.isAppliedShortClassName(shortClassName)) {
+				return true;
+			}
+			return false;
 		}
 	}
 

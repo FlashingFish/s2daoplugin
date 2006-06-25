@@ -20,7 +20,11 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 
 public class ComponentDeployerFactory implements CacheConstants {
 
-	private static final IComponentDeployer NULL_DEPLOYER = new NullDeployer();
+	private static final IComponentDeployer NULL_DEPLOYER = new IComponentDeployer() {
+		public void deploy() {
+		}
+	};
+	
 	private IComponentContainer container;
 	
 	public ComponentDeployerFactory(IComponentContainer container) {
@@ -40,13 +44,6 @@ public class ComponentDeployerFactory implements CacheConstants {
 			return new AspectAutoRegisterDeployer(container, component);
 		} else {
 			return new DefaultComponentDeployer(container, component);
-		}
-	}
-	
-	
-	private static class NullDeployer implements IComponentDeployer {
-
-		public void deploy() {
 		}
 	}
 

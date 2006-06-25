@@ -53,10 +53,6 @@ public class ElementWrapper extends ElementAdaptor {
 		return ret;
 	}
 	
-	protected IElement getRoot() {
-		return root;
-	}
-	
 	protected List getChildren(String elementName) {
 		List list = new ArrayList();
 		for (Iterator it = children.iterator(); it.hasNext();) {
@@ -66,6 +62,10 @@ public class ElementWrapper extends ElementAdaptor {
 			}
 		}
 		return list;
+	}
+	
+	protected IElement getRoot() {
+		return root;
 	}
 
 }

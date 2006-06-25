@@ -34,10 +34,7 @@ public class DiconElementWrapper extends ElementWrapper implements
 	}
 
 	public IContainerElement getContainerElement() {
-		if (getRoot() instanceof IContainerElement) {
-			return (IContainerElement) getRoot();
-		}
-		return null;
+		return element.getContainerElement();
 	}
 
 	public int getMarkerSeverity() {

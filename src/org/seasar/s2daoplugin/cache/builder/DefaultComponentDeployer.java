@@ -16,7 +16,6 @@
 package org.seasar.s2daoplugin.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.model.ComponentElementWrapper;
 
 public class DefaultComponentDeployer implements IComponentDeployer {
 
@@ -32,7 +31,7 @@ public class DefaultComponentDeployer implements IComponentDeployer {
 	}
 	
 	public void deploy() {
-		container.addPreparedComponent(new ComponentElementWrapper(component));
+		container.addComponent(component);
 	}
 
 }

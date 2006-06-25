@@ -19,9 +19,12 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public interface IComponentContainer {
 
-	void deploy();
+	void deploy(IComponentElement[] components);
 	
 	void addPreparedComponent(IComponentElement component);
 	
 	IComponentElement[] getPreparedComponents();
+	
+	void addComponent(IComponentElement component);
+
 }

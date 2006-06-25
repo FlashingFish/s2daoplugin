@@ -57,6 +57,10 @@ public abstract class AbstractAutoRegisterDeployer implements
 		container.addPreparedComponent(component);
 	}
 	
+	protected void deploy(IComponentElement component) {
+		container.addComponent(component);
+	}
+	
 	protected IComponentElement[] getPreparedComponents() {
 		return container.getPreparedComponents();
 	}
@@ -107,7 +111,7 @@ public abstract class AbstractAutoRegisterDeployer implements
 	}
 	
 	protected void setParent(IElement child, IElement parent) {
-		Field field = findParentFiled(child.getClass());
+		Field field = findParentField(child.getClass());
 		if (field != null) {
 			try {
 				field.set(child, parent);
@@ -119,7 +123,7 @@ public abstract class AbstractAutoRegisterDeployer implements
 		}
 	}
 	
-	private Field findParentFiled(Class clazz) {
+	private Field findParentField(Class clazz) {
 		Field[] fields = clazz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			fields[i].setAccessible(true);
@@ -129,7 +133,7 @@ public abstract class AbstractAutoRegisterDeployer implements
 		}
 		Class superClass = clazz.getSuperclass();
 		if (clazz != Object.class && superClass != null) {
-			return findParentFiled(superClass);
+			return findParentField(superClass);
 		}
 		return null;
 	}

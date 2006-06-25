@@ -44,6 +44,7 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 				process(components[i]);
 			}
 		}
+		deploy(getAutoRegister());
 	}
 	
 	private boolean isApplied(IComponentElement component) {
