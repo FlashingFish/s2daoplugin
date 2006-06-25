@@ -89,7 +89,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	
 	private void addListenerIfNecessary(CacheNature nature, IComponentCache cache) {
 		IDeploymentDiconModelRegistry registry = nature.getDeploymentModelRegistry();
-		if (!registry.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
+		if (!registry.hasListener(S2DAO_CACHE_KEY)) {
 			registry.addListener(S2DAO_CACHE_KEY, createListener(cache));
 		}
 	}

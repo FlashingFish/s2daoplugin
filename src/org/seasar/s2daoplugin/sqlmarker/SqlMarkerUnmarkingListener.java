@@ -17,6 +17,8 @@ package org.seasar.s2daoplugin.sqlmarker;
 
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.S2DaoUtil;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 
 public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
 
@@ -33,7 +35,15 @@ public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
 	
 	private void unmark(IComponentElement[] components) {
 		IType[] types = getAppliedTypes(components);
-		getMarker().unmark(types);
+		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(getProject());
+		if (cache == null) {
+			return;
+		}
+		for (int i = 0; i < types.length; i++) {
+			if (cache.getComponents(types[i]).length == 1) {
+				getMarker().unmark(types[i]);
+			}
+		}
 	}
 
 }

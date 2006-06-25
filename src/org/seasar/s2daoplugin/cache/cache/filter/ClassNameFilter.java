@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.s2daoplugin.cache.util.RttiUtil;
 
 public class ClassNameFilter extends AbstractComponentFilter {
 
@@ -42,8 +42,7 @@ public class ClassNameFilter extends AbstractComponentFilter {
 		if (!classNameSet.isEmpty() && !classNameSet.contains(className)) {
 			return false;
 		}
-		IRtti rtti = getRtti(className);
-		return rtti != null && rtti.getType() != null;
+		return RttiUtil.existsType(getRtti(className));
 	}
 
 }

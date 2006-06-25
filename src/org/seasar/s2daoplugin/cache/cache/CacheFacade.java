@@ -141,18 +141,13 @@ public class CacheFacade extends AbstractCache {
 	}
 
 	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		if (olds.length == 0 || youngs.length == 0) {
-			return;
-		}
 		IPath path = olds[0].getStorage().getFullPath();
 		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
 		cache.diconUpdated(olds, youngs);
 	}
 
 	public void diconRemoved(IComponentElement[] components) {
-		if (components.length == 0) {
-			return;
-		}
+
 		IPath path = components[0].getStorage().getFullPath();
 		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
 		if (cache == null) {

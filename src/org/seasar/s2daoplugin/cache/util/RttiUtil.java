@@ -45,5 +45,9 @@ public class RttiUtil {
 		}
 		return types;
 	}
+	
+	public static boolean existsType(IRtti rtti) {
+		return rtti != null && rtti.getType() != null;
+	}
 
 }

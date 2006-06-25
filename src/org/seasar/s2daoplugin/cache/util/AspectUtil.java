@@ -38,8 +38,7 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 public final class AspectUtil implements CacheConstants {
 
 	public static boolean containsInterceptorType(IAspectElement aspect, IType type) {
-		IComponentElement component = DiconUtil.getAvailableComponent(aspect);
-		return hasInterceptor(component, type);
+		return hasInterceptor(DiconUtil.getChildComponent(aspect), type);
 	}
 	
 	public static boolean hasInterceptor(IComponentElement component, IType type) {
@@ -64,7 +63,7 @@ public final class AspectUtil implements CacheConstants {
 		if (aspect == null) {
 			return EMPTY_COMPONENTS;
 		}
-		return getAllInterceptors(DiconUtil.getAvailableComponent(aspect));
+		return getAllInterceptors(DiconUtil.getChildComponent(aspect));
 	}
 	
 	public static IComponentElement[] getAllInterceptors(IComponentElement interceptor) {
@@ -111,17 +110,17 @@ public final class AspectUtil implements CacheConstants {
 		return false;
 	}
 	
-	private static boolean isInterceptorChain(IComponentElement ognlComponent) {
-		RttiLoader loader = ognlComponent.getRttiLoader();
+	private static boolean isInterceptorChain(IComponentElement component) {
+		RttiLoader loader = component.getRttiLoader();
 		IRtti interceptorChainRtti = loader.loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
 		if (interceptorChainRtti == null || interceptorChainRtti.getType() == null) {
 			return false;
 		}
-		IRtti componentRtti = loader.loadRtti(ognlComponent.getComponentClassName());
-		if (componentRtti == null) {
+		IRtti rtti = loader.loadRtti(component.getComponentClassName());
+		if (rtti == null) {
 			return false;
 		}
-		return interceptorChainRtti.getType().equals(componentRtti.getType());
+		return interceptorChainRtti.getType().equals(rtti.getType());
 	}
 	
 	private static IComponentElement[] getInterceptors(IComponentElement interceptorChain) {
@@ -138,7 +137,7 @@ public final class AspectUtil implements CacheConstants {
 					continue;
 				}
 				IComponentElement component =
-					DiconUtil.getAvailableComponent((IArgElement) args.get(0));
+					DiconUtil.getChildComponent((IArgElement) args.get(0));
 				if (component != null) {
 					result.add(component);
 				}

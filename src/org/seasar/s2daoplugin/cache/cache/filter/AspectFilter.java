@@ -39,7 +39,7 @@ public class AspectFilter extends AbstractDecorationFilter {
 		List aspects = component.getAspectList();
 		for (int i = 0; i < aspects.size(); i++) {
 			IComponentElement interceptor =
-				DiconUtil.getAvailableComponent((IAspectElement) aspects.get(i));
+				DiconUtil.getChildComponent((IAspectElement) aspects.get(i));
 			if (getFilter().isPassable(interceptor)) {
 				return true;
 			}

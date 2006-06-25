@@ -25,7 +25,7 @@ public interface IDeploymentDiconModelRegistry extends IDiconChangeListener {
 	
 	void removeComponent(IContainerElement container);
 	
-	boolean hasDiconChangeListener(String key);
+	boolean hasListener(String key);
 	
 	void addListener(String key, IDeploymentChangeListener listener);
 	

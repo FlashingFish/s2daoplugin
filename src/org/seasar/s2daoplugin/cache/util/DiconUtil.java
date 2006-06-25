@@ -36,7 +36,7 @@ public final class DiconUtil implements CacheConstants {
 				new IComponentElement[collection.size()]) : EMPTY_COMPONENTS;
 	}
 	
-	public static IComponentElement getAvailableComponent(IComponentHolderElement element) {
+	public static IComponentElement getChildComponent(IComponentHolderElement element) {
 		if (element == null) {
 			return null;
 		}

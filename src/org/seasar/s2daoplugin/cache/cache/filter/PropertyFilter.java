@@ -39,7 +39,7 @@ public class PropertyFilter extends AbstractDecorationFilter {
 		for (int i = 0; i < props.size(); i++) {
 			IPropertyElement prop = (IPropertyElement) props.get(i);
 			if (propertyName.equals(prop.getPropertyName())) {
-				IComponentElement comp = DiconUtil.getAvailableComponent(prop);
+				IComponentElement comp = DiconUtil.getChildComponent(prop);
 				if (getFilter().isPassable(comp)) {
 					return true;
 				}

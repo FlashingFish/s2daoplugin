@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
+import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.parser.IElement;
@@ -87,23 +88,24 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	}
 
 	public void finishChanged() {
-//		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
-//			Set components = (Set) it.next();
-//			for (Iterator jt = components.iterator(); jt.hasNext();) {
-//				IComponentElement component = (IComponentElement) jt.next();
-//				List aspects = component.getAspectList();
-//				for (int i = 0; i < aspects.size(); i++) {
-//					IAspectElement aspect = (IAspectElement) aspects.get(i);
-//					if (i == 0) System.out.println(component);
-//					System.out.println("  " + DiconUtil.getAvailableComponent(aspect));
-//				}
-//			}
-//		}
+		System.out.print("\n");
+		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
+			Set components = (Set) it.next();
+			for (Iterator jt = components.iterator(); jt.hasNext();) {
+				IComponentElement component = (IComponentElement) jt.next();
+				List aspects = component.getAspectList();
+				for (int i = 0; i < aspects.size(); i++) {
+					IAspectElement aspect = (IAspectElement) aspects.get(i);
+					if (i == 0) System.out.println(component);
+					System.out.println("  " + DiconUtil.getChildComponent(aspect));
+				}
+			}
+		}
 		builder.finishBuild();
 		affectedComponents.fireEvent();
 	}
 	
-	public boolean hasDiconChangeListener(String key) {
+	public boolean hasListener(String key) {
 		return affectedComponents.hasListener(key);
 	}
 	

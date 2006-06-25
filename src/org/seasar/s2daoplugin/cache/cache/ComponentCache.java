@@ -183,8 +183,7 @@ public class ComponentCache extends AbstractComponentCache {
 	}
 	
 	private boolean existsType(IComponentElement component) {
-		IRtti rtti = getRtti(component);
-		return rtti != null && rtti.getType() != null;
+		return RttiUtil.existsType(getRtti(component));		
 	}
 
 }
