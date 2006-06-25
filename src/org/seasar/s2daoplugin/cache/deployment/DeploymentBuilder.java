@@ -15,18 +15,10 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class DeploymentBuilder {
 
-	private static final Comparator comparator = new LineNumberComparator();
-	
 	private IDeploymentDiconModelRegistry registry;
 	private IDeploymentContainer cc = new DeploymentContainer(this);
 	
@@ -38,40 +30,18 @@ public class DeploymentBuilder {
 	}
 
 	public void build(IContainerElement container) {
-		List components = container.getComponentList();
-		Collections.sort(components, comparator);
-		cc.deploy(DiconUtil.toComponentArray(components));
+		cc.deploy(container);
 	}
 
 	public void clear(IContainerElement container) {
-		registry.removeComponent(container);
+		registry.removeContainer(container);
 	}
 
 	public void finishBuild() {
 	}
 	
-	public void addComponent(IComponentElement component) {
-		registry.addComponent(component);
-	}
-
-
-	private static class LineNumberComparator implements Comparator {
-
-		public int compare(Object o1, Object o2) {
-			if (o1 instanceof IComponentElement &&
-					o2 instanceof IComponentElement) {
-				return doCompare((IComponentElement) o1, (IComponentElement) o2);
-			}
-			throw new ClassCastException();
-		}
-		
-		private int doCompare(IComponentElement c1, IComponentElement c2) {
-			if (c1.getStartLine() == c2.getStartLine()) {
-				return 0;
-			}
-			return c1.getStartLine() < c2.getStartLine() ? -1 : 1;
-		}
-		
+	public void addContainer(IContainerElement container) {
+		registry.addContainer(container);
 	}
 
 }

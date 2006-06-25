@@ -16,23 +16,23 @@
 package org.seasar.s2daoplugin.sqlmarker;
 
 import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public class SqlMarkerMarkingListener extends AbstractSqlMarkerListener {
 
-	public void diconAdded(IComponentElement[] components) {
-		mark(components);
-	}
-
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		mark(youngs);
-	}
-
-	public void diconRemoved(IComponentElement[] components) {
+	public void diconAdded(IContainerElement container) {
+		mark(container);
 	}
 	
-	private void mark(IComponentElement[] components) {
-		IType[] types = getAppliedTypes(components);
+	public void diconUpdated(IContainerElement old, IContainerElement young) {
+		mark(young);
+	}
+	
+	public void diconRemoved(IContainerElement container) {
+	}
+	
+	private void mark(IContainerElement container) {
+		IType[] types = getAppliedTypes(container);
 		getMarker().mark(types);
 	}
 

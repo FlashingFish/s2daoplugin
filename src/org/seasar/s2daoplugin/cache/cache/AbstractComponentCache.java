@@ -16,9 +16,11 @@
 package org.seasar.s2daoplugin.cache.cache;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.rtti.HasErrorRtti;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.cache.builder.ICacheBuilder;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public abstract class AbstractComponentCache extends AbstractCache {
 
@@ -40,17 +42,17 @@ public abstract class AbstractComponentCache extends AbstractCache {
 		}
 	}
 	
-	public void diconAdded(IComponentElement[] components) {
-		builder.build(components);
+	public void diconAdded(IContainerElement container) {
+		builder.build(DiconUtil.getComponents(container));
 	}
 
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		builder.clear(olds);
-		builder.build(youngs);
+	public void diconUpdated(IContainerElement old, IContainerElement young) {
+		builder.clear(DiconUtil.getComponents(old));
+		builder.build(DiconUtil.getComponents(young));
 	}
-
-	public void diconRemoved(IComponentElement[] components) {
-		builder.clear(components);
+	
+	public void diconRemoved(IContainerElement container) {
+		builder.clear(DiconUtil.getComponents(container));
 	}
 
 	public void finishChanged() {

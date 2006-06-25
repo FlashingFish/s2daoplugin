@@ -15,32 +15,40 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.deployment.deployer.ComponentDeployerFactory;
 import org.seasar.s2daoplugin.cache.deployment.deployer.IComponentDeployer;
 import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
+import org.seasar.s2daoplugin.cache.deployment.model.ContainerElementWrapper;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class DeploymentContainer implements IDeploymentContainer {
+
+	private static final Comparator comparator = new LineNumberComparator();
 	
 	private ComponentDeployerFactory factory = new ComponentDeployerFactory(this);
 	private DeploymentBuilder builder;
 	private ComponentQueue queue = new ComponentQueue();
+	private List deployedComponents = new LinkedList();
 	
 	public DeploymentContainer(DeploymentBuilder builder) {
 		this.builder = builder;
 	}
 	
-	public void deploy(IComponentElement[] components) {
-		prepare(components);
+	public void deploy(IContainerElement container) {
+		prepare(container);
 		while (!queue.isEmpty()) {
 			IComponentElement component = queue.poll();
 			IComponentDeployer deployer = factory.createComponentDeployer(component);
 			deployer.deploy();
 		}
+		deployContainer(container);
 	}
 	
 	public void addPreparedComponent(IComponentElement component) {
@@ -52,13 +60,26 @@ public class DeploymentContainer implements IDeploymentContainer {
 	}
 	
 	public void addComponent(IComponentElement component) {
-		builder.addComponent(component);
+		deployedComponents.add(component);
 	}
 	
-	private void prepare(IComponentElement[] components) {
-		for (int i = 0; i < components.length; i++) {
-			addPreparedComponent(new ComponentElementWrapper(components[i]));
+	private void prepare(IContainerElement container) {
+		deployedComponents.clear();
+		queue.clear();
+		List components = container.getComponentList();
+		Collections.sort(components, comparator);
+		for (int i = 0; i < components.size(); i++) {
+			addPreparedComponent(new ComponentElementWrapper(
+					(IComponentElement) components.get(i)));
 		}
+	}
+	
+	private void deployContainer(IContainerElement container) {
+		IContainerElement newContainer = new ContainerElementWrapper(container);
+		while (!deployedComponents.isEmpty()) {
+			newContainer.addChild((IComponentElement) deployedComponents.remove(0));
+		}
+		builder.addContainer(newContainer);
 	}
 	
 	
@@ -80,9 +101,32 @@ public class DeploymentContainer implements IDeploymentContainer {
 			return queue.isEmpty();
 		}
 		
+		public void clear() {
+			queue.clear();
+		}
+		
 		public IComponentElement[] toArray() {
 			return DiconUtil.toComponentArray(queue);
 		}
+	}
+
+	private static class LineNumberComparator implements Comparator {
+
+		public int compare(Object o1, Object o2) {
+			if (o1 instanceof IComponentElement &&
+					o2 instanceof IComponentElement) {
+				return doCompare((IComponentElement) o1, (IComponentElement) o2);
+			}
+			throw new ClassCastException();
+		}
+		
+		private int doCompare(IComponentElement c1, IComponentElement c2) {
+			if (c1.getStartLine() == c2.getStartLine()) {
+				return 0;
+			}
+			return c1.getStartLine() < c2.getStartLine() ? -1 : 1;
+		}
+		
 	}
 
 }

@@ -16,10 +16,11 @@
 package org.seasar.s2daoplugin.cache.deployment;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public interface IDeploymentContainer {
 
-	void deploy(IComponentElement[] components);
+	void deploy(IContainerElement container);
 	
 	void addPreparedComponent(IComponentElement component);
 	

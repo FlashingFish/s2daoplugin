@@ -16,27 +16,22 @@
 package org.seasar.s2daoplugin.cache.deployment;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
-import org.seasar.kijimuna.core.dicon.model.IAspectElement;
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.util.DiconUtil;
+import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 
 public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegistry {
 
 	private DeploymentBuilder builder;
 	private DiconModelManager manager;
-	private Map componentMap = new HashMap();
-	private AffectedComponents affectedComponents = new AffectedComponents();
+	private Map containerMap = new HashMap();
+	private AffectedContainers affectedContainers = new AffectedContainers();
 	
 	public DeploymentDiconModelRegistry() {
 		this(new DeploymentBuilder());
@@ -50,12 +45,12 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 		this.builder = builder;
 	}
 	
-	public void addComponent(IComponentElement component) {
-		addComponentMap(component.getStorage().getFullPath(), component);
+	public void addContainer(IContainerElement container) {
+		addContainerMap(container.getStorage().getFullPath(), container);
 	}
 	
-	public void removeComponent(IContainerElement container) {
-		removeComponentMap(container.getStorage().getFullPath());
+	public void removeContainer(IContainerElement container) {
+		removeContainerMap(container.getStorage().getFullPath());
 	}
 	
 	public void setManager(DiconModelManager manager) {
@@ -72,95 +67,75 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 
 	public void diconAdded(IContainerElement container) {
 		builder.build(container);
-		affectedComponents.addAddedComponents(getComponents(container));
+		affectedContainers.addAddedContainer(getContainer(container));
 	}
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		IComponentElement[] olds = getComponents(old);
+		IContainerElement removing = getContainer(old);
 		builder.clear(old);
 		builder.build(young);
-		affectedComponents.addUpdatedComponents(olds, getComponents(young));
+		affectedContainers.addUpdatedContainer(removing, getContainer(young));
 	}
 
 	public void diconRemoved(IContainerElement container) {
-		affectedComponents.addRemovedComponents(getComponents(container));
+		affectedContainers.addRemovedContainer(getContainer(container));
 		builder.clear(container);
 	}
 
 	public void finishChanged() {
-		System.out.print("\n");
-		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
-			Set components = (Set) it.next();
-			for (Iterator jt = components.iterator(); jt.hasNext();) {
-				IComponentElement component = (IComponentElement) jt.next();
-				List aspects = component.getAspectList();
-				for (int i = 0; i < aspects.size(); i++) {
-					IAspectElement aspect = (IAspectElement) aspects.get(i);
-					if (i == 0) System.out.println(component);
-					System.out.println("  " + DiconUtil.getChildComponent(aspect));
-				}
-			}
-		}
+//		System.out.print("\n");
+//		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
+//			List components = ((IContainerElement) it.next()).getComponentList();
+//			for (Iterator jt = components.iterator(); jt.hasNext();) {
+//				IComponentElement component = (IComponentElement) jt.next();
+//				List aspects = component.getAspectList();
+//				for (int i = 0; i < aspects.size(); i++) {
+//					IAspectElement aspect = (IAspectElement) aspects.get(i);
+//					if (i == 0) System.out.println(component);
+//					System.out.println("  " + DiconUtil.getChildComponent(aspect));
+//				}
+//			}
+//		}
 		builder.finishBuild();
-		affectedComponents.fireEvent();
+		affectedContainers.fireEvent();
 	}
 	
 	public boolean hasListener(String key) {
-		return affectedComponents.hasListener(key);
+		return affectedContainers.hasListener(key);
 	}
 	
-	public void addListener(String key, IDeploymentChangeListener listener) {
-		affectedComponents.addListener(key, listener);
+	public void addListener(String key, IDiconChangeListener listener) {
+		affectedContainers.addListener(key, listener);
 		listener.setManager(getManager());
 		fireInitialEvent(listener);
 	}
 	
 	public void removeListener(String key) {
-		affectedComponents.removeListener(key);
+		affectedContainers.removeListener(key);
 	}
 	
-	private void fireInitialEvent(IDeploymentChangeListener listener) {
+	private void fireInitialEvent(IDiconChangeListener listener) {
 		listener.initialize();
-		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
-			listener.diconAdded(DiconUtil.toComponentArray((Set) it.next()));
+		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
+			listener.diconAdded((IContainerElement) it.next());
 		}
 		listener.finishChanged();
 	}
 	
-	private void addComponentMap(IPath containerPath, IComponentElement component) {
-		if (componentMap.containsKey(containerPath)) {
-			Set components = getComponentSet(containerPath);
-			components.add(component);
-		} else {
-			Set components = new HashSet();
-			components.add(component);
-			componentMap.put(containerPath, components);
-		}
+	private void addContainerMap(IPath containerPath, IContainerElement container) {
+		containerMap.put(containerPath, container);
 	}
 	
-	private void removeComponentMap(IPath containerPath) {
-		Set components = getComponentSet(containerPath);
-		if (components == null) {
-			return;
-		}
-		components.clear();
-		componentMap.remove(containerPath);
+	private void removeContainerMap(IPath containerPath) {
+		containerMap.remove(containerPath);
 	}
 	
-	private IComponentElement[] getComponents(IContainerElement container) {
-		return DiconUtil.toComponentArray(getComponentSet(container));
-	}
-	
-	private Set getComponentSet(IElement element) {
-		return getComponentSet(element.getStorage().getFullPath());
-	}
-	
-	private Set getComponentSet(IPath contaienrPath) {
-		return (Set) componentMap.get(contaienrPath);
+	private IContainerElement getContainer(IContainerElement container) {
+		return (IContainerElement) containerMap.get(container.getStorage().getFullPath());
 	}
 
 	
-	private class AffectedComponents {
+	private class AffectedContainers {
 
 		private Map listeners = new HashMap();
 		private List containers = new LinkedList(); 
@@ -169,7 +144,7 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 			return listeners.containsKey(key);
 		}
 		
-		public void addListener(String key, IDeploymentChangeListener listener) {
+		public void addListener(String key, IDiconChangeListener listener) {
 			listeners.put(key, listener);
 		}
 		
@@ -177,27 +152,27 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 			listeners.remove(key);
 		}
 		
-		public void addAddedComponents(final IComponentElement[] components) {
+		public void addAddedContainer(final IContainerElement container) {
 			containers.add(new EventFirer() {
-				public void process(IDeploymentChangeListener listener) {
-					listener.diconAdded(components);
+				public void process(IDiconChangeListener listener) {
+					listener.diconAdded(container);
 				}
 			});
 		}
 		
-		public void addUpdatedComponents(final IComponentElement[] olds,
-				final IComponentElement[] youngs) {
+		public void addUpdatedContainer(final IContainerElement old,
+				final IContainerElement young) {
 			containers.add(new EventFirer() {
-				public void process(IDeploymentChangeListener listener) {
-					listener.diconUpdated(olds, youngs);
+				public void process(IDiconChangeListener listener) {
+					listener.diconUpdated(old, young);
 				}
 			});
 		}
 		
-		public void addRemovedComponents(final IComponentElement[] components) {
+		public void addRemovedContainer(final IContainerElement container) {
 			containers.add(new EventFirer() {
-				public void process(IDeploymentChangeListener listener) {
-					listener.diconRemoved(components);
+				public void process(IDiconChangeListener listener) {
+					listener.diconRemoved(container);
 				}
 			});
 		}
@@ -208,7 +183,7 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 					((EventFirer) containers.get(i)).fire();
 				}
 				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					((IDeploymentChangeListener) it.next()).finishChanged();
+					((IDiconChangeListener) it.next()).finishChanged();
 				}
 			} finally {
 				containers.clear();
@@ -220,11 +195,11 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 			
 			public void fire() {
 				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					process((IDeploymentChangeListener) it.next());
+					process((IDiconChangeListener) it.next());
 				}
 			}
 			
-			protected abstract void process(IDeploymentChangeListener listener);
+			protected abstract void process(IDiconChangeListener listener);
 		}
 	}
 

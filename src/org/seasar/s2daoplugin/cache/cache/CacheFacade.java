@@ -25,6 +25,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
@@ -125,35 +126,31 @@ public class CacheFacade extends AbstractCache {
 		}
 	}
 	
-	public void diconAdded(IComponentElement[] components) {
-		if (components.length == 0) {
-			return;
-		}
-		IPath path = components[0].getStorage().getFullPath();
+	public void diconAdded(IContainerElement container) {
+		IPath path = container.getStorage().getFullPath();
 		IComponentCache cache = factory.createComponentCache();
 		// atomic begin
 		cache.setManager(getManager());
 		cache.setContainerPath(path);
 		cache.initialize();
-		cache.diconAdded(components);
+		cache.diconAdded(container);
 		// atomic end
 		cacheByContainerPath.put(path, cache);
 	}
 
-	public void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs) {
-		IPath path = olds[0].getStorage().getFullPath();
+	public void diconUpdated(IContainerElement old, IContainerElement young) {
+		IPath path = old.getStorage().getFullPath();
 		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
-		cache.diconUpdated(olds, youngs);
+		cache.diconUpdated(old, young);
 	}
 
-	public void diconRemoved(IComponentElement[] components) {
-
-		IPath path = components[0].getStorage().getFullPath();
+	public void diconRemoved(IContainerElement container) {
+		IPath path = container.getStorage().getFullPath();
 		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
 		if (cache == null) {
 			return;
 		}
-		cache.diconRemoved(components);
+		cache.diconRemoved(container);
 		cacheByContainerPath.remove(path);
 	}
 

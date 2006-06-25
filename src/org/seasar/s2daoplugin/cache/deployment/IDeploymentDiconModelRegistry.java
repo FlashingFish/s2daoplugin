@@ -15,19 +15,18 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 
 public interface IDeploymentDiconModelRegistry extends IDiconChangeListener {
 
-	void addComponent(IComponentElement component);
+	void addContainer(IContainerElement container);
 	
-	void removeComponent(IContainerElement container);
+	void removeContainer(IContainerElement container);
 	
 	boolean hasListener(String key);
 	
-	void addListener(String key, IDeploymentChangeListener listener);
+	void addListener(String key, IDiconChangeListener listener);
 	
 	void removeListener(String key);
 }

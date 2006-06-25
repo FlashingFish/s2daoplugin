@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.CacheConstants;
-import org.seasar.s2daoplugin.cache.deployment.IDeploymentChangeListener;
+import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 
-public interface IComponentCache extends IDeploymentChangeListener, CacheConstants {
+public interface IComponentCache extends IDiconChangeListener, CacheConstants {
 
 	IComponentElement[] getComponents(IType type);
 	

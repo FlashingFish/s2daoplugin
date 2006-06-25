@@ -19,12 +19,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.seasar.s2daoplugin.cache.CacheNature;
+import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.cache.filter.AspectFilter;
-import org.seasar.s2daoplugin.cache.deployment.IDeploymentChangeListener;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
 import org.seasar.s2daoplugin.cache.deployment.SequentializedListenerChain;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
@@ -105,7 +105,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 		modelRegistry.removeListener(S2DAO_CACHE_KEY);
 	}
 	
-	private IDeploymentChangeListener createListener(IComponentCache cache) {
+	private IDiconChangeListener createListener(IComponentCache cache) {
 		SequentializedListenerChain listener = new SequentializedListenerChain();
 		listener.addListener(new SqlMarkerUnmarkingListener());
 		listener.addListener(cache);
