@@ -13,24 +13,26 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
 
-public interface IVirtualDiconChangeListener {
+public class DefaultComponentDeployer implements IComponentDeployer {
 
-	void setManager(DiconModelManager manager);
+	private IComponentContainer container;
+	private IComponentElement component;
 	
-	DiconModelManager getManager();
+	public DefaultComponentDeployer(IComponentContainer container, IComponentElement component) {
+		if (container == null || component == null) {
+			throw new IllegalArgumentException();
+		}
+		this.container = container;
+		this.component = component;
+	}
 	
-	void initialize();
-	
-	void diconAdded(IComponentElement[] components);
-	
-	void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs);
-	
-	void diconRemoved(IComponentElement[] components);
-	
-	void finishChanged();
+	public void deploy() {
+		container.addComponent(component);
+	}
 
 }

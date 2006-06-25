@@ -13,10 +13,11 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.CacheConstants;
+import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
 
 public class ComponentDeployerFactory implements CacheConstants {
 

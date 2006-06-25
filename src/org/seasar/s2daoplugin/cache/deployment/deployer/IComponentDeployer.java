@@ -13,20 +13,9 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.deployment.deployer;
 
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+public interface IComponentDeployer {
 
-public interface IVirtualDiconModelRegistry extends IDiconChangeListener {
-
-	void addComponent(IComponentElement component);
-	
-	void removeComponent(IContainerElement container);
-	
-	boolean hasDiconChangeListener(String key);
-	
-	void addListener(String key, IVirtualDiconChangeListener listener);
-	
-	void removeListener(String key);
+	void deploy();
 }

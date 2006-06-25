@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.kijimuna.core.parser.IElement;
+import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
 import org.seasar.s2daoplugin.cache.model.ClassPattern;
 import org.seasar.s2daoplugin.util.JavaUtil;
 

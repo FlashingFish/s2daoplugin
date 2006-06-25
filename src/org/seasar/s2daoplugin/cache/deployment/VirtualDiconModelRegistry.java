@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.deployment;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +27,8 @@ import org.eclipse.core.runtime.IPath;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.parser.IElement;
-import org.seasar.s2daoplugin.cache.builder.RegistryBuilder;
+import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.cache.DiconUtil;
 
 public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 

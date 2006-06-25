@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
+import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
 import org.seasar.s2daoplugin.cache.model.ClassPattern;
 
 public abstract class AbstractAutoRegisterDeployer implements

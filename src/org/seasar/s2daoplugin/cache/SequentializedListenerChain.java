@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconChangeListener;
 
 // FIXME: AffectedComponents‚ðŽg‚¤
 public class SequentializedListenerChain implements IVirtualDiconChangeListener {

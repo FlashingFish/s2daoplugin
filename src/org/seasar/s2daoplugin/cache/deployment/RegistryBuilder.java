@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.deployment;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +22,6 @@ import java.util.List;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.DiconUtil;
-import org.seasar.s2daoplugin.cache.IVirtualDiconModelRegistry;
 
 public class RegistryBuilder {
 

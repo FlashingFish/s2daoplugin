@@ -18,6 +18,7 @@ package org.seasar.s2daoplugin.cache;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconChangeListener;
 
 public interface IComponentCache extends IVirtualDiconChangeListener, CacheConstants {
 
