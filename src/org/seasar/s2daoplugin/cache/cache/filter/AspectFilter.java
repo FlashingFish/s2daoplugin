@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.DiconUtil;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class AspectFilter extends AbstractDecorationFilter {
 

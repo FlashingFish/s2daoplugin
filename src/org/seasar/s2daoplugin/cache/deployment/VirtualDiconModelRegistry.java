@@ -28,7 +28,7 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.DiconUtil;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 

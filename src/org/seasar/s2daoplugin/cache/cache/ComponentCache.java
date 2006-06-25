@@ -26,10 +26,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
-import org.seasar.s2daoplugin.cache.RttiUtil;
 import org.seasar.s2daoplugin.cache.cache.builder.ComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
+import org.seasar.s2daoplugin.cache.util.RttiUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class ComponentCache extends AbstractComponentCache {
@@ -63,8 +64,7 @@ public class ComponentCache extends AbstractComponentCache {
 				result.addAll(components);
 			}
 		}
-		return (IComponentElement[]) result.toArray(
-				new IComponentElement[result.size()]);
+		return DiconUtil.toComponentArray(result);
 	}
 
 	public IComponentElement[] getAllComponents() {
@@ -72,7 +72,7 @@ public class ComponentCache extends AbstractComponentCache {
 		for (Iterator it = componentsByFqcn.values().iterator(); it.hasNext();) {
 			result.addAll((Set) it.next());
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		return DiconUtil.toComponentArray(result);
 	}
 
 	public void setContainerPath(IPath containerPath) {

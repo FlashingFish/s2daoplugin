@@ -19,10 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.deployment.deployer.ComponentDeployerFactory;
 import org.seasar.s2daoplugin.cache.deployment.deployer.IComponentDeployer;
 import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class ComponentContainer implements IComponentContainer {
 	

@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class CacheFacade extends AbstractCache {
@@ -54,7 +55,7 @@ public class CacheFacade extends AbstractCache {
 			IComponentCache cache = (IComponentCache) it.next();
 			result.addAll(Arrays.asList(cache.getComponents(fullyQualifiedClassName)));
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		return DiconUtil.toComponentArray(result);
 	}
 
 	public IComponentElement[] getAllComponents() {
@@ -63,7 +64,7 @@ public class CacheFacade extends AbstractCache {
 			IComponentCache cache = (IComponentCache) it.next();
 			result.addAll(Arrays.asList(cache.getAllComponents()));
 		}
-		return (IComponentElement[]) result.toArray(new IComponentElement[result.size()]);
+		return DiconUtil.toComponentArray(result);
 	}
 
 	public void setContainerPath(IPath containerPath) {

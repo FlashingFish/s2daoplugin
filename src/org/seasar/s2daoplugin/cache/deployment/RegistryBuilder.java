@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.s2daoplugin.cache.DiconUtil;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class RegistryBuilder {
 

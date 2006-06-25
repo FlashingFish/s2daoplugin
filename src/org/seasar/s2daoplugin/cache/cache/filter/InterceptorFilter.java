@@ -16,7 +16,7 @@
 package org.seasar.s2daoplugin.cache.cache.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.cache.builder.AspectUtil;
+import org.seasar.s2daoplugin.cache.util.AspectUtil;
 
 public class InterceptorFilter extends AbstractDecorationFilter {
 

@@ -25,6 +25,7 @@ import org.seasar.kijimuna.core.dicon.ModelManager;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.project.IProjectRecordChangeListener;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class DiconModelManager implements IProjectRecordChangeListener {

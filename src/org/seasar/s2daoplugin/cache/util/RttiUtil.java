@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.util;
 
 import java.util.HashSet;
 import java.util.Set;

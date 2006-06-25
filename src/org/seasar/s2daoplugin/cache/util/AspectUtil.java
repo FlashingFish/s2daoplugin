@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.cache.builder;
+package org.seasar.s2daoplugin.cache.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,7 +34,6 @@ import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
-import org.seasar.s2daoplugin.cache.DiconUtil;
 
 public final class AspectUtil implements CacheConstants {
 
