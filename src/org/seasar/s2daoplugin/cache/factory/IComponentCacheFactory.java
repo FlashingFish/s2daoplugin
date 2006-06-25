@@ -15,7 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.factory;
 
-import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 
 public interface IComponentCacheFactory {
 

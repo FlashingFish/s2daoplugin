@@ -18,8 +18,8 @@ package org.seasar.s2daoplugin.cache.factory;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.seasar.s2daoplugin.cache.CacheFacade;
-import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.CacheFacade;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class CacheRegistry {

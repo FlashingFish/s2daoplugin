@@ -26,7 +26,7 @@ import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.KijimunaCore;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
-import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;

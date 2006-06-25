@@ -13,11 +13,15 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.cache.filter;
 
-import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
-public interface ICacheBuilder extends IBuilderLifecycle {
+public interface IExtractionComponentFilter extends IComponentFilter {
 
-	void setComponentCache(IComponentCache cache);
+	boolean addComponentIfNecessary(IComponentElement component);
+	
+	IComponentElement[] getComponents();
+	
+	void clearComponents();
 }

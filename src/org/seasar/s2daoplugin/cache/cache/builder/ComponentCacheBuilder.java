@@ -13,25 +13,36 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder.filter;
+package org.seasar.s2daoplugin.cache.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.builder.AspectUtil;
+import org.seasar.s2daoplugin.cache.cache.filter.ClassNameFilter;
+import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
 
-public class InterceptorFilter extends AbstractDecorationFilter {
+public class ComponentCacheBuilder extends AbstractCacheBuilder {
 
-	public InterceptorFilter(IComponentFilter filter) {
+	public ComponentCacheBuilder(String className) {
+		this(new String[] {className});
+	}
+	
+	public ComponentCacheBuilder(String[] classNames) {
+		this(new ClassNameFilter(classNames));
+	}
+	
+	public ComponentCacheBuilder(IComponentFilter filter) {
 		super(filter);
 	}
 	
-	public boolean isPassable(IComponentElement component) {
-		IComponentElement[] interceptors = AspectUtil.getAllInterceptors(component);
-		for (int i = 0; i < interceptors.length; i++) {
-			if (getFilter().isPassable(interceptors[i])) {
-				return true;
+	public void build(IComponentElement[] components) {
+		for (int i = 0; i < components.length; i++) {
+			if (getFilter().isPassable(components[i])) {
+				addComponent(components[i]);
 			}
 		}
-		return false;
+	}
+	
+	public void finishBuild() {
+		// do nothing
 	}
 
 }

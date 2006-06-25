@@ -27,8 +27,8 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IDiconElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
-import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.cache.builder.AspectUtil;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.builder.AspectUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {

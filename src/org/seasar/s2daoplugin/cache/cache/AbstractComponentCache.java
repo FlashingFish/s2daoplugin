@@ -13,12 +13,12 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.cache;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.HasErrorRtti;
 import org.seasar.kijimuna.core.rtti.IRtti;
-import org.seasar.s2daoplugin.cache.builder.ICacheBuilder;
+import org.seasar.s2daoplugin.cache.cache.builder.ICacheBuilder;
 
 public abstract class AbstractComponentCache extends AbstractCache {
 

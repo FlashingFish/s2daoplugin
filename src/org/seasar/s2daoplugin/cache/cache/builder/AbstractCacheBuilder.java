@@ -13,15 +13,15 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder;
+package org.seasar.s2daoplugin.cache.cache.builder;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.IComponentCache;
-import org.seasar.s2daoplugin.cache.builder.filter.IComponentFilter;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
 
 public abstract class AbstractCacheBuilder implements ICacheBuilder {
 

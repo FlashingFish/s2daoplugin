@@ -13,34 +13,21 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder.filter;
+package org.seasar.s2daoplugin.cache.cache.filter;
 
-import java.util.List;
-
-import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.DiconUtil;
+import org.seasar.s2daoplugin.cache.cache.builder.AspectUtil;
 
-public class AspectFilter extends AbstractDecorationFilter {
+public class InterceptorFilter extends AbstractDecorationFilter {
 
-	public AspectFilter(String interceptorClassName) {
-		this(new String[] {interceptorClassName});
-	}
-	
-	public AspectFilter(String[] interceptorClassNames) {
-		this(new InterceptorFilter(new ClassNameFilter(interceptorClassNames)));
-	}
-	
-	public AspectFilter(IComponentFilter filter) {
+	public InterceptorFilter(IComponentFilter filter) {
 		super(filter);
 	}
 	
 	public boolean isPassable(IComponentElement component) {
-		List aspects = component.getAspectList();
-		for (int i = 0; i < aspects.size(); i++) {
-			IComponentElement interceptor =
-				DiconUtil.getAvailableComponent((IAspectElement) aspects.get(i));
-			if (getFilter().isPassable(interceptor)) {
+		IComponentElement[] interceptors = AspectUtil.getAllInterceptors(component);
+		for (int i = 0; i < interceptors.length; i++) {
+			if (getFilter().isPassable(interceptors[i])) {
 				return true;
 			}
 		}

@@ -13,33 +13,28 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder.filter;
+package org.seasar.s2daoplugin.cache.cache.filter;
 
-import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 
-public abstract class AbstractComponentFilter implements IComponentFilter {
+public abstract class AbstractDecorationFilter extends AbstractComponentFilter {
 
-	private DiconModelManager manager;
+	private IComponentFilter filter;
 	
-	public void setManager(DiconModelManager manager) {
-		if (manager == null) {
+	public AbstractDecorationFilter(IComponentFilter filter) {
+		if (filter == null) {
 			throw new IllegalArgumentException();
 		}
-		if (this.manager == null) {
-			this.manager = manager;
-		}
+		this.filter = filter;
 	}
 	
-	protected DiconModelManager getManager() {
-		if (manager == null) {
-			throw new IllegalStateException();
-		}
-		return manager;
+	public void setManager(DiconModelManager manager) {
+		super.setManager(manager);
+		filter.setManager(manager);
 	}
 	
-	protected IRtti getRtti(String fullyQualifiedClassName) {
-		return getManager().getRtti(fullyQualifiedClassName);
+	protected IComponentFilter getFilter() {
+		return filter;
 	}
 
 }

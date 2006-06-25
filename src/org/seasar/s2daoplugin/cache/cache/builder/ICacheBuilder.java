@@ -13,28 +13,11 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder.filter;
+package org.seasar.s2daoplugin.cache.cache.builder;
 
-import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 
-public abstract class AbstractDecorationFilter extends AbstractComponentFilter {
+public interface ICacheBuilder extends IBuilderLifecycle {
 
-	private IComponentFilter filter;
-	
-	public AbstractDecorationFilter(IComponentFilter filter) {
-		if (filter == null) {
-			throw new IllegalArgumentException();
-		}
-		this.filter = filter;
-	}
-	
-	public void setManager(DiconModelManager manager) {
-		super.setManager(manager);
-		filter.setManager(manager);
-	}
-	
-	protected IComponentFilter getFilter() {
-		return filter;
-	}
-
+	void setComponentCache(IComponentCache cache);
 }

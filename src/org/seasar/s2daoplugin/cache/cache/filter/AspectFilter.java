@@ -13,36 +13,35 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.builder.filter;
+package org.seasar.s2daoplugin.cache.cache.filter;
 
 import java.util.List;
 
+import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.s2daoplugin.cache.DiconUtil;
-import org.seasar.s2daoplugin.util.StringUtil;
 
-public class PropertyFilter extends AbstractDecorationFilter {
+public class AspectFilter extends AbstractDecorationFilter {
 
-	private String propertyName;
+	public AspectFilter(String interceptorClassName) {
+		this(new String[] {interceptorClassName});
+	}
 	
-	public PropertyFilter(String propertyName, IComponentFilter filter) {
+	public AspectFilter(String[] interceptorClassNames) {
+		this(new InterceptorFilter(new ClassNameFilter(interceptorClassNames)));
+	}
+	
+	public AspectFilter(IComponentFilter filter) {
 		super(filter);
-		if (StringUtil.isEmpty(propertyName)) {
-			throw new IllegalArgumentException();
-		}
-		this.propertyName = propertyName;
 	}
 	
 	public boolean isPassable(IComponentElement component) {
-		List props = component.getPropertyList();
-		for (int i = 0; i < props.size(); i++) {
-			IPropertyElement prop = (IPropertyElement) props.get(i);
-			if (propertyName.equals(prop.getPropertyName())) {
-				IComponentElement comp = DiconUtil.getAvailableComponent(prop);
-				if (getFilter().isPassable(comp)) {
-					return true;
-				}
+		List aspects = component.getAspectList();
+		for (int i = 0; i < aspects.size(); i++) {
+			IComponentElement interceptor =
+				DiconUtil.getAvailableComponent((IAspectElement) aspects.get(i));
+			if (getFilter().isPassable(interceptor)) {
+				return true;
 			}
 		}
 		return false;
