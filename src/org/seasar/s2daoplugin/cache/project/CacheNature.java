@@ -21,9 +21,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconModelRegistry;
 import org.seasar.s2daoplugin.cache.deployment.VirtualDiconModelRegistry;
-import org.seasar.s2daoplugin.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
 public class CacheNature implements IProjectNature {

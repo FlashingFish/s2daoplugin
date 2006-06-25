@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.factory;
+package org.seasar.s2daoplugin.cache.cache.factory;
 
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 

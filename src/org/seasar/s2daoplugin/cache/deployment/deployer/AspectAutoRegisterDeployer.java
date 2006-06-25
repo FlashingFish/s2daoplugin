@@ -25,7 +25,6 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
-import org.seasar.s2daoplugin.cache.model.ClassPattern;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {

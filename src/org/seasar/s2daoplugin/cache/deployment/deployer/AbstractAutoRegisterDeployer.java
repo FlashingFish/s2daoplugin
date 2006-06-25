@@ -28,7 +28,6 @@ import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
-import org.seasar.s2daoplugin.cache.model.ClassPattern;
 
 public abstract class AbstractAutoRegisterDeployer implements
 		IComponentDeployer, CacheConstants, ConstCore {

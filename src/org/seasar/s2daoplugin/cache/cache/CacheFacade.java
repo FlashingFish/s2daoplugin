@@ -25,7 +25,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.factory.IComponentCacheFactory;
+import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class CacheFacade extends AbstractCache {
