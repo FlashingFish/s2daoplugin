@@ -27,19 +27,19 @@ import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
 import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
-import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 
 public abstract class AbstractAutoRegisterDeployer implements
 		IComponentDeployer, CacheConstants, ConstCore {
 
 	private static final DiconElementFactory factory = new DiconElementFactory();
 	
-	private IComponentContainer container;
+	private IDeploymentContainer container;
 	private IComponentElement autoRegister;
 	private List classPatterns = new ArrayList();
 	private List ignoreClassPatterns = new ArrayList();
 	
-	public AbstractAutoRegisterDeployer(IComponentContainer container,
+	public AbstractAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
 		if (container == null || autoRegister == null) {
 			throw new IllegalArgumentException();

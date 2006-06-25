@@ -22,17 +22,17 @@ import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
-import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconModelRegistry;
-import org.seasar.s2daoplugin.cache.deployment.VirtualDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.DeploymentDiconModelRegistry;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
 public class CacheNature implements IProjectNature {
 
 	private IProject project;
 	private DiconModelManager manager;
-	private IVirtualDiconModelRegistry virtualModelRegistry =
-		new VirtualDiconModelRegistry();
-	private CacheRegistry registry = new CacheRegistry();
+	private IDeploymentDiconModelRegistry deploymentModelRegistry =
+		new DeploymentDiconModelRegistry();
+	private CacheRegistry cacheRegistry = new CacheRegistry();
 	
 	public static CacheNature getInstance(IProject project) {
 		IProjectNature nature = null;
@@ -60,9 +60,9 @@ public class CacheNature implements IProjectNature {
 		this.project = project;
 	}
 	
-	public IVirtualDiconModelRegistry getVirtualDiconModelRegistry() {
+	public IDeploymentDiconModelRegistry getDeploymentModelRegistry() {
 		createDiconModelManagerIfNecessary();
-		return virtualModelRegistry;
+		return deploymentModelRegistry;
 	}
 	
 	public DiconModelManager getDiconModelManager() {
@@ -72,13 +72,13 @@ public class CacheNature implements IProjectNature {
 	
 	public CacheRegistry getCacheRegistry() {
 		createDiconModelManagerIfNecessary();
-		return registry;
+		return cacheRegistry;
 	}
 	
 	private synchronized void createDiconModelManagerIfNecessary() {
 		if (manager == null) {
 			manager = new DiconModelManager(getProject());
-			manager.addDiconChangeListener("virtual", virtualModelRegistry);
+			manager.addDiconChangeListener("deploymentmodel", deploymentModelRegistry);
 		}
 	}
 

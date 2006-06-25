@@ -16,14 +16,14 @@
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 
 public class DefaultComponentDeployer implements IComponentDeployer {
 
-	private IComponentContainer container;
+	private IDeploymentContainer container;
 	private IComponentElement component;
 	
-	public DefaultComponentDeployer(IComponentContainer container, IComponentElement component) {
+	public DefaultComponentDeployer(IDeploymentContainer container, IComponentElement component) {
 		if (container == null || component == null) {
 			throw new IllegalArgumentException();
 		}

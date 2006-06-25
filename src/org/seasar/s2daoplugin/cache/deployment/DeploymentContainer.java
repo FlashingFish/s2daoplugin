@@ -24,13 +24,13 @@ import org.seasar.s2daoplugin.cache.deployment.deployer.IComponentDeployer;
 import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
-public class ComponentContainer implements IComponentContainer {
+public class DeploymentContainer implements IDeploymentContainer {
 	
 	private ComponentDeployerFactory factory = new ComponentDeployerFactory(this);
-	private RegistryBuilder builder;
+	private DeploymentBuilder builder;
 	private ComponentQueue queue = new ComponentQueue();
 	
-	public ComponentContainer(RegistryBuilder builder) {
+	public DeploymentContainer(DeploymentBuilder builder) {
 		this.builder = builder;
 	}
 	

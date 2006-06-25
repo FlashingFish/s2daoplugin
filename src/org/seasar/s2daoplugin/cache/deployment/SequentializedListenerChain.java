@@ -13,17 +13,17 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache;
+package org.seasar.s2daoplugin.cache.deployment;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconChangeListener;
+import org.seasar.s2daoplugin.cache.DiconModelManager;
 
 // FIXME: AffectedComponents‚ðŽg‚¤
-public class SequentializedListenerChain implements IVirtualDiconChangeListener {
+public class SequentializedListenerChain implements IDeploymentChangeListener {
 
 	private DiconModelManager manager;
 	private List listeners = new ArrayList();
@@ -36,7 +36,7 @@ public class SequentializedListenerChain implements IVirtualDiconChangeListener 
 			return;
 		}
 		for (int i = 0; i < listeners.size(); i++) {
-			((IVirtualDiconChangeListener) listeners.get(i)).setManager(manager);
+			((IDeploymentChangeListener) listeners.get(i)).setManager(manager);
 		}
 		this.manager = manager;
 	}
@@ -47,7 +47,7 @@ public class SequentializedListenerChain implements IVirtualDiconChangeListener 
 	
 	public void initialize() {
 		for (int i = 0; i < listeners.size(); i++) {
-			((IVirtualDiconChangeListener) listeners.get(i)).initialize();
+			((IDeploymentChangeListener) listeners.get(i)).initialize();
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class SequentializedListenerChain implements IVirtualDiconChangeListener 
 	public void finishChanged() {
 		try {
 			for (int i = 0; i < listeners.size(); i++) {
-				IVirtualDiconChangeListener listener = (IVirtualDiconChangeListener) listeners.get(i);
+				IDeploymentChangeListener listener = (IDeploymentChangeListener) listeners.get(i);
 				fireAdded(listener);
 				fireUpdated(listener);
 				fireRemoved(listener);
@@ -77,7 +77,7 @@ public class SequentializedListenerChain implements IVirtualDiconChangeListener 
 		}
 	}
 	
-	public SequentializedListenerChain addListener(IVirtualDiconChangeListener listener) {
+	public SequentializedListenerChain addListener(IDeploymentChangeListener listener) {
 		if (listener == null) {
 			return this;
 		}
@@ -85,20 +85,20 @@ public class SequentializedListenerChain implements IVirtualDiconChangeListener 
 		return this;
 	}
 	
-	private void fireAdded(IVirtualDiconChangeListener listener) {
+	private void fireAdded(IDeploymentChangeListener listener) {
 		for (int i = 0; i < addedComponentsList.size(); i++) {
 			listener.diconAdded((IComponentElement[]) addedComponentsList.get(i));
 		}
 	}
 	
-	private void fireUpdated(IVirtualDiconChangeListener listener) {
+	private void fireUpdated(IDeploymentChangeListener listener) {
 		for (int i = 0; i < updatedComponentsList.size(); i++) {
 			UpdatedContainerPair pair = (UpdatedContainerPair) updatedComponentsList.get(i);
 			listener.diconUpdated(pair.getOlds(), pair.getYoungs());
 		}
 	}
 	
-	private void fireRemoved(IVirtualDiconChangeListener listener) {
+	private void fireRemoved(IDeploymentChangeListener listener) {
 		for (int i = 0; i < removedComponentsList.size(); i++) {
 			listener.diconRemoved((IComponentElement[]) removedComponentsList.get(i));
 		}

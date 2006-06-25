@@ -18,14 +18,14 @@ package org.seasar.s2daoplugin;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
-import org.seasar.s2daoplugin.cache.SequentializedListenerChain;
 import org.seasar.s2daoplugin.cache.cache.ComponentCache;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.cache.filter.AspectFilter;
-import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconChangeListener;
-import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentChangeListener;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.SequentializedListenerChain;
 import org.seasar.s2daoplugin.cache.project.CacheNature;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
@@ -88,7 +88,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	}
 	
 	private void addListenerIfNecessary(CacheNature nature, IComponentCache cache) {
-		IVirtualDiconModelRegistry registry = nature.getVirtualDiconModelRegistry();
+		IDeploymentDiconModelRegistry registry = nature.getDeploymentModelRegistry();
 		if (!registry.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
 			registry.addListener(S2DAO_CACHE_KEY, createListener(cache));
 		}
@@ -101,11 +101,11 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 		}
 		CacheRegistry registry = nature.getCacheRegistry();
 		registry.removeComponentCache(S2DAO_CACHE_KEY);
-		IVirtualDiconModelRegistry modelRegistry = nature.getVirtualDiconModelRegistry();
+		IDeploymentDiconModelRegistry modelRegistry = nature.getDeploymentModelRegistry();
 		modelRegistry.removeListener(S2DAO_CACHE_KEY);
 	}
 	
-	private IVirtualDiconChangeListener createListener(IComponentCache cache) {
+	private IDeploymentChangeListener createListener(IComponentCache cache) {
 		SequentializedListenerChain listener = new SequentializedListenerChain();
 		listener.addListener(new SqlMarkerUnmarkingListener());
 		listener.addListener(cache);

@@ -21,10 +21,10 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
-import org.seasar.s2daoplugin.cache.deployment.IVirtualDiconChangeListener;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentChangeListener;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 
-public abstract class AbstractSqlMarkerListener implements IVirtualDiconChangeListener {
+public abstract class AbstractSqlMarkerListener implements IDeploymentChangeListener {
 
 	protected static final IType[] EMPTY_TYPES = new IType[0];
 	

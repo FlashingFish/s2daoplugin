@@ -30,18 +30,18 @@ import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
-public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
+public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegistry {
 
-	private RegistryBuilder builder;
+	private DeploymentBuilder builder;
 	private DiconModelManager manager;
 	private Map componentMap = new HashMap();
 	private AffectedComponents affectedComponents = new AffectedComponents();
 	
-	public VirtualDiconModelRegistry() {
-		this(new RegistryBuilder());
+	public DeploymentDiconModelRegistry() {
+		this(new DeploymentBuilder());
 	}
 	
-	public VirtualDiconModelRegistry(RegistryBuilder builder) {
+	public DeploymentDiconModelRegistry(DeploymentBuilder builder) {
 		if (builder == null) {
 			throw new IllegalArgumentException();
 		}
@@ -107,7 +107,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		return affectedComponents.hasListener(key);
 	}
 	
-	public void addListener(String key, IVirtualDiconChangeListener listener) {
+	public void addListener(String key, IDeploymentChangeListener listener) {
 		affectedComponents.addListener(key, listener);
 		listener.setManager(getManager());
 		fireInitialEvent(listener);
@@ -117,7 +117,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		affectedComponents.removeListener(key);
 	}
 	
-	private void fireInitialEvent(IVirtualDiconChangeListener listener) {
+	private void fireInitialEvent(IDeploymentChangeListener listener) {
 		listener.initialize();
 		for (Iterator it = componentMap.values().iterator(); it.hasNext();) {
 			listener.diconAdded(DiconUtil.toComponentArray((Set) it.next()));
@@ -167,7 +167,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 			return listeners.containsKey(key);
 		}
 		
-		public void addListener(String key, IVirtualDiconChangeListener listener) {
+		public void addListener(String key, IDeploymentChangeListener listener) {
 			listeners.put(key, listener);
 		}
 		
@@ -177,7 +177,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		
 		public void addAddedComponents(final IComponentElement[] components) {
 			containers.add(new EventFirer() {
-				public void process(IVirtualDiconChangeListener listener) {
+				public void process(IDeploymentChangeListener listener) {
 					listener.diconAdded(components);
 				}
 			});
@@ -186,7 +186,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		public void addUpdatedComponents(final IComponentElement[] olds,
 				final IComponentElement[] youngs) {
 			containers.add(new EventFirer() {
-				public void process(IVirtualDiconChangeListener listener) {
+				public void process(IDeploymentChangeListener listener) {
 					listener.diconUpdated(olds, youngs);
 				}
 			});
@@ -194,7 +194,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 		
 		public void addRemovedComponents(final IComponentElement[] components) {
 			containers.add(new EventFirer() {
-				public void process(IVirtualDiconChangeListener listener) {
+				public void process(IDeploymentChangeListener listener) {
 					listener.diconRemoved(components);
 				}
 			});
@@ -206,7 +206,7 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 					((EventFirer) containers.get(i)).fire();
 				}
 				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					((IVirtualDiconChangeListener) it.next()).finishChanged();
+					((IDeploymentChangeListener) it.next()).finishChanged();
 				}
 			} finally {
 				containers.clear();
@@ -218,11 +218,11 @@ public class VirtualDiconModelRegistry implements IVirtualDiconModelRegistry {
 			
 			public void fire() {
 				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					process((IVirtualDiconChangeListener) it.next());
+					process((IDeploymentChangeListener) it.next());
 				}
 			}
 			
-			protected abstract void process(IVirtualDiconChangeListener listener);
+			protected abstract void process(IDeploymentChangeListener listener);
 		}
 	}
 

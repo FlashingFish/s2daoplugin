@@ -35,7 +35,6 @@ public abstract class AbstractComponentCache extends AbstractCache {
 	
 	public void initialize() {
 		if (!initialized) {
-			clearCache();
 			builder.initialize();
 			initialized = true;
 		}

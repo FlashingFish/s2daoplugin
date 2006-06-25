@@ -24,12 +24,12 @@ import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.kijimuna.core.parser.IElement;
-import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 
-	public AspectAutoRegisterDeployer(IComponentContainer container,
+	public AspectAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement component) {
 		super(container, component);
 		if (!ASPECT_AUTO_REGISTER.equals(component.getComponentClassName())) {

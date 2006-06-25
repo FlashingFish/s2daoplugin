@@ -23,14 +23,14 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
-public class RegistryBuilder {
+public class DeploymentBuilder {
 
 	private static final Comparator comparator = new LineNumberComparator();
 	
-	private IVirtualDiconModelRegistry registry;
-	private IComponentContainer cc = new ComponentContainer(this);
+	private IDeploymentDiconModelRegistry registry;
+	private IDeploymentContainer cc = new DeploymentContainer(this);
 	
-	public void setRegistry(IVirtualDiconModelRegistry registry) {
+	public void setRegistry(IDeploymentDiconModelRegistry registry) {
 		this.registry = registry;
 	}
 	

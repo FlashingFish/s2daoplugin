@@ -13,15 +13,25 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.cache.filter;
+package org.seasar.s2daoplugin.cache.deployment;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.DiconModelManager;
 
-public interface IExtractionComponentFilter extends IComponentFilter {
+public interface IDeploymentChangeListener {
 
-	boolean addComponentIfNecessary(IComponentElement component);
+	void setManager(DiconModelManager manager);
 	
-	IComponentElement[] getComponents();
+	DiconModelManager getManager();
 	
-	void clearComponents();
+	void initialize();
+	
+	void diconAdded(IComponentElement[] components);
+	
+	void diconUpdated(IComponentElement[] olds, IComponentElement[] youngs);
+	
+	void diconRemoved(IComponentElement[] components);
+	
+	void finishChanged();
+
 }

@@ -25,13 +25,13 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class FileSystemComponentAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 
-	public FileSystemComponentAutoRegisterDeployer(IComponentContainer container,
+	public FileSystemComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
 		super(container, autoRegister);
 		if (!FILESYSTEM_COMPONENT_AUTO_REGISTER.equals(

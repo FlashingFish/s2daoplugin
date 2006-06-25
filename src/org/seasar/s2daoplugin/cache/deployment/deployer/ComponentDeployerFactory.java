@@ -17,7 +17,7 @@ package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.CacheConstants;
-import org.seasar.s2daoplugin.cache.deployment.IComponentContainer;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 
 public class ComponentDeployerFactory implements CacheConstants {
 
@@ -26,9 +26,9 @@ public class ComponentDeployerFactory implements CacheConstants {
 		}
 	};
 	
-	private IComponentContainer container;
+	private IDeploymentContainer container;
 	
-	public ComponentDeployerFactory(IComponentContainer container) {
+	public ComponentDeployerFactory(IDeploymentContainer container) {
 		if (container == null) {
 			throw new IllegalArgumentException();
 		}
