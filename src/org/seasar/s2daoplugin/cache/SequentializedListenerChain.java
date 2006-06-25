@@ -13,15 +13,13 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment;
+package org.seasar.s2daoplugin.cache;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 
 public class SequentializedListenerChain implements IDiconChangeListener {
 
