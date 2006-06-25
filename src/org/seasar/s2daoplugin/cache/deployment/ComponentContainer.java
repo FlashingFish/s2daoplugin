@@ -22,7 +22,7 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.DiconUtil;
 import org.seasar.s2daoplugin.cache.deployment.deployer.ComponentDeployerFactory;
 import org.seasar.s2daoplugin.cache.deployment.deployer.IComponentDeployer;
-import org.seasar.s2daoplugin.cache.model.ComponentElementWrapper;
+import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
 
 public class ComponentContainer implements IComponentContainer {
 	
