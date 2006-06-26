@@ -13,35 +13,40 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment;
+package org.seasar.s2daoplugin.sqlmarker;
 
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
-public class DeploymentBuilder {
+public class SqlMarkerPreListener extends AbstractSqlMarkerListener {
 
-	private IDeploymentDiconModelRegistry registry;
-	private IDeploymentContainer dc = new DeploymentContainer(this);
+	private boolean first = true;
 	
-	public void setRegistry(IDeploymentDiconModelRegistry registry) {
-		this.registry = registry;
-	}
-	
-	public void initialize() {
-	}
-
-	public void build(IContainerElement container) {
-		dc.deploy(container);
-	}
-
-	public void clear(IContainerElement container) {
-		registry.removeContainer(container);
-	}
-
-	public void finishBuild() {
+	public SqlMarkerPreListener(SqlMarkerListenerContext context) {
+		super(context);
 	}
 	
-	public void addContainer(IContainerElement container) {
-		registry.addContainer(container);
+	public void diconAdded(IContainerElement container) {
+	}
+	
+	public void diconUpdated(IContainerElement old, IContainerElement young) {
+		addTypes(getAppliedTypes(old));
+	}
+
+	public void diconRemoved(IContainerElement container) {
+		addTypes(getAppliedTypes(container));
+	}
+	
+	public void finishChanged() {
+		first = true;
+	}
+	
+	private void addTypes(IType[] types) {
+		if (first) {
+			first = false;
+			getContext().clear();
+		}
+		getContext().addTypes(types);
 	}
 
 }

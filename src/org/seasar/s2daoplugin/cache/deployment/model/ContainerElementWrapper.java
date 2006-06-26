@@ -35,12 +35,11 @@ public class ContainerElementWrapper extends DiconElementWrapper implements
 	}
 	
 	public List getComponentList() {
-		List ret = new ArrayList(container.getComponentList());
-		ret.addAll(getChildren(DICON_TAG_COMPONENT));
-		return ret;
+		return new ArrayList(getChildren(DICON_TAG_COMPONENT));
 	}
 
 	public List getIncludeList() {
+		// IncludeElement‚àƒ‰ƒbƒv‚·‚é‚È‚çcontainer.getIncludeList‚Í‚¢‚ç‚È‚¢
 		List ret = new ArrayList(container.getIncludeList());
 		ret.addAll(getChildren(DICON_TAG_INCLUDE));
 		return ret;

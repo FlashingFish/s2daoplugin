@@ -20,27 +20,37 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 
-public class SqlMarkerUnmarkingListener extends AbstractSqlMarkerListener {
+public class SqlMarkerPostListener extends AbstractSqlMarkerListener {
 
+	public SqlMarkerPostListener(SqlMarkerListenerContext context) {
+		super(context);
+	}
+	
 	public void diconAdded(IContainerElement container) {
+		mark(container);
 	}
 	
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		unmark(old);
-	}
-
-	public void diconRemoved(IContainerElement container) {
-		unmark(container);
+		unmark();
+		mark(young);
 	}
 	
-	private void unmark(IContainerElement container) {
-		IType[] types = getAppliedTypes(container);
+	public void diconRemoved(IContainerElement container) {
+		unmark();
+	}
+	
+	private void mark(IContainerElement container) {
+		getMarker().mark(getAppliedTypes(container));
+	}
+	
+	private void unmark() {
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(getProject());
 		if (cache == null) {
 			return;
 		}
+		IType[] types = getContext().getTypes();
 		for (int i = 0; i < types.length; i++) {
-			if (cache.getComponents(types[i]).length == 1) {
+			if (cache.getComponents(types[i]).length == 0) {
 				getMarker().unmark(types[i]);
 			}
 		}

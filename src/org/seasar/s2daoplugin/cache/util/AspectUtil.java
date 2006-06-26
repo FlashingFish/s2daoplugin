@@ -113,7 +113,7 @@ public final class AspectUtil implements CacheConstants {
 	private static boolean isInterceptorChain(IComponentElement component) {
 		RttiLoader loader = component.getRttiLoader();
 		IRtti interceptorChainRtti = loader.loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
-		if (interceptorChainRtti == null || interceptorChainRtti.getType() == null) {
+		if (!RttiUtil.existsType(interceptorChainRtti)) {
 			return false;
 		}
 		IRtti rtti = loader.loadRtti(component.getComponentClassName());

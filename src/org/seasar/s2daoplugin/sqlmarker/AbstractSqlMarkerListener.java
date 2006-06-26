@@ -30,6 +30,14 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 	
 	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
 	private DiconModelManager manager;
+	private SqlMarkerListenerContext context;
+	
+	public AbstractSqlMarkerListener(SqlMarkerListenerContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException();
+		}
+		this.context = context;
+	}
 	
 	public void setManager(DiconModelManager manager) {
 		this.manager = manager;
@@ -51,6 +59,10 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 	
 	protected ISqlMarkerCreator getMarker() {
 		return marker;
+	}
+	
+	protected SqlMarkerListenerContext getContext() {
+		return context;
 	}
 	
 	protected IType[] getAppliedTypes(IContainerElement container) {

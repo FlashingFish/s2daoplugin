@@ -15,25 +15,26 @@
  */
 package org.seasar.s2daoplugin.sqlmarker;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.core.IType;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
-public class SqlMarkerMarkingListener extends AbstractSqlMarkerListener {
+public class SqlMarkerListenerContext {
 
-	public void diconAdded(IContainerElement container) {
-		mark(container);
+	private Set types = new HashSet();
+	
+	public void addTypes(IType[] types) {
+		this.types.addAll(Arrays.asList(types));
 	}
 	
-	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		mark(young);
+	public IType[] getTypes() {
+		return (IType[]) types.toArray(new IType[types.size()]);
 	}
 	
-	public void diconRemoved(IContainerElement container) {
-	}
-	
-	private void mark(IContainerElement container) {
-		IType[] types = getAppliedTypes(container);
-		getMarker().mark(types);
+	public void clear() {
+		types.clear();
 	}
 
 }

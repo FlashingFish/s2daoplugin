@@ -27,8 +27,9 @@ import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.cache.filter.AspectFilter;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
-import org.seasar.s2daoplugin.sqlmarker.SqlMarkerMarkingListener;
-import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUnmarkingListener;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerListenerContext;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerPostListener;
+import org.seasar.s2daoplugin.sqlmarker.SqlMarkerPreListener;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
 public class S2DaoNature implements IProjectNature, S2DaoConstants {
@@ -106,10 +107,11 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	}
 	
 	private IDiconChangeListener createListener(IComponentCache cache) {
+		SqlMarkerListenerContext context = new SqlMarkerListenerContext();
 		SequentializedListenerChain listener = new SequentializedListenerChain();
-		listener.addListener(new SqlMarkerUnmarkingListener());
+		listener.addListener(new SqlMarkerPreListener(context));
 		listener.addListener(cache);
-		listener.addListener(new SqlMarkerMarkingListener());
+		listener.addListener(new SqlMarkerPostListener(context));
 		return listener;
 	}
 
