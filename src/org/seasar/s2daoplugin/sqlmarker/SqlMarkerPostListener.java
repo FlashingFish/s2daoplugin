@@ -15,7 +15,9 @@
  */
 package org.seasar.s2daoplugin.sqlmarker;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
@@ -52,6 +54,16 @@ public class SqlMarkerPostListener extends AbstractSqlMarkerListener {
 		for (int i = 0; i < types.length; i++) {
 			if (cache.getComponents(types[i]).length == 0) {
 				getMarker().unmark(types[i]);
+			} else {
+				try {
+					IMethod[] methods = types[i].getMethods();
+					for (int j = 0; j < methods.length; j++) {
+						if (!S2DaoUtil.isS2DaoInterceptorAppliedMethod(methods[j])) {
+							getMarker().unmark(methods[j]);
+						}
+					}
+				} catch (JavaModelException ignore) {
+				}
 			}
 		}
 	}

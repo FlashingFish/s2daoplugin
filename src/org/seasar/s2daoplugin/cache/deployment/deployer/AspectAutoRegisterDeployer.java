@@ -74,11 +74,10 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 	
 	private void createAttributes(IAspectElement aspect) {
 		String pointcut = getBody("pointcut");
-		if (pointcut == null) {
-			return;
-		}
 		Map attributes = new HashMap();
-		attributes.put("pointcut", trimQuote(pointcut));
+		if (pointcut != null) {
+			attributes.put("pointcut", trimQuote(pointcut));
+		}
 		aspect.setAttributes(attributes);
 	}
 	

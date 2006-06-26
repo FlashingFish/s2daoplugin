@@ -60,9 +60,6 @@ public final class AspectUtil implements CacheConstants {
 	}
 	
 	public static IComponentElement[] getAllInterceptors(IComponentHolderElement aspect) {
-		if (aspect == null) {
-			return EMPTY_COMPONENTS;
-		}
 		return getAllInterceptors(DiconUtil.getChildComponent(aspect));
 	}
 	
@@ -112,7 +109,7 @@ public final class AspectUtil implements CacheConstants {
 	
 	private static boolean isInterceptorChain(IComponentElement component) {
 		RttiLoader loader = component.getRttiLoader();
-		IRtti interceptorChainRtti = loader.loadRtti(CacheConstants.INTERCEPTOR_CHAIN);
+		IRtti interceptorChainRtti = loader.loadRtti(INTERCEPTOR_CHAIN);
 		if (!RttiUtil.existsType(interceptorChainRtti)) {
 			return false;
 		}
