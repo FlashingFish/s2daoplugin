@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.JavaModelException;
 public class TypeUtil {
 
 	public static final IType[] EMPTY_TYPES = new IType[0];
+	private static final IMethod[] EMPTY_METHODS = new IMethod[0];
 	
 	public static IType[] findSuperInterfaces(IType type) {
 		if (type == null) {
@@ -60,9 +61,9 @@ public class TypeUtil {
 	
 	public static IMethod[] getMethods(IType type) {
 		try {
-			return type != null ? type.getMethods() : MethodUtil.EMPTY_METHODS;
+			return type != null ? type.getMethods() : EMPTY_METHODS;
 		} catch (JavaModelException e) {
-			return MethodUtil.EMPTY_METHODS;
+			return EMPTY_METHODS;
 		}
 	}
 	

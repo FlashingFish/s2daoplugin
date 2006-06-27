@@ -16,42 +16,40 @@
 package org.seasar.s2daoplugin.cache.util;
 
 import org.eclipse.jdt.core.Flags;
-import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.JavaModelException;
 
-public class MethodUtil {
+public class FlagsUtil {
 
-	public static final IMethod[] EMPTY_METHODS = new IMethod[0];
-
-	public static boolean isPublic(IMethod method) {
-		return Flags.isPublic(getFlags(method));
+	public static boolean isPublic(IMember member) {
+		return Flags.isPublic(getFlags(member));
 	}
 	
-	public static boolean isProtected(IMethod method) {
-		return Flags.isProtected(getFlags(method));
+	public static boolean isProtected(IMember member) {
+		return Flags.isProtected(getFlags(member));
 	}
 	
-	public static boolean isPackagePrivate(IMethod method) {
-		int flag = getFlags(method);
+	public static boolean isPackagePrivate(IMember member) {
+		int flag = getFlags(member);
 		return !Flags.isPublic(flag) && !Flags.isProtected(flag) && !Flags.isPrivate(flag);
 	}
 	
-	public static boolean isPrivate(IMethod method) {
-		return Flags.isPrivate(getFlags(method));
+	public static boolean isPrivate(IMember member) {
+		return Flags.isPrivate(getFlags(member));
 	}
 	
-	public static boolean isFinal(IMethod method) {
-		return Flags.isFinal(getFlags(method));
+	public static boolean isFinal(IMember member) {
+		return Flags.isFinal(getFlags(member));
 	}
 	
-	public static boolean isStatic(IMethod method) {
-		return Flags.isStatic(getFlags(method));
+	public static boolean isStatic(IMember member) {
+		return Flags.isStatic(getFlags(member));
 	}
 	
-	private static int getFlags(IMethod method) {
+	private static int getFlags(IMember member) {
 		try {
-			if (method != null) {
-				return method.getFlags();
+			if (member != null) {
+				return member.getFlags();
 			}
 		} catch (JavaModelException ignore) {
 		}

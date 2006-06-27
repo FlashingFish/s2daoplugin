@@ -102,9 +102,10 @@ public final class AspectUtil implements CacheConstants {
 			}
 		} catch (JavaModelException ignore) {
 		}
-		if (MethodUtil.isFinal(method) || MethodUtil.isStatic(method) ||
-				MethodUtil.isPrivate(method) || MethodUtil.isProtected(method) ||
-				MethodUtil.isPackagePrivate(method)) {
+		if (FlagsUtil.isFinal(type) ||
+				FlagsUtil.isFinal(method) || FlagsUtil.isStatic(method) ||
+				FlagsUtil.isPrivate(method) || FlagsUtil.isProtected(method) ||
+				FlagsUtil.isPackagePrivate(method)) {
 			return false;
 		}
 		return true;
@@ -133,17 +134,21 @@ public final class AspectUtil implements CacheConstants {
 	}
 	
 	private static boolean isDefineOnInterface(IType type, IMethod method) {
+		if (type == null) {
+			return false;
+		}
+		boolean isInterface = false;
 		try {
-			if (type == null || !type.isInterface()) {
-				return false;
-			}
+			isInterface = type.isInterface();
 		} catch (JavaModelException e) {
 			return false;
 		}
-		IMethod[] methods = TypeUtil.getMethods(type);
-		for (int i = 0; i < methods.length; i++) {
-			if (method.isSimilar(methods[i])) {
-				return true;
+		if (isInterface) {
+			IMethod[] methods = TypeUtil.getMethods(type);
+			for (int i = 0; i < methods.length; i++) {
+				if (method.isSimilar(methods[i])) {
+					return true;
+				}
 			}
 		}
 		IType[] interfaces = TypeUtil.findSuperInterfaces(type);
