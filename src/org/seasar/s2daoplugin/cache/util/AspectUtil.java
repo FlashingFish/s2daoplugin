@@ -24,6 +24,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.dicon.info.IAspectInfo;
 import org.seasar.kijimuna.core.dicon.info.IPointcut;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
@@ -83,6 +84,9 @@ public final class AspectUtil implements CacheConstants {
 		if (aspect == null || method == null) {
 			return false;
 		}
+		if (!isApplieableMethodModifier(method)) {
+			return false;
+		}
 		IAspectInfo info = (IAspectInfo) aspect.getAdapter(IAspectInfo.class);
 		if (info != null && matchPointcut(info.getPointcuts(), method)) {
 			return true;
@@ -90,9 +94,26 @@ public final class AspectUtil implements CacheConstants {
 		return false;
 	}
 	
+	private static boolean isApplieableMethodModifier(IMethod method) {
+		IType type = method.getDeclaringType();
+		try {
+			if (type != null && type.isInterface()) {
+				return true;
+			}
+		} catch (JavaModelException ignore) {
+		}
+		if (MethodUtil.isFinal(method) || MethodUtil.isStatic(method) ||
+				MethodUtil.isPrivate(method) || MethodUtil.isProtected(method) ||
+				MethodUtil.isPackagePrivate(method)) {
+			return false;
+		}
+		return true;
+	}
+	
 	private static boolean matchPointcut(IPointcut[] pointcuts, IMethod method) {
 		for (int i = 0; i < pointcuts.length; i++) {
-			if (pointcuts[i].isAutoApply()) {
+			if (pointcuts[i].isAutoApply() &&
+					isApplieableMethodOnInterface(method)) {
 				return true;
 			}
 			// Œp³Œ³‚à‹–‚·‚½‚ßIRttiMethodDescriptor‚Å”äŠr‚µ‚È‚¢
@@ -102,6 +123,37 @@ public final class AspectUtil implements CacheConstants {
 					return true;
 				}
 			} catch (PatternSyntaxException ignore) {
+			}
+		}
+		return false;
+	}
+	
+	private static boolean isApplieableMethodOnInterface(IMethod method) {
+		return isDefineOnInterface(method.getDeclaringType(), method);
+	}
+	
+	private static boolean isDefineOnInterface(IType type, IMethod method) {
+		if (type == null) {
+			return false;
+		}
+		boolean isInterface = false;
+		try {
+			isInterface = type.isInterface();
+		} catch (JavaModelException e) {
+			return false;
+		}
+		if (isInterface) {
+			IMethod[] methods = TypeUtil.getMethods(type);
+			for (int i = 0; i < methods.length; i++) {
+				if (method.isSimilar(methods[i])) {
+					return true;
+				}
+			}
+		}
+		IType[] interfaces = TypeUtil.findSuperInterfaces(type);
+		for (int i = 0; i < interfaces.length; i++) {
+			if (isDefineOnInterface(interfaces[i], method)) {
+				return true;
 			}
 		}
 		return false;

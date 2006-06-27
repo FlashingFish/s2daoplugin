@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
-import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
 import org.seasar.s2daoplugin.cache.deployment.DeploymentDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
 public class CacheNature implements IProjectNature {

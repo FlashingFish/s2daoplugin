@@ -67,7 +67,7 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 	private void process(IComponentElement component) {
 		IAspectElement aspect = (IAspectElement) createElement(DICON_TAG_ASPECT);
 		createAttributes(aspect);
-		createInterceptor(aspect);
+		createInterceptors(aspect);
 		aspect.setParent(component);
 //		component.addChild(aspect);
 	}
@@ -81,7 +81,7 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 		aspect.setAttributes(attributes);
 	}
 	
-	private void createInterceptor(IAspectElement aspect) {
+	private void createInterceptors(IAspectElement aspect) {
 		String interceptor = getBody("interceptor");
 		if (interceptor != null) {
 			aspect.setBody(interceptor);

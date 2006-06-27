@@ -39,9 +39,10 @@ public class ComponentDeployerFactory implements CacheConstants {
 		if (component == null) {
 			return NULL_DEPLOYER;
 		}
-		if (FILESYSTEM_COMPONENT_AUTO_REGISTER.equals(component.getComponentClassName())){
+		String className = component.getComponentClassName();
+		if (FILESYSTEM_COMPONENT_AUTO_REGISTER.equals(className)) {
 			return new FileSystemComponentAutoRegisterDeployer(container, component);
-		} else if (ASPECT_AUTO_REGISTER.equals(component.getComponentClassName())) {
+		} else if (ASPECT_AUTO_REGISTER.equals(className)) {
 			return new AspectAutoRegisterDeployer(container, component);
 		} else {
 			return new DefaultComponentDeployer(container, component);
