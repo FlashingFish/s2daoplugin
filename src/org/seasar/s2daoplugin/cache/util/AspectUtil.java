@@ -133,21 +133,17 @@ public final class AspectUtil implements CacheConstants {
 	}
 	
 	private static boolean isDefineOnInterface(IType type, IMethod method) {
-		if (type == null) {
-			return false;
-		}
-		boolean isInterface = false;
 		try {
-			isInterface = type.isInterface();
+			if (type == null || !type.isInterface()) {
+				return false;
+			}
 		} catch (JavaModelException e) {
 			return false;
 		}
-		if (isInterface) {
-			IMethod[] methods = TypeUtil.getMethods(type);
-			for (int i = 0; i < methods.length; i++) {
-				if (method.isSimilar(methods[i])) {
-					return true;
-				}
+		IMethod[] methods = TypeUtil.getMethods(type);
+		for (int i = 0; i < methods.length; i++) {
+			if (method.isSimilar(methods[i])) {
+				return true;
 			}
 		}
 		IType[] interfaces = TypeUtil.findSuperInterfaces(type);
