@@ -24,7 +24,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.dicon.info.IAspectInfo;
 import org.seasar.kijimuna.core.dicon.info.IPointcut;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
@@ -98,12 +97,8 @@ public final class AspectUtil implements CacheConstants {
 	
 	private static boolean isApplieableMethodModifier(IMethod method) {
 		IType type = method.getDeclaringType();
-		try {
-			if (type != null && type.isInterface()) {
-				return true;
-			}
-		} catch (JavaModelException e) {
-			return false;
+		if (FlagsUtil.isInterface(type)) {
+			return true;
 		}
 		if (FlagsUtil.isFinal(type) ||
 				FlagsUtil.isFinal(method) || FlagsUtil.isStatic(method) ||
@@ -139,13 +134,7 @@ public final class AspectUtil implements CacheConstants {
 		if (type == null) {
 			return false;
 		}
-		boolean isInterface = false;
-		try {
-			isInterface = type.isInterface();
-		} catch (JavaModelException e) {
-			return false;
-		}
-		if (isInterface) {
+		if (FlagsUtil.isInterface(type)) {
 			IMethod[] methods = TypeUtil.getMethods(type);
 			for (int i = 0; i < methods.length; i++) {
 				if (method.isSimilar(methods[i])) {

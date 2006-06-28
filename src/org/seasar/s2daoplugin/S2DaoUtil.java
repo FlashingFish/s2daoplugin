@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IDiconElement;
@@ -30,6 +29,7 @@ import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.util.AspectUtil;
+import org.seasar.s2daoplugin.cache.util.FlagsUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoUtil implements S2DaoConstants, CacheConstants {
@@ -121,7 +121,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 	}
 	
 	public static boolean isS2DaoInterceptorAppliedMethod(IMethod method) {
-		if (method == null || !isOnInterface(method)) {
+		if (method == null || !isOnApplieableType(method)) {
 			return false;
 		}
 		IComponentCache cache = getS2DaoComponentCache(method.getJavaProject().getProject());
@@ -144,13 +144,9 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		return false;
 	}
 	
-	private static boolean isOnInterface(IMethod method) {
+	private static boolean isOnApplieableType(IMethod method) {
 		IType type = method.getDeclaringType();
-		try {
-			return type != null && type.isInterface();
-		} catch (JavaModelException e) {
-			return false;
-		}
+		return FlagsUtil.isInterface(type) || FlagsUtil.isAbstract(method);
 	}
 	
 	private static IType getS2DaoInterceptorType(IDiconElement element) {

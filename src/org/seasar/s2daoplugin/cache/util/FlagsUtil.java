@@ -21,6 +21,14 @@ import org.eclipse.jdt.core.JavaModelException;
 
 public class FlagsUtil {
 
+	public static boolean isAbstract(IMember member) {
+		return Flags.isAbstract(getFlags(member));
+	}
+	
+	public static boolean isInterface(IMember member) {
+		return Flags.isInterface(getFlags(member));
+	}
+	
 	public static boolean isPublic(IMember member) {
 		return Flags.isPublic(getFlags(member));
 	}
