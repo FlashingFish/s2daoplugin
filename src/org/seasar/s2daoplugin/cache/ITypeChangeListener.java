@@ -13,17 +13,10 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment;
+package org.seasar.s2daoplugin.cache;
 
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
-import org.seasar.s2daoplugin.cache.ITypeChangeListener;
+// TODO: •ÏX‚Ì‚ ‚Á‚½IType‚¾‚¯‚ğ’Ê’m‚Å‚«‚é‚æ‚¤‚É‚·‚é
+public interface ITypeChangeListener {
 
-public interface IDeploymentDiconModelRegistry extends IDiconChangeListener,
-		ITypeChangeListener {
-
-	boolean hasListener(String key);
-	
-	void addListener(String key, IDiconChangeListener listener);
-	
-	void removeListener(String key);
+	void typeChanged();
 }

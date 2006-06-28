@@ -34,5 +34,9 @@ public class DefaultComponentDeployer implements IComponentDeployer {
 	public void deploy() {
 		container.addComponent(component);
 	}
+	
+	public int getType() {
+		return TYPE_COMPONENT;
+	}
 
 }

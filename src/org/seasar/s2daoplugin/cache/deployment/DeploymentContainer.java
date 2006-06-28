@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -33,22 +34,40 @@ public class DeploymentContainer implements IDeploymentContainer {
 	private static final Comparator comparator = new LineNumberComparator();
 	
 	private ComponentDeployerFactory factory = new ComponentDeployerFactory(this);
-	private DeploymentBuilder builder;
+	private IContainerElement originalContainer;
+	private IContainerElement deployedContainer;
 	private ComponentQueue queue = new ComponentQueue();
-	private List deployedComponents = new LinkedList();
+	private ComponentQueue deployedComponents = new ComponentQueue();
 	
-	public DeploymentContainer(DeploymentBuilder builder) {
-		this.builder = builder;
+	private List autoRegisterDeployer = new ArrayList();
+	private boolean hasComponentAuto;
+	
+	public DeploymentContainer(IContainerElement container) {
+		this.originalContainer = container;
 	}
 	
-	public void deploy(IContainerElement container) {
-		prepare(container);
+	public void deploy() {
+		prepare();
 		while (!queue.isEmpty()) {
 			IComponentElement component = queue.poll();
 			IComponentDeployer deployer = factory.createComponentDeployer(component);
 			deployer.deploy();
+			addAutoRegisterDeployerIfNecessary(deployer);
 		}
-		deployContainer(container);
+		createDeployedContainer();
+	}
+	
+	private void addAutoRegisterDeployerIfNecessary(IComponentDeployer deployer) {
+		if (deployer.getType() == IComponentDeployer.TYPE_COMPONENT_AUTO) {
+			hasComponentAuto = true;
+			addAutoRegisterDeployer(deployer);
+		} else if (deployer.getType() == IComponentDeployer.TYPE_COMPONENT_TARGET_AUTO) {
+			addAutoRegisterDeployer(deployer);
+		}
+	}
+	
+	private void addAutoRegisterDeployer(IComponentDeployer deployer) {
+		autoRegisterDeployer.add(deployer);
 	}
 	
 	public void addPreparedComponent(IComponentElement component) {
@@ -60,13 +79,24 @@ public class DeploymentContainer implements IDeploymentContainer {
 	}
 	
 	public void addComponent(IComponentElement component) {
-		deployedComponents.add(component);
+		deployedComponents.offer(component);
 	}
 	
-	private void prepare(IContainerElement container) {
-		deployedComponents.clear();
-		queue.clear();
-		List components = container.getComponentList();
+	public IContainerElement getOriginalContainer() {
+		return originalContainer;
+	}
+	
+	public IContainerElement getDeployedContainer() {
+		return deployedContainer;
+	}
+	
+	public boolean hasAutoReigsterDeployer() {
+		return hasComponentAuto;
+	}
+	
+	private void prepare() {
+		clear();
+		List components = originalContainer.getComponentList();
 		Collections.sort(components, comparator);
 		for (int i = 0; i < components.size(); i++) {
 			addPreparedComponent(new ComponentElementWrapper(
@@ -74,12 +104,20 @@ public class DeploymentContainer implements IDeploymentContainer {
 		}
 	}
 	
-	private void deployContainer(IContainerElement container) {
-		IContainerElement newContainer = new ContainerElementWrapper(container);
+	private void clear() {
+		deployedContainer = null;
+		queue.clear();
+		deployedComponents.clear();
+		autoRegisterDeployer.clear();
+		hasComponentAuto = false;
+	}
+	
+	private void createDeployedContainer() {
+		IContainerElement newContainer = new ContainerElementWrapper(originalContainer);
 		while (!deployedComponents.isEmpty()) {
-			newContainer.addChild((IComponentElement) deployedComponents.remove(0));
+			newContainer.addChild(deployedComponents.poll());
 		}
-		builder.addContainer(newContainer);
+		deployedContainer = newContainer;
 	}
 	
 	

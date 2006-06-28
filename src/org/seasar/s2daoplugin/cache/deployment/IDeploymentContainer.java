@@ -20,12 +20,17 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public interface IDeploymentContainer {
 
-	void deploy(IContainerElement container);
+	void deploy();
 	
 	void addPreparedComponent(IComponentElement component);
 	
 	IComponentElement[] getPreparedComponents();
 	
 	void addComponent(IComponentElement component);
+	
+	IContainerElement getOriginalContainer();
+	
+	IContainerElement getDeployedContainer();
 
+	boolean hasAutoReigsterDeployer();
 }

@@ -38,25 +38,27 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 
 public final class AspectUtil implements CacheConstants {
 
-	public static boolean containsInterceptorType(IAspectElement aspect, IType type) {
-		return hasInterceptor(DiconUtil.getChildComponent(aspect), type);
+	public static boolean hasInterceptorType(IAspectElement aspect, IType interceptorType) {
+		return hasInterceptorType(DiconUtil.getChildComponent(aspect), interceptorType);
 	}
 	
-	public static boolean hasInterceptor(IComponentElement component, IType type) {
-		if (component == null || type == null) {
+	public static boolean hasInterceptorType(IComponentElement interceptor,
+			IType interceptorType) {
+		if (interceptor == null || interceptorType == null) {
 			return false;
 		}
-		if (isInterceptorChain(component)) {
-			IComponentElement[] interceptors = getInterceptors(component);
+		if (isInterceptorChain(interceptor)) {
+			IComponentElement[] interceptors = getInterceptors(interceptor);
 			for (int i = 0; i < interceptors.length; i++) {
-				if (hasInterceptor(interceptors[i], type)) {
+				if (hasInterceptorType(interceptors[i], interceptorType)) {
 					return true;
 				}
 			}
 			return false;
 		} else {
-			IRtti rtti = component.getRttiLoader().loadRtti(component.getComponentClassName());
-			return rtti != null ? type.equals(rtti.getType()) : false;
+			IRtti rtti = interceptor.getRttiLoader().loadRtti(
+					interceptor.getComponentClassName());
+			return rtti != null ? interceptorType.equals(rtti.getType()) : false;
 		}
 	}
 	
@@ -100,7 +102,8 @@ public final class AspectUtil implements CacheConstants {
 			if (type != null && type.isInterface()) {
 				return true;
 			}
-		} catch (JavaModelException ignore) {
+		} catch (JavaModelException e) {
+			return false;
 		}
 		if (FlagsUtil.isFinal(type) ||
 				FlagsUtil.isFinal(method) || FlagsUtil.isStatic(method) ||
@@ -113,9 +116,8 @@ public final class AspectUtil implements CacheConstants {
 	
 	private static boolean matchPointcut(IPointcut[] pointcuts, IMethod method) {
 		for (int i = 0; i < pointcuts.length; i++) {
-			if (pointcuts[i].isAutoApply() &&
-					isApplieableMethodOnInterface(method)) {
-				return true;
+			if (pointcuts[i].isAutoApply()) {
+				return isApplieableMethodOnInterface(method);
 			}
 			// Œp³Œ³‚à‹–‚·‚½‚ßIRttiMethodDescriptor‚Å”äŠr‚µ‚È‚¢
 			try {
@@ -130,10 +132,10 @@ public final class AspectUtil implements CacheConstants {
 	}
 	
 	private static boolean isApplieableMethodOnInterface(IMethod method) {
-		return isDefineOnInterface(method.getDeclaringType(), method);
+		return isDeclaredOnInterface(method.getDeclaringType(), method);
 	}
 	
-	private static boolean isDefineOnInterface(IType type, IMethod method) {
+	private static boolean isDeclaredOnInterface(IType type, IMethod method) {
 		if (type == null) {
 			return false;
 		}
@@ -153,7 +155,7 @@ public final class AspectUtil implements CacheConstants {
 		}
 		IType[] interfaces = TypeUtil.findSuperInterfaces(type);
 		for (int i = 0; i < interfaces.length; i++) {
-			if (isDefineOnInterface(interfaces[i], method)) {
+			if (isDeclaredOnInterface(interfaces[i], method)) {
 				return true;
 			}
 		}
@@ -162,15 +164,12 @@ public final class AspectUtil implements CacheConstants {
 	
 	private static boolean isInterceptorChain(IComponentElement component) {
 		RttiLoader loader = component.getRttiLoader();
-		IRtti interceptorChainRtti = loader.loadRtti(INTERCEPTOR_CHAIN);
-		if (!RttiUtil.existsType(interceptorChainRtti)) {
+		IRtti chainRtti = loader.loadRtti(INTERCEPTOR_CHAIN);
+		if (!RttiUtil.existsType(chainRtti)) {
 			return false;
 		}
 		IRtti rtti = loader.loadRtti(component.getComponentClassName());
-		if (rtti == null) {
-			return false;
-		}
-		return interceptorChainRtti.getType().equals(rtti.getType());
+		return rtti != null ? chainRtti.getType().equals(rtti.getType()) : false;
 	}
 	
 	private static IComponentElement[] getInterceptors(IComponentElement interceptorChain) {

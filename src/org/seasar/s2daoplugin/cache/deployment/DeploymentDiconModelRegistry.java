@@ -28,29 +28,11 @@ import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 
 public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegistry {
 
-	private DeploymentBuilder builder;
 	private DiconModelManager manager;
 	private Map containerMap = new HashMap();
 	private AffectedContainers affectedContainers = new AffectedContainers();
 	
 	public DeploymentDiconModelRegistry() {
-		this(new DeploymentBuilder());
-	}
-	
-	public DeploymentDiconModelRegistry(DeploymentBuilder builder) {
-		if (builder == null) {
-			throw new IllegalArgumentException();
-		}
-		builder.setRegistry(this);
-		this.builder = builder;
-	}
-	
-	public void addContainer(IContainerElement container) {
-		addContainerMap(container.getStorage().getFullPath(), container);
-	}
-	
-	public void removeContainer(IContainerElement container) {
-		removeContainerMap(container.getStorage().getFullPath());
 	}
 	
 	public void setManager(DiconModelManager manager) {
@@ -62,24 +44,23 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	}
 
 	public void initialize() {
-		builder.initialize();
 	}
 
 	public void diconAdded(IContainerElement container) {
-		builder.build(container);
+		addContainer(container);
 		affectedContainers.addAddedContainer(getContainer(container));
 	}
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
 		IContainerElement removing = getContainer(old);
-		builder.clear(old);
-		builder.build(young);
+		removeContainer(old);
+		addContainer(young);
 		affectedContainers.addUpdatedContainer(removing, getContainer(young));
 	}
 
 	public void diconRemoved(IContainerElement container) {
 		affectedContainers.addRemovedContainer(getContainer(container));
-		builder.clear(container);
+		removeContainer(container);
 	}
 
 	public void finishChanged() {
@@ -96,8 +77,8 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 //				}
 //			}
 //		}
-		builder.finishBuild();
-		affectedContainers.fireEvent();
+//		builder.finishBuild();
+		affectedContainers.fireEvents();
 	}
 	
 	public boolean hasListener(String key) {
@@ -114,15 +95,37 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 		affectedContainers.removeListener(key);
 	}
 	
+	public void typeChanged() {
+		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
+			IDeploymentContainer container = (IDeploymentContainer) it.next();
+			if (container.hasAutoReigsterDeployer()) {
+				diconUpdated(container.getOriginalContainer(),
+						container.getOriginalContainer());
+			}
+		}
+		finishChanged();
+	}
+	
 	private void fireInitialEvent(IDiconChangeListener listener) {
 		listener.initialize();
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
-			listener.diconAdded((IContainerElement) it.next());
+			IDeploymentContainer container = (IDeploymentContainer) it.next();
+			listener.diconAdded(container.getDeployedContainer());
 		}
 		listener.finishChanged();
 	}
+
+	private void addContainer(IContainerElement container) {
+		addContainerMap(container.getStorage().getFullPath(),
+				new DeploymentContainer(container));
+	}
 	
-	private void addContainerMap(IPath containerPath, IContainerElement container) {
+	private void removeContainer(IContainerElement container) {
+		removeContainerMap(container.getStorage().getFullPath());
+	}
+	
+	private void addContainerMap(IPath containerPath, IDeploymentContainer container) {
+		container.deploy();
 		containerMap.put(containerPath, container);
 	}
 	
@@ -131,10 +134,12 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	}
 	
 	private IContainerElement getContainer(IContainerElement container) {
-		return (IContainerElement) containerMap.get(container.getStorage().getFullPath());
+		IDeploymentContainer deployed = (IDeploymentContainer) containerMap.get(
+				container.getStorage().getFullPath());
+		return deployed.getDeployedContainer();
 	}
 
-	
+
 	private class AffectedContainers {
 
 		private Map listeners = new HashMap();
@@ -177,7 +182,7 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 			});
 		}
 		
-		public void fireEvent() {
+		public void fireEvents() {
 			try {
 				for (int i = 0; i < containers.size(); i++) {
 					((EventFirer) containers.get(i)).fire();

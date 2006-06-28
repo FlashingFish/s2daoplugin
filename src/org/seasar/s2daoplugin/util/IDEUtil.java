@@ -45,9 +45,6 @@ public class IDEUtil {
 	}
 	
 	public static IEditorPart openEditor(IFile file) {
-		if (file == null) {
-			return null;
-		}
 		return openEditor(PlatformUI.getWorkbench(), file);
 	}
 	

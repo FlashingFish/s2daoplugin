@@ -18,9 +18,14 @@ package org.seasar.s2daoplugin.cache;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
+import org.seasar.s2daoplugin.util.JavaProjectUtil;
+import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class CacheBuilder extends IncrementalProjectBuilder {
 
@@ -29,8 +34,47 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 		CacheNature nature = CacheNature.getInstance(getProject());
 		if (nature != null) {
 			nature.getDiconModelManager().buildModel();
+			IResourceDelta delta = getDelta(getProject());
+			if (delta != null) {
+				try {
+					delta.accept(new CacheDeltaVisitor(nature.getDeploymentModelRegistry()));
+				} catch (StopVisitException ignore) {
+				}
+			}
 		}
 		return null;
+	}
+	
+	private static class CacheDeltaVisitor implements IResourceDeltaVisitor {
+
+		private IDeploymentDiconModelRegistry registry;
+
+		public CacheDeltaVisitor(IDeploymentDiconModelRegistry registry) {
+			this.registry = registry;
+		}
+		
+		public boolean visit(IResourceDelta delta) throws CoreException {
+
+			if (delta.getKind() == IResourceDelta.ADDED ||
+					delta.getKind() == IResourceDelta.REMOVED) {
+				return process(delta);
+			}
+			return true;
+		}
+		
+		private boolean process(IResourceDelta delta) {
+			if (!JavaUtil.isJavaFile(delta.getResource())) {
+				return true;
+			}
+			if (!JavaProjectUtil.isInSourceFolder(delta.getResource())) {
+				return true;
+			}
+			registry.typeChanged();
+			throw new StopVisitException();
+		}
+	}
+	
+	private static class StopVisitException extends RuntimeException {
 	}
 
 }

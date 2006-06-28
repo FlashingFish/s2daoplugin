@@ -50,6 +50,10 @@ public class FileSystemComponentAutoRegisterDeployer extends AbstractAutoRegiste
 		deploy(getAutoRegister());
 	}
 	
+	public int getType() {
+		return TYPE_COMPONENT_AUTO;
+	}
+	
 	private void process(IType type) {
 		IComponentElement component = createComponent(type.getFullyQualifiedName());
 		addPreparedComponent(component);

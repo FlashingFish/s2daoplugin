@@ -47,6 +47,10 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 		deploy(getAutoRegister());
 	}
 	
+	public int getType() {
+		return TYPE_COMPONENT_TARGET_AUTO;
+	}
+	
 	private boolean isApplied(IComponentElement component) {
 		String fqcn = component.getComponentClassName();
 		String packageName = JavaUtil.getPackageName(fqcn);

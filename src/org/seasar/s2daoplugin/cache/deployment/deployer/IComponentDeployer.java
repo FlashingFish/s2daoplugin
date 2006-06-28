@@ -17,5 +17,12 @@ package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 public interface IComponentDeployer {
 
+	int TYPE_UNKNOWN = -1;
+	int TYPE_COMPONENT = 0;
+	int TYPE_COMPONENT_AUTO = 1;
+	int TYPE_COMPONENT_TARGET_AUTO = 2;
+	
 	void deploy();
+	
+	int getType();
 }

@@ -24,6 +24,9 @@ public class ComponentDeployerFactory implements CacheConstants {
 	private static final IComponentDeployer NULL_DEPLOYER = new IComponentDeployer() {
 		public void deploy() {
 		}
+		public int getType() {
+			return TYPE_UNKNOWN;
+		}
 	};
 	
 	private IDeploymentContainer container;
