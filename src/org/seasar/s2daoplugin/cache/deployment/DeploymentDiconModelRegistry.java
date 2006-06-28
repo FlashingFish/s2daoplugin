@@ -53,7 +53,7 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
 		IContainerElement removing = getContainer(old);
-		removeContainer(old);
+//		removeContainer(old);
 		addContainer(young);
 		affectedContainers.addUpdatedContainer(removing, getContainer(young));
 	}
@@ -116,17 +116,21 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	}
 
 	private void addContainer(IContainerElement container) {
-		addContainerMap(container.getStorage().getFullPath(),
-				new DeploymentContainer(container));
+		addContainerMap(container.getStorage().getFullPath(), container);
 	}
 	
 	private void removeContainer(IContainerElement container) {
 		removeContainerMap(container.getStorage().getFullPath());
 	}
 	
-	private void addContainerMap(IPath containerPath, IDeploymentContainer container) {
-		container.deploy();
-		containerMap.put(containerPath, container);
+	private void addContainerMap(IPath containerPath, IContainerElement container) {
+		IDeploymentContainer deployment = getDeploymentContainer(containerPath);
+		if (deployment == null) {
+			deployment = new DeploymentContainer();
+		}
+		deployment.setOriginalContainer(container);
+		deployment.deploy();
+		containerMap.put(containerPath, deployment);
 	}
 	
 	private void removeContainerMap(IPath containerPath) {
@@ -134,9 +138,13 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	}
 	
 	private IContainerElement getContainer(IContainerElement container) {
-		IDeploymentContainer deployed = (IDeploymentContainer) containerMap.get(
+		IDeploymentContainer deployment = getDeploymentContainer(
 				container.getStorage().getFullPath());
-		return deployed.getDeployedContainer();
+		return deployment != null ? deployment.getDeployedContainer() : null;
+	}
+	
+	private IDeploymentContainer getDeploymentContainer(IPath containerPath) {
+		return (IDeploymentContainer) containerMap.get(containerPath);
 	}
 
 

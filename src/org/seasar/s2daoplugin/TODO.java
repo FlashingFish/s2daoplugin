@@ -32,8 +32,9 @@ interface TODO {
 	 * 
 	 * TODO: Hot Deploy(ComponentDefCustomizer)対応
 	 * 
-	 * TODO: キャッシュノシクミヲツクリナオシ
-	 *       - ITypeが追加・更新・削除されたときの仕組み
+	 * TODO: diconファイルとAutoReigster対象のIType変更で2回ビルドが走ってしまう
+	 * 
+	 * TODO: S2DaoInterceptorがアスペクトされていれば抽象クラスでもよい？
 	 * 
 	 * TODO: ネストしたITypeに対応する
 	 * 

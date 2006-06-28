@@ -54,7 +54,6 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 		}
 		
 		public boolean visit(IResourceDelta delta) throws CoreException {
-
 			if (delta.getKind() == IResourceDelta.ADDED ||
 					delta.getKind() == IResourceDelta.REMOVED) {
 				return process(delta);

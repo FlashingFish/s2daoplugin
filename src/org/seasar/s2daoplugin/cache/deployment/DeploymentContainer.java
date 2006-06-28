@@ -42,8 +42,8 @@ public class DeploymentContainer implements IDeploymentContainer {
 	private List autoRegisterDeployer = new ArrayList();
 	private boolean hasComponentAuto;
 	
-	public DeploymentContainer(IContainerElement container) {
-		this.originalContainer = container;
+	public void setOriginalContainer(IContainerElement originalContainer) {
+		this.originalContainer = originalContainer;
 	}
 	
 	public void deploy() {

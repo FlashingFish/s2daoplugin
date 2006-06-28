@@ -20,6 +20,8 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public interface IDeploymentContainer {
 
+	void setOriginalContainer(IContainerElement container);
+	
 	void deploy();
 	
 	void addPreparedComponent(IComponentElement component);
