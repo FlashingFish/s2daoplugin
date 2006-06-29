@@ -45,10 +45,9 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	public boolean visit(IResourceDelta delta) throws CoreException {
-		String extension = delta.getFullPath().getFileExtension();
-		if ("java".equalsIgnoreCase(extension)) {
+		if (JavaUtil.isJavaFile(delta.getResource())) {
 			handleJava(delta);
-		} else if ("sql".equalsIgnoreCase(extension)) {
+		} else if ("sql".equalsIgnoreCase(delta.getFullPath().getFileExtension())) {
 			handleSql(delta);
 		} else if (".project".equals(delta.getResource().getName())) {
 			handleDotProject(delta);
@@ -57,7 +56,7 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	private void handleJava(IResourceDelta delta) {
-		final IType type = JavaUtil.findPrimaryType(delta.getResource());
+		IType type = JavaUtil.findPrimaryType(delta.getResource());
 		marker.unmark(type);
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
@@ -83,16 +82,12 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 				!JavaProjectUtil.isInSourceFolder(resource)) {
 			return;
 		}
-		final IMethod method = finder.findMethodFromSql((IFile) resource);
+		IMethod method = finder.findMethodFromSql((IFile) resource);
 		if (method == null) {
 			return;
 		}
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
-		if (cache == null) {
-			return;
-		}
-		IType type = method.getDeclaringType();
-		if (!cache.contains(type)) {
+		if (cache == null || !cache.contains(method.getDeclaringType())) {
 			return;
 		}
 		switch (delta.getKind()) {

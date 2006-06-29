@@ -33,6 +33,7 @@ import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.util.TypeUtil;
 
 public class SqlMarkerUtil {
 
@@ -126,15 +127,6 @@ public class SqlMarkerUtil {
 			return marker.getAttribute(IMarker.CHAR_END, -1);
 		}
 		
-		protected boolean isInInterface(IMethod method) {
-			try {
-				return method != null && method.getDeclaringType().isInterface();
-			} catch (JavaModelException e) {
-				S2DaoPlugin.log(e);
-				return false;
-			}
-		}
-		
 	}
 	
 	private static class CreatorWithoutRunnable extends AbstractCreator {
@@ -167,23 +159,13 @@ public class SqlMarkerUtil {
 		}
 
 		public void mark(IType type) {
-			if (type == null) {
-				return;
-			}
-			try {
-				IMethod[] methods = type.getMethods();
-				for (int i = 0; i < methods.length; i++) {
-					mark(methods[i]);
-				}
-			} catch (JavaModelException e) {
-				S2DaoPlugin.log(e);
+			IMethod[] methods = TypeUtil.getMethods(type);
+			for (int i = 0; i < methods.length; i++) {
+				mark(methods[i]);
 			}
 		}
 
 		public void mark(IMethod method) {
-			if (method == null || !isInInterface(method)) {
-				return;
-			}
 			if (hasSql(method) &&
 					S2DaoUtil.isS2DaoInterceptorAppliedMethod(method)) {
 				createMarker(method);

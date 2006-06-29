@@ -133,7 +133,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			List aspects = components[i].getAspectList();
 			for (int j = 0; j < aspects.size(); j++) {
 				IAspectElement aspect = (IAspectElement) aspects.get(j);
-				if (!AspectUtil.hasInterceptorType(aspect, getS2DaoInterceptorType(aspect))) {
+				if (!AspectUtil.hasInterceptor(aspect, getS2DaoInterceptorType(aspect))) {
 					continue;
 				}
 				if (AspectUtil.isApplied(aspect, method)) {

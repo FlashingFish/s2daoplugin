@@ -112,14 +112,15 @@ public abstract class AbstractAutoRegisterDeployer implements
 	
 	protected void setParent(IElement child, IElement parent) {
 		Field field = findParentField(child.getClass());
-		if (field != null) {
-			try {
-				field.set(child, parent);
-			} catch (IllegalArgumentException e) {
-				S2DaoPlugin.log(e);
-			} catch (IllegalAccessException e) {
-				S2DaoPlugin.log(e);
-			}
+		if (field == null) {
+			throw new IllegalStateException("found no parent field");
+		}
+		try {
+			field.set(child, parent);
+		} catch (IllegalArgumentException e) {
+			S2DaoPlugin.log(e);
+		} catch (IllegalAccessException e) {
+			S2DaoPlugin.log(e);
 		}
 	}
 	

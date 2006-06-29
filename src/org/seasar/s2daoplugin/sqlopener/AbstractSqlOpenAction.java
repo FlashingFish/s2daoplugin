@@ -47,8 +47,8 @@ import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizard;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
-public abstract class AbstractSqlOpenAction
-		implements IEditorActionDelegate, IObjectActionDelegate {
+public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
+		IObjectActionDelegate {
 
 	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
 	private Shell shell;
@@ -116,13 +116,13 @@ public abstract class AbstractSqlOpenAction
 	
 	private IMethod[] findS2DaoInterceptorAppliedMethods(IMember member) throws JavaModelException {
 		IMethod[] methods = getMethods(member);
-		Set appliedMethods = new HashSet();
+		Set result = new HashSet();
 		for (int i = 0; i < methods.length; i++) {
 			if (S2DaoUtil.isS2DaoInterceptorAppliedMethod(methods[i])) {
-				appliedMethods.add(methods[i]);
+				result.add(methods[i]);
 			}
 		}
-		return (IMethod[]) appliedMethods.toArray(new IMethod[appliedMethods.size()]);
+		return (IMethod[]) result.toArray(new IMethod[result.size()]);
 	}
 	
 	private IMethod[] getMethods(IMember member) throws JavaModelException {

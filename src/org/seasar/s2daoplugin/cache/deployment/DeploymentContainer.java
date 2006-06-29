@@ -15,7 +15,6 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -36,61 +35,48 @@ public class DeploymentContainer implements IDeploymentContainer {
 	private ComponentDeployerFactory factory = new ComponentDeployerFactory(this);
 	private IContainerElement originalContainer;
 	private IContainerElement deployedContainer;
-	private ComponentQueue queue = new ComponentQueue();
-	private ComponentQueue deployedComponents = new ComponentQueue();
-	
-	private List autoRegisterDeployer = new ArrayList();
+	private ComponentQueue preparedQueue = new ComponentQueue();
+	private ComponentQueue deployedQueue = new ComponentQueue();
 	private boolean hasComponentAuto;
 	
 	public void setOriginalContainer(IContainerElement originalContainer) {
 		this.originalContainer = originalContainer;
 	}
+
+	public IContainerElement getOriginalContainer() {
+		return originalContainer;
+	}
 	
 	public void deploy() {
 		prepare();
-		while (!queue.isEmpty()) {
-			IComponentElement component = queue.poll();
+		while (!preparedQueue.isEmpty()) {
+			IComponentElement component = preparedQueue.poll();
 			IComponentDeployer deployer = factory.createComponentDeployer(component);
 			deployer.deploy();
-			addAutoRegisterDeployerIfNecessary(deployer);
+			if (deployer.getType() == IComponentDeployer.TYPE_COMPONENT_AUTO) {
+				hasComponentAuto = true;
+			}
 		}
 		createDeployedContainer();
 	}
 	
-	private void addAutoRegisterDeployerIfNecessary(IComponentDeployer deployer) {
-		if (deployer.getType() == IComponentDeployer.TYPE_COMPONENT_AUTO) {
-			hasComponentAuto = true;
-			addAutoRegisterDeployer(deployer);
-		} else if (deployer.getType() == IComponentDeployer.TYPE_COMPONENT_TARGET_AUTO) {
-			addAutoRegisterDeployer(deployer);
-		}
-	}
-	
-	private void addAutoRegisterDeployer(IComponentDeployer deployer) {
-		autoRegisterDeployer.add(deployer);
-	}
-	
 	public void addPreparedComponent(IComponentElement component) {
-		queue.offer(component);
+		preparedQueue.offer(component);
 	}
 	
 	public IComponentElement[] getPreparedComponents() {
-		return queue.toArray();
+		return preparedQueue.toArray();
 	}
 	
 	public void addComponent(IComponentElement component) {
-		deployedComponents.offer(component);
-	}
-	
-	public IContainerElement getOriginalContainer() {
-		return originalContainer;
+		deployedQueue.offer(component);
 	}
 	
 	public IContainerElement getDeployedContainer() {
 		return deployedContainer;
 	}
 	
-	public boolean hasAutoReigsterDeployer() {
+	public boolean hasComponentAuto() {
 		return hasComponentAuto;
 	}
 	
@@ -105,17 +91,16 @@ public class DeploymentContainer implements IDeploymentContainer {
 	}
 	
 	private void clear() {
+		preparedQueue.clear();
+		deployedQueue.clear();
 		deployedContainer = null;
-		queue.clear();
-		deployedComponents.clear();
-		autoRegisterDeployer.clear();
 		hasComponentAuto = false;
 	}
 	
 	private void createDeployedContainer() {
 		IContainerElement newContainer = new ContainerElementWrapper(originalContainer);
-		while (!deployedComponents.isEmpty()) {
-			newContainer.addChild(deployedComponents.poll());
+		while (!deployedQueue.isEmpty()) {
+			newContainer.addChild(deployedQueue.poll());
 		}
 		deployedContainer = newContainer;
 	}
@@ -159,10 +144,8 @@ public class DeploymentContainer implements IDeploymentContainer {
 		}
 		
 		private int doCompare(IComponentElement c1, IComponentElement c2) {
-			if (c1.getStartLine() == c2.getStartLine()) {
-				return 0;
-			}
-			return c1.getStartLine() < c2.getStartLine() ? -1 : 1;
+			return c1.getStartLine() == c2.getStartLine() ? 0 :
+				c1.getStartLine() < c2.getStartLine() ? -1 : 1;
 		}
 		
 	}

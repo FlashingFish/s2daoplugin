@@ -37,11 +37,11 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 
 public final class AspectUtil implements CacheConstants {
 
-	public static boolean hasInterceptorType(IAspectElement aspect, IType interceptorType) {
-		return hasInterceptorType(DiconUtil.getChildComponent(aspect), interceptorType);
+	public static boolean hasInterceptor(IAspectElement aspect, IType interceptorType) {
+		return hasInterceptor(DiconUtil.getChildComponent(aspect), interceptorType);
 	}
 	
-	public static boolean hasInterceptorType(IComponentElement interceptor,
+	public static boolean hasInterceptor(IComponentElement interceptor,
 			IType interceptorType) {
 		if (interceptor == null || interceptorType == null) {
 			return false;
@@ -49,7 +49,7 @@ public final class AspectUtil implements CacheConstants {
 		if (isInterceptorChain(interceptor)) {
 			IComponentElement[] interceptors = getInterceptors(interceptor);
 			for (int i = 0; i < interceptors.length; i++) {
-				if (hasInterceptorType(interceptors[i], interceptorType)) {
+				if (hasInterceptor(interceptors[i], interceptorType)) {
 					return true;
 				}
 			}
@@ -111,7 +111,9 @@ public final class AspectUtil implements CacheConstants {
 	
 	private static boolean matchPointcut(IPointcut[] pointcuts, IMethod method) {
 		for (int i = 0; i < pointcuts.length; i++) {
+			// pointcutが無指定の場合
 			if (pointcuts[i].isAutoApply()) {
+				// interfaceのメソッドだけが有効
 				return isApplieableMethodOnInterface(method);
 			}
 			// 継承元も許すためIRttiMethodDescriptorで比較しない

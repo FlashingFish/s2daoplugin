@@ -53,7 +53,6 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
 		IContainerElement removing = getContainer(old);
-//		removeContainer(old);
 		addContainer(young);
 		affectedContainers.addUpdatedContainer(removing, getContainer(young));
 	}
@@ -77,7 +76,6 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 //				}
 //			}
 //		}
-//		builder.finishBuild();
 		affectedContainers.fireEvents();
 	}
 	
@@ -98,7 +96,7 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	public void typeChanged() {
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
 			IDeploymentContainer container = (IDeploymentContainer) it.next();
-			if (container.hasAutoReigsterDeployer()) {
+			if (container.hasComponentAuto()) {
 				diconUpdated(container.getOriginalContainer(),
 						container.getOriginalContainer());
 			}

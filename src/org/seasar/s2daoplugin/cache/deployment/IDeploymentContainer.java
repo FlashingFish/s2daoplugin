@@ -34,5 +34,5 @@ public interface IDeploymentContainer {
 	
 	IContainerElement getDeployedContainer();
 
-	boolean hasAutoReigsterDeployer();
+	boolean hasComponentAuto();
 }

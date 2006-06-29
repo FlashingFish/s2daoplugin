@@ -34,9 +34,9 @@ interface TODO {
 	 * 
 	 * TODO: diconファイルとAutoReigster対象のIType変更で2回ビルドが走ってしまう
 	 * 
-	 * TODO: S2DaoInterceptorがアスペクトされていれば抽象クラスでもよい？
-	 * 
 	 * TODO: ネストしたITypeに対応する
+	 * 
+	 * TODO: キャッシュビルド中にプログレスモニタ
 	 * 
 	 */
 
