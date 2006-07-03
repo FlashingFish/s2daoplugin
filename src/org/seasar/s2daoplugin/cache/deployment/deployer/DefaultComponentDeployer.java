@@ -18,21 +18,14 @@ package org.seasar.s2daoplugin.cache.deployment.deployer;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 
-public class DefaultComponentDeployer implements IComponentDeployer {
+public class DefaultComponentDeployer extends AbstractComponentDeployer {
 
-	private IDeploymentContainer container;
-	private IComponentElement component;
-	
-	public DefaultComponentDeployer(IDeploymentContainer container, IComponentElement component) {
-		if (container == null || component == null) {
-			throw new IllegalArgumentException();
-		}
-		this.container = container;
-		this.component = component;
+	public DefaultComponentDeployer(IDeploymentContainer container,
+			IComponentElement component) {
+		super(container, component);
 	}
 	
-	public void deploy() {
-		container.addComponent(component);
+	public void doDeploy() {
 	}
 	
 	public int getType() {

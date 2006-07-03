@@ -47,6 +47,12 @@ public class ComponentDeployerFactory implements CacheConstants {
 			return new FileSystemComponentAutoRegisterDeployer(container, component);
 		} else if (ASPECT_AUTO_REGISTER.equals(className)) {
 			return new AspectAutoRegisterDeployer(container, component);
+		} else if (INTERFACE_ASPECT_AUTO_REGISTER.equals(className)) {
+			return new InterfaceAspectAutoRegisterDeployer(container, component);
+		} else if (JAR_COMPONENT_AUTO_REGISTER.equals(className)) {
+			return new JarComponentAutoRegisterDeployer(container, component);
+		} else if (COMPONENT_AUTO_REGISTER.equals(className)) {
+			return new ComponentAutoRegisterDeployer(container, component);
 		} else {
 			return new DefaultComponentDeployer(container, component);
 		}

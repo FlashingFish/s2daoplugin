@@ -40,14 +40,11 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		if (method == null) {
 			return null;
 		}
-		IType type = method.getCompilationUnit().findPrimaryType();
+		IType type = method.getDeclaringType();
 		return type.getElementName() + "_" + method.getElementName();
 	}
 	
 	public static String createSqlFileName(IMethod method) {
-		if (method == null) {
-			return null;
-		}
 		return createBaseSqlFileName(method) + EXTENSION;
 	}
 	

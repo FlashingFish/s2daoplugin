@@ -23,8 +23,11 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.S2DaoPlugin;
@@ -71,6 +74,22 @@ public class JavaProjectUtil {
 
 	public static boolean isInSourceFolder(IResource resource) {
 		return resource != null && JavaCore.create(resource.getParent()) != null;
+	}
+	
+	public static IPackageFragmentRoot findPackageFragmentRoot(IType type) {
+		return type != null ? ascend(type.getPackageFragment().getParent()) : null;
+	}
+	
+	public static IPackageFragmentRoot findPackageFragmentRoot(IResource resource) {
+		 return resource != null ? ascend(JavaCore.create(resource.getParent())) : null;
+	}
+	
+	private static IPackageFragmentRoot ascend(IJavaElement element) {
+		while (element instanceof IPackageFragment) {
+			element = ((IPackageFragment) element).getParent();
+		}
+		return element instanceof IPackageFragmentRoot ?
+				(IPackageFragmentRoot) element : null;
 	}
 	
 	private static String toPathName(String packageName) {

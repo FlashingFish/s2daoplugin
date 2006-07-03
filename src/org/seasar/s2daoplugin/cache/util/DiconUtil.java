@@ -21,6 +21,7 @@ import java.util.List;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 
@@ -61,6 +62,21 @@ public final class DiconUtil implements CacheConstants {
 			}
 		}
 		return component;
+	}
+	
+	public static IPropertyElement getProperty(IComponentElement component,
+			String propertyName) {
+		if (component == null) {
+			return null;
+		}
+		List props = component.getPropertyList();
+		for (int i = 0; i < props.size(); i++) {
+			IPropertyElement prop = (IPropertyElement) props.get(i);
+			if (prop.getPropertyName().equals(propertyName)) {
+				return prop;
+			}
+		}
+		return null;
 	}
 
 }

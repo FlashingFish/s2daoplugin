@@ -24,8 +24,6 @@ interface TODO {
 	 * 
 	 * TODO: kijimunaを使わないで使える設定を作る
 	 * 
-	 * TODO: 各種AutoRegisterの挙動を実装
-	 * 
 	 * TODO: スレッドセーフに
 	 * 
 	 * TODO: テストコード書く
@@ -34,9 +32,15 @@ interface TODO {
 	 * 
 	 * TODO: diconファイルとAutoReigster対象のIType変更で2回ビルドが走ってしまう
 	 * 
-	 * TODO: ネストしたITypeに対応する
+	 * TODO: ネストしたクラス・インターフェースが追加・削除されたときどうするか。。。
+	 *   - 変更されたICompilationUnitのgetAllTypesでcache.isAlreadyChecked
+	 *   - IElementChangeListenerで追加・削除のITypeがある場合フラグ立てる
 	 * 
 	 * TODO: キャッシュビルド中にプログレスモニタ
+	 * 
+	 * TODO: cacheパッケージ名の変更
+	 * 
+	 * TODO: build.xmlの調整
 	 * 
 	 */
 

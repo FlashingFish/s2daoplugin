@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -108,8 +109,7 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 				if (pack == null) {
 					continue;
 				}
-				ICompilationUnit unit = pack.getCompilationUnit(split[0] + ".java");
-				IType type = unit.findPrimaryType();
+				IType type = findType(pack, split[0]);
 				if (type == null) {
 					continue;
 				}
@@ -126,12 +126,26 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		return null;
 	}
 	
-	private Set findSqlFilesFromMethod(IMethod method) {
-		ICompilationUnit unit = method.getCompilationUnit();
-		if (unit == null) {
-			return Collections.EMPTY_SET;
+	private IType findType(IPackageFragment fragment, String typeName)
+			throws JavaModelException {
+		IJavaElement[] elements = fragment.getChildren();
+		for (int i = 0; i < elements.length; i++) {
+			if (!(elements[i] instanceof ICompilationUnit)) {
+				continue;
+			}
+			ICompilationUnit unit = (ICompilationUnit) elements[i];
+			IType[] types = unit.getAllTypes();
+			for (int j = 0; j < types.length; j++) {
+				if (types[j].getElementName().equals(typeName)) {
+					return types[j];
+				}
+			}
 		}
-		IType type = unit.findPrimaryType();
+		return null;
+	}
+	
+	private Set findSqlFilesFromMethod(IMethod method) {
+		IType type = method.getDeclaringType();
 		if (type == null) {
 			return Collections.EMPTY_SET;
 		}

@@ -15,54 +15,41 @@
  */
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.seasar.kijimuna.core.ConstCore;
-import org.seasar.kijimuna.core.dicon.DiconElementFactory;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IInitMethodElement;
-import org.seasar.kijimuna.core.parser.IElement;
-import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 
-public abstract class AbstractAutoRegisterDeployer implements
-		IComponentDeployer, CacheConstants, ConstCore {
+public abstract class AbstractAutoRegisterDeployer extends AbstractComponentDeployer
+		implements CacheConstants {
 
-	private static final DiconElementFactory factory = new DiconElementFactory();
-	
-	private IDeploymentContainer container;
-	private IComponentElement autoRegister;
 	private List classPatterns = new ArrayList();
 	private List ignoreClassPatterns = new ArrayList();
 	
 	public AbstractAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
-		if (container == null || autoRegister == null) {
-			throw new IllegalArgumentException();
-		}
-		this.container = container;
-		this.autoRegister = autoRegister;
+		super(container, autoRegister);
 		buildPatterns(autoRegister);
 	}
 	
 	protected IComponentElement getAutoRegister() {
-		return autoRegister;
+		return getComponent();
 	}
 	
 	protected void addPreparedComponent(IComponentElement component) {
-		container.addPreparedComponent(component);
+		getContainer().addPreparedComponent(component);
 	}
 	
 	protected void deploy(IComponentElement component) {
-		container.addComponent(component);
+		getContainer().addComponent(component);
 	}
 	
 	protected IComponentElement[] getPreparedComponents() {
-		return container.getPreparedComponents();
+		return getContainer().getPreparedComponents();
 	}
 	
     protected boolean isIgnore(String packageName, String shortClassName) {
@@ -81,6 +68,20 @@ public abstract class AbstractAutoRegisterDeployer implements
         return false;
     }
     
+    protected boolean isApplied(String packageName, String typeName) {
+		if (isIgnore(packageName, typeName)) {
+			return false;
+		}
+		for (int i = 0; i < getClassPatternSize(); i++) {
+			ClassPattern cp = getClassPattern(i);
+			if (cp.isAppliedPackageName(packageName) &&
+					cp.isAppliedShortClassName(typeName)) {
+				return true;
+			}
+		}
+		return false;
+    }
+    
     protected int getClassPatternSize() {
     	return classPatterns.size();
     }
@@ -89,16 +90,7 @@ public abstract class AbstractAutoRegisterDeployer implements
     	return (ClassPattern) classPatterns.get(index);
     }
     
-    protected IElement createElement(String elementName) {
-    	IElement element = factory.createElement(autoRegister.getProject(),
-    			autoRegister.getStorage(), elementName);
-		element.setStartLocation(2, autoRegister.getStartLine(), 1);
-		element.setEndLocation(autoRegister.getEndLine(), 1);
-		element.setRootElement(autoRegister.getContainerElement());
-		return element;
-    }
-    
-	protected void buildPatterns(IComponentElement component) {
+	private void buildPatterns(IComponentElement component) {
 		List initMethods = component.getInitMethodList();
 		for (int i = 0; i < initMethods.size(); i++) {
 			IInitMethodElement im = (IInitMethodElement) initMethods.get(i);
@@ -109,36 +101,7 @@ public abstract class AbstractAutoRegisterDeployer implements
 			}
 		}
 	}
-	
-	protected void setParent(IElement child, IElement parent) {
-		Field field = findParentField(child.getClass());
-		if (field == null) {
-			throw new IllegalStateException("found no parent field");
-		}
-		try {
-			field.set(child, parent);
-		} catch (IllegalArgumentException e) {
-			S2DaoPlugin.log(e);
-		} catch (IllegalAccessException e) {
-			S2DaoPlugin.log(e);
-		}
-	}
-	
-	private Field findParentField(Class clazz) {
-		Field[] fields = clazz.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			fields[i].setAccessible(true);
-			if ("parent".equals(fields[i].getName())) {
-				return fields[i];
-			}
-		}
-		Class superClass = clazz.getSuperclass();
-		if (clazz != Object.class && superClass != null) {
-			return findParentField(superClass);
-		}
-		return null;
-	}
-	
+
 	private void buildClassPattern(IInitMethodElement initMethod) {
 		List args = initMethod.getArgList();
 		if (args.size() == 2) {
@@ -147,7 +110,7 @@ public abstract class AbstractAutoRegisterDeployer implements
 	}
 	
 	private void addClassPattern(IArgElement packageArg, IArgElement classArg) {
-		addClassPattern(trim(packageArg.getBody()), trim(classArg.getBody()));
+		addClassPattern(trimQuote(packageArg.getBody()), trimQuote(classArg.getBody()));
 	}
 	
 	private void addClassPattern(String packageName, String className) {
@@ -162,15 +125,11 @@ public abstract class AbstractAutoRegisterDeployer implements
 	}
 	
 	private void setIgnoreClassPattern(IArgElement packageArg, IArgElement classArg) {
-		setIgnoreClassPattern(trim(packageArg.getBody()), trim(classArg.getBody()));
+		setIgnoreClassPattern(trimQuote(packageArg.getBody()), trimQuote(classArg.getBody()));
 	}
 	
 	private void setIgnoreClassPattern(String packageName, String className) {
 		ignoreClassPatterns.add(new ClassPattern(packageName, className));
-	}
-	
-	private String trim(String value) {
-		return value.replaceAll("\"", "").trim();
 	}
 
 }
