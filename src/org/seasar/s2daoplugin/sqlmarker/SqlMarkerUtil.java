@@ -89,7 +89,7 @@ public class SqlMarkerUtil {
 		}
 		
 		protected IMarker createMarker(IMethod method) {
-			if (method.isBinary()) {
+			if (method.isBinary() || hasMarker(method)) {
 				return null;
 			}
 			try {
@@ -109,6 +109,36 @@ public class SqlMarkerUtil {
 			map.put(IMarker.CHAR_START, new Integer(start));
 			map.put(IMarker.CHAR_END, new Integer(end));
 			return map;
+		}
+		
+		protected boolean hasMarker(IMethod method) {
+			return getMarker(method) != null;
+		}
+		
+		protected IMarker getMarker(IMethod method) {
+			if (method == null || method.isBinary()) {
+				return null;
+			}
+			IMarker[] markers = null;
+			try {
+				markers = method.getResource().findMarkers(
+						S2DaoConstants.ID_SQL_MARKER, false, IResource.DEPTH_ZERO);
+			} catch (CoreException e) {
+				S2DaoPlugin.log(e);
+				return null;
+			}
+			for (int i = 0; i < markers.length; i++) {
+				try {
+					int start = getStart(method);
+					int end = start + getLength(method);
+					if (start == getStart(markers[i]) && end == getEnd(markers[i])) {
+						return markers[i];
+					}
+				} catch (CoreException e) {
+					S2DaoPlugin.log(e);
+				}
+			}
+			return null;
 		}
 		
 		protected int getStart(IMethod method) throws JavaModelException {
@@ -208,31 +238,15 @@ public class SqlMarkerUtil {
 		}
 
 		public void unmark(IMethod method) {
-			if (method == null || method.isBinary()) {
-				return;
-			}
-			IMarker[] markers = null;
-			try {
-				markers = method.getResource().findMarkers(
-						S2DaoConstants.ID_SQL_MARKER, false, IResource.DEPTH_ZERO);
-			} catch (CoreException e) {
-				S2DaoPlugin.log(e);
-				return;
-			}
-			for (int i = 0; i < markers.length; i++) {
+			IMarker marker = getMarker(method);
+			if (marker != null) {
 				try {
-					int start = getStart(method);
-					int end = start + getLength(method);
-					if (start == getStart(markers[i]) && end == getEnd(markers[i])) {
-						markers[i].delete();
-						return;
-					}
+					marker.delete();
 				} catch (CoreException e) {
 					S2DaoPlugin.log(e);
 				}
 			}
 		}
-		
 	}
 
 	private static class Creator extends AbstractCreator {
