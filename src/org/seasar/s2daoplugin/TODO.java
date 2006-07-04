@@ -32,10 +32,6 @@ interface TODO {
 	 * 
 	 * TODO: diconファイルとAutoReigster対象のIType変更で2回ビルドが走ってしまう
 	 * 
-	 * TODO: ネストしたクラス・インターフェースが追加・削除されたときどうするか。。。
-	 *   - 変更されたICompilationUnitのgetAllTypesでcache.isAlreadyChecked
-	 *   - IElementChangeListenerで追加・削除のITypeがある場合フラグ立てる
-	 * 
 	 * TODO: キャッシュビルド中にプログレスモニタ
 	 * 
 	 * TODO: cacheパッケージ名の変更

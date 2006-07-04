@@ -23,8 +23,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
-import org.seasar.s2daoplugin.util.JavaProjectUtil;
+import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class CacheBuilder extends IncrementalProjectBuilder {
@@ -38,19 +37,20 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			if (delta != null) {
 				try {
 					delta.accept(new CacheDeltaVisitor(nature.getDeploymentModelRegistry()));
-				} catch (StopVisitException ignore) {
+				} catch (StopVisitingException ignore) {
 				}
 			}
 		}
 		return null;
 	}
 	
+	
 	private static class CacheDeltaVisitor implements IResourceDeltaVisitor {
 
-		private IDeploymentDiconModelRegistry registry;
+		private ITypeChangeListener listener;
 
-		public CacheDeltaVisitor(IDeploymentDiconModelRegistry registry) {
-			this.registry = registry;
+		public CacheDeltaVisitor(ITypeChangeListener listener) {
+			this.listener = listener;
 		}
 		
 		public boolean visit(IResourceDelta delta) throws CoreException {
@@ -61,19 +61,17 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			return true;
 		}
 		
-		private boolean process(IResourceDelta delta) {
-			if (!JavaUtil.isJavaFile(delta.getResource())) {
+		private boolean process(IResourceDelta delta) throws JavaModelException {
+			if (!JavaUtil.isClassFile(delta.getResource())) {
 				return true;
 			}
-			if (!JavaProjectUtil.isInSourceFolder(delta.getResource())) {
-				return true;
-			}
-			registry.typeChanged();
-			throw new StopVisitException();
+			// TODO: 内部クラスと匿名クラスを対象外にしたい
+			listener.typeChanged();
+			throw new StopVisitingException();
 		}
 	}
 	
-	private static class StopVisitException extends RuntimeException {
+	private static class StopVisitingException extends RuntimeException {
 	}
 
 }

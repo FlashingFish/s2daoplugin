@@ -36,8 +36,8 @@ public class FileSystemComponentAutoRegisterDeployer extends
 		if (!(s instanceof IResource)) {
 			return;
 		}
-		IPackageFragmentRoot root = JavaProjectUtil.findPackageFragmentRoot((IResource) s);
-		IPackageFragmentRoot[] packages = findPackageFragmentRootsSharedOutputLocation(root);
+		IPackageFragmentRoot[] packages =
+			JavaProjectUtil.findPackageFragmentRootsSharedOutputLocation((IResource) s);
 		for (int i = 0; i < packages.length; i++) {
 			process(packages[i]);
 		}

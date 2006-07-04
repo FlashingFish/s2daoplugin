@@ -21,9 +21,14 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.KijimunaCore;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
@@ -56,23 +61,35 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	private void handleJava(IResourceDelta delta) {
-		IType type = JavaUtil.findPrimaryType(delta.getResource());
-		marker.unmark(type);
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
 			return;
 		}
-		if (!cache.contains(type)) {
+		IJavaElement element = JavaCore.create(delta.getResource());
+		if (!(element instanceof ICompilationUnit)) {
 			return;
 		}
-		switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-				marker.mark(type);
-				break;
-			
-			case IResourceDelta.CHANGED:
-				marker.remark(type);
-				break;
+		IType[] types = null;
+		try {
+			types = ((ICompilationUnit) element).getAllTypes();
+		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
+			return;
+		}
+		for (int i = 0; i < types.length; i++) {
+			marker.unmark(types[i]);
+			if (!cache.contains(types[i])) {
+				continue;
+			}
+			switch (delta.getKind()) {
+				case IResourceDelta.ADDED:
+					marker.mark(types[i]);
+					break;
+				
+				case IResourceDelta.CHANGED:
+					marker.remark(types[i]);
+					break;
+			}
 		}
 	}
 	

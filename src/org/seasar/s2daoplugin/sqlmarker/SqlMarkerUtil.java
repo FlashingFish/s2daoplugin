@@ -198,9 +198,11 @@ public class SqlMarkerUtil {
 				return;
 			}
 			try {
-				type.getResource().deleteMarkers(S2DaoConstants.ID_SQL_MARKER,
-						false, IResource.DEPTH_ZERO);
-			} catch (CoreException e) {
+				IMethod[] methods = type.getMethods();
+				for (int i = 0; i < methods.length; i++) {
+					unmark(methods[i]);
+				}
+			} catch (JavaModelException e) {
 				S2DaoPlugin.log(e);
 			}
 		}

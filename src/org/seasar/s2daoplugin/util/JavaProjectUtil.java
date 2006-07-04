@@ -15,8 +15,10 @@
  */
 package org.seasar.s2daoplugin.util;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -82,6 +84,43 @@ public class JavaProjectUtil {
 	
 	public static IPackageFragmentRoot findPackageFragmentRoot(IResource resource) {
 		 return resource != null ? ascend(JavaCore.create(resource.getParent())) : null;
+	}
+	
+	public static IPackageFragmentRoot[] findPackageFragmentRootsSharedOutputLocation(
+			IResource resource) {
+		return findPackageFragmentRootsSharedOutputLocation(findPackageFragmentRoot(resource));
+	}
+	
+	public static IPackageFragmentRoot[] findPackageFragmentRootsSharedOutputLocation(
+			IPackageFragmentRoot root) {
+		if (root == null) {
+			return new IPackageFragmentRoot[0];
+		}
+		IJavaProject project = root.getJavaProject();
+		Set result = new HashSet();
+		try {
+			IPath output1 = root.getRawClasspathEntry().getOutputLocation();
+			if (output1 == null) {
+				output1 = project.getOutputLocation();
+			}
+			IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
+			for (int i = 0; i < roots.length; i++) {
+				if (roots[i].getKind() == IPackageFragmentRoot.K_BINARY) {
+					continue;
+				}
+				IPath output2 = roots[i].getRawClasspathEntry().getOutputLocation();
+				if (output2 == null) {
+					output2 = project.getOutputLocation();
+				}
+				if (output1.equals(output2)) {
+					result.add(roots[i]);
+				}
+			}
+		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
+		}
+		return (IPackageFragmentRoot[]) result.toArray(
+				new IPackageFragmentRoot[result.size()]);
 	}
 	
 	private static IPackageFragmentRoot ascend(IJavaElement element) {

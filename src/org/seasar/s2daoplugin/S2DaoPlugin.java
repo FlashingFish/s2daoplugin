@@ -60,6 +60,7 @@ public class S2DaoPlugin extends AbstractUIPlugin implements S2DaoConstants {
 	}
 	
 	public static void log(CoreException e) {
+		// TODO: スタックトレースが出るように
 		getDefault().getLog().log(e.getStatus());
 	}
 	

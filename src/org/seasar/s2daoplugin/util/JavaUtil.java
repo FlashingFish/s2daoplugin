@@ -18,25 +18,11 @@ package org.seasar.s2daoplugin.util;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 
 public class JavaUtil {
 
-	public static IType findPrimaryType(IResource resource) {
-		if (resource == null || !isJavaFile(resource)) {
-			return null;
-		}
-		Object obj = resource.getAdapter(IJavaElement.class);
-		if (!(obj instanceof ICompilationUnit)) {
-			return null;
-		}
-		return ((ICompilationUnit) obj).findPrimaryType();
-	}
-	
 	public static IPath getPackagePath(IFile file) {
 		if (file == null) {
 			return null;
@@ -54,8 +40,16 @@ public class JavaUtil {
 	}
 	
 	public static boolean isJavaFile(IResource resource) {
+		return hasExtension(resource, "java");
+	}
+	
+	public static boolean isClassFile(IResource resource) {
+		return hasExtension(resource, "class");
+	}
+	
+	private static boolean hasExtension(IResource resource, String extension) {
 		return resource != null &&
-				"java".equalsIgnoreCase(resource.getFileExtension());
+				extension.equalsIgnoreCase(resource.getFileExtension());
 	}
 	
     public static String getPackageName(String className) {

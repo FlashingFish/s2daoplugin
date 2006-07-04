@@ -69,7 +69,7 @@ public class InterfaceAspectAutoRegisterDeployer extends AbstractComponentDeploy
 	private boolean isApplied(IComponentElement component) {
 		RttiLoader loader = component.getRttiLoader();
 		IRtti rtti = loader.loadRtti(component.getComponentClassName());
-		return targetInterface.isAssignableFrom(rtti);
+		return rtti != null && targetInterface.isAssignableFrom(rtti);
 	}
 	
 	private void process(IComponentElement component) {

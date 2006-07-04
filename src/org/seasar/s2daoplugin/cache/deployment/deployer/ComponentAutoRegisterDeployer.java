@@ -47,7 +47,7 @@ public class ComponentAutoRegisterDeployer extends
 				process(root);
 			} else if (isFileSystem(root)) {
 				IPackageFragmentRoot[] roots =
-					findPackageFragmentRootsSharedOutputLocation(root);
+					JavaProjectUtil.findPackageFragmentRootsSharedOutputLocation(root);
 				for (int j = 0; j < roots.length; j++) {
 					process(roots[j]);
 				}

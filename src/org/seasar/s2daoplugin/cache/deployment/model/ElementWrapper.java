@@ -23,12 +23,14 @@ import org.seasar.kijimuna.core.parser.IElement;
 
 public class ElementWrapper extends ElementAdaptor {
 
+	private IElement element;
 	private IElement root;
-	private IElement parent;
+//	private IElement parent;
 	private List children = new ArrayList();
 	
 	public ElementWrapper(IElement element) {
 		super(element);
+		this.element = element;
 	}
 	
 	public void setRootElement(IElement root) {
@@ -36,11 +38,12 @@ public class ElementWrapper extends ElementAdaptor {
 	}
 	
 	public void setParent(IElement parent) {
-		this.parent = parent;
+//		this.parent = parent;
 	}
 	
 	public IElement getParent() {
-		return parent;
+//		return parent;
+		return element.getParent();
 	}
 	
 	public void addChild(IElement child) {

@@ -55,18 +55,21 @@ public class JarComponentAutoRegisterDeployer extends
 			return;
 		}
 		IContainer base = jar.getResource().getParent();
-		IJavaProject project = jar.getJavaProject();
 		IResource[] archives = null;
 		try {
 			archives = base.members();
 		} catch (CoreException e) {
 			return;
 		}
+		IJavaProject project = jar.getJavaProject();
 		for (int i = 0; i < archives.length; i++) {
 			if (!"jar".equalsIgnoreCase(archives[i].getFileExtension())) {
 				continue;
 			}
 			jar = project.getPackageFragmentRoot(archives[i].getFullPath().toString());
+			if (jar == null) {
+				continue;
+			}
 			if (isAppliedJar(jar)) {
 				process(jar);
 			}

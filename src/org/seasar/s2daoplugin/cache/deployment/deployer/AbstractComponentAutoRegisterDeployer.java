@@ -15,20 +15,14 @@
  */
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 import org.seasar.s2daoplugin.cache.util.FlagsUtil;
 
@@ -42,38 +36,6 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 	
 	public int getType() {
 		return TYPE_COMPONENT_AUTO;
-	}
-		
-	protected IPackageFragmentRoot[] findPackageFragmentRootsSharedOutputLocation(
-			IPackageFragmentRoot root) {
-		if (root == null) {
-			return new IPackageFragmentRoot[0];
-		}
-		IJavaProject project = root.getJavaProject();
-		Set result = new HashSet();
-		try {
-			IPath output1 = root.getRawClasspathEntry().getOutputLocation();
-			if (output1 == null) {
-				output1 = project.getOutputLocation();
-			}
-			IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
-			for (int i = 0; i < roots.length; i++) {
-				if (roots[i].getKind() == IPackageFragmentRoot.K_BINARY) {
-					continue;
-				}
-				IPath output2 = roots[i].getRawClasspathEntry().getOutputLocation();
-				if (output2 == null) {
-					output2 = project.getOutputLocation();
-				}
-				if (output1.equals(output2)) {
-					result.add(roots[i]);
-				}
-			}
-		} catch (JavaModelException e) {
-			S2DaoPlugin.log(e);
-		}
-		return (IPackageFragmentRoot[]) result.toArray(
-				new IPackageFragmentRoot[result.size()]);
 	}
 	
 	protected void process(IPackageFragmentRoot root) {
