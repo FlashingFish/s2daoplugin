@@ -67,7 +67,7 @@ public class JarComponentAutoRegisterDeployer extends
 				continue;
 			}
 			jar = project.getPackageFragmentRoot(archives[i].getFullPath().toString());
-			if (jar == null) {
+			if (!jar.exists()) {
 				continue;
 			}
 			if (isAppliedJar(jar)) {

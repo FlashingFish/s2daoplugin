@@ -57,7 +57,7 @@ public final class AspectUtil implements CacheConstants {
 		} else {
 			IRtti rtti = interceptor.getRttiLoader().loadRtti(
 					interceptor.getComponentClassName());
-			return rtti != null ? interceptorType.equals(rtti.getType()) : false;
+			return rtti != null && interceptorType.equals(rtti.getType());
 		}
 	}
 	
@@ -160,7 +160,7 @@ public final class AspectUtil implements CacheConstants {
 			return false;
 		}
 		IRtti rtti = loader.loadRtti(component.getComponentClassName());
-		return rtti != null ? chainRtti.getType().equals(rtti.getType()) : false;
+		return rtti != null && chainRtti.getType().equals(rtti.getType());
 	}
 	
 	private static IComponentElement[] getInterceptors(IComponentElement interceptorChain) {
@@ -172,15 +172,13 @@ public final class AspectUtil implements CacheConstants {
 				continue;
 			}
 			List args = initMethod.getArgList();
-			for (int j = 0; j < args.size(); j++) {
-				if (args.size() != 1) {
-					continue;
-				}
-				IComponentElement component =
-					DiconUtil.getChildComponent((IArgElement) args.get(0));
-				if (component != null) {
-					result.add(component);
-				}
+			if (args.size() != 1) {
+				continue;
+			}
+			IComponentElement component =
+				DiconUtil.getChildComponent((IArgElement) args.get(0));
+			if (component != null) {
+				result.add(component);
 			}
 		}
 		return DiconUtil.toComponentArray(result);

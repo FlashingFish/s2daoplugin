@@ -20,10 +20,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -31,7 +29,6 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
-import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class S2DaoSqlFinder implements S2DaoConstants {
 
@@ -52,6 +49,47 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		SqlCollectingHandler handler = new SqlCollectingHandler(sqlBaseName);
 		process(method, handler);
 		return handler.getResult();
+	}
+	
+	public IMethod findMethodFromSql(IFile file) {
+		if (file == null || !"sql".equals(file.getFileExtension())) {
+			return null;
+		}
+		String[] split = S2DaoUtil.splitSqlFileName(file.getName());
+		if (split.length != 2) {
+			return null;
+		}
+		IJavaElement element = JavaCore.create(file.getParent());
+		if (element.getElementType() != IJavaElement.PACKAGE_FRAGMENT &&
+				element.getElementType() != IJavaElement.PACKAGE_FRAGMENT_ROOT) {
+			return null;
+		}
+		String packageName = element.getElementName().toString();
+		IPackageFragmentRoot[] roots = JavaProjectUtil
+				.findPackageFragmentRootsSharedOutputLocation(file);
+		for (int i = 0; i < roots.length; i++) {
+			IPackageFragment fragment = roots[i].getPackageFragment(packageName);
+			if (!fragment.exists()) {
+				continue;
+			}
+			IType type = findType(fragment, split[0]);
+			if (type == null) {
+				continue;
+			}
+			IMethod[] methods;
+			try {
+				methods = type.getMethods();
+			} catch (JavaModelException e) {
+				S2DaoPlugin.log(e);
+				continue;
+			}
+			for (int j = 0; j < methods.length; j++) {
+				if (methods[j].getElementName().equals(split[1])) {
+					return methods[j];
+				}
+			}
+		}
+		return null;
 	}
 	
 	private void process(IMethod method, IFileHandler handler) { 
@@ -80,58 +118,31 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 			}
 		}
 	}
-	
-	public IMethod findMethodFromSql(IFile file) {
-		if (file == null || !"sql".equals(file.getFileExtension())) {
-			return null;
-		}
-		String[] split = S2DaoUtil.splitSqlFileName(file.getName());
-		if (split.length != 2) {
-			return null;
-		}
-		IPath packagePath = JavaUtil.getPackagePath(file);
-		if (packagePath == null) {
-			return null;
-		}
-		IJavaProject project = JavaCore.create(file.getProject());
-		IPath[] srcPaths = JavaProjectUtil.getSourceFolderPaths(project);
-		for (int i = 0; i < srcPaths.length; i++) {
-			try {
-				IPackageFragment pack =
-					project.findPackageFragment(srcPaths[i].append(packagePath));
-				if (pack == null) {
-					continue;
-				}
-				IType type = findType(pack, split[0]);
-				if (type == null) {
-					continue;
-				}
-				IMethod[] methods = type.getMethods();
-				for (int j = 0; j < methods.length; j++) {
-					if (methods[j].getElementName().equals(split[1])) {
-						return methods[j];
-					}
-				}
-			} catch (JavaModelException e) {
-				S2DaoPlugin.log(e);
-			}
-		}
-		return null;
-	}
 
 	private String getPackageName(IMethod method) {
 		return method.getDeclaringType().getPackageFragment().getElementName().toString();
 	}
 	
-	private IType findType(IPackageFragment fragment, String typeName)
-			throws JavaModelException {
-		IJavaElement[] elements = fragment.getChildren();
+	private IType findType(IPackageFragment fragment, String typeName) {
+		IJavaElement[] elements;
+		try {
+			elements = fragment.getChildren();
+		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
+			return null;
+		}
 		for (int i = 0; i < elements.length; i++) {
 			if (!(elements[i] instanceof ICompilationUnit)) {
 				continue;
 			}
 			ICompilationUnit unit = (ICompilationUnit) elements[i];
-			IType[] types = unit.getAllTypes();
+			IType[] types;
+			try {
+				types = unit.getAllTypes();
+			} catch (JavaModelException e) {
+				S2DaoPlugin.log(e);
+				continue;
+			}
 			for (int j = 0; j < types.length; j++) {
 				if (types[j].getElementName().equals(typeName)) {
 					return types[j];

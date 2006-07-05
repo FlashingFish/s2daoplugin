@@ -46,7 +46,7 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 			return;
 		}
 		for (int i = 0; i < elements.length; i++) {
-			if (!(elements[i] instanceof IPackageFragment)) {
+			if (elements[i].getElementType() != IJavaElement.PACKAGE_FRAGMENT) {
 				continue;
 			}
 			IPackageFragment fragment = (IPackageFragment) elements[i];
@@ -100,8 +100,8 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		} catch (JavaModelException e) {
 			return false;
 		}
-		return isEnclosingType(type) ? FlagsUtil.isInterface(type) ? true :
-			FlagsUtil.isPackagePrivate(type) && FlagsUtil.isStatic(type) : true;
+		return !isEnclosingType(type) || FlagsUtil.isInterface(type) ||
+				(FlagsUtil.isStatic(type) && FlagsUtil.isPublic(type)); 
 	}
 	
 	private boolean isEnclosingType(IType type) {
