@@ -41,6 +41,7 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.seasar.s2daoplugin.Messages;
+import org.seasar.s2daoplugin.S2DaoNamingConventions;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoSqlFinder;
 import org.seasar.s2daoplugin.S2DaoUtil;
@@ -105,7 +106,7 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 		for (int i = 0; i < methods.length; i++) {
 			sqlFiles.addAll(Arrays.asList(finder.findSqlFiles(methods[i])));
 		}
-		// TODO: sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
+		// sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
 		if (methods.length == 1 && sqlFiles.isEmpty()) {
 			if (confirmCreation()) {
 				openSqlCreationWizard(methods[0]);
@@ -153,7 +154,7 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 		IResource resource = folder != null ? folder : method.getResource();
 		
 		SqlCreationWizard wizard = new SqlCreationWizard();
-		wizard.setInitialFileName(S2DaoUtil.createSqlFileName(method));
+		wizard.setInitialFileName(S2DaoNamingConventions.createSqlFileName(method));
 		wizard.init(PlatformUI.getWorkbench(), new StructuredSelection(resource));
 		WizardDialog dialog = new WizardDialog(getShell(), wizard);
 		dialog.open();

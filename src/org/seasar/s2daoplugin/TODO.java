@@ -38,6 +38,8 @@ interface TODO {
 	 * 
 	 * TODO: build.xmlの調整
 	 * 
+	 * TODO: ネストしたTypeを変更（追加削除でなく）すると、autoregisterで補足できない
+	 * 
 	 */
 
 }

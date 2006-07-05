@@ -104,7 +104,8 @@ public class JarComponentAutoRegisterDeployer extends
 		}
 		for (int i = 0; i < jarFilePatterns.length; i++) {
 			String jarWithoutExt = removeExtension(jar.getElementName());
-			if (jarFilePatterns[i].matcher(jarWithoutExt).matches()) {
+			if (jarFilePatterns[i] != null &&
+					jarFilePatterns[i].matcher(jarWithoutExt).matches()) {
 				return true;
 			}
 		}

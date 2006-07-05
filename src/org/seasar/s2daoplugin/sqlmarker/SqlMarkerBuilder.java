@@ -25,10 +25,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public class SqlMarkerBuilder extends IncrementalProjectBuilder {
 
+	protected void startupOnInitialize() {
+		// 暫定。キャッシュが永続でないので最初にdiconを修正するとマーカが消えない
+		remarkAll();
+	}
+	
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
 		if (kind == FULL_BUILD) {
-			SqlMarkerUtil.getCreator().remarkAll(getProject());
+			remarkAll();
 		} else {
 			IResourceDelta delta = getDelta(getProject());
 			if (delta != null) {
@@ -36,6 +41,10 @@ public class SqlMarkerBuilder extends IncrementalProjectBuilder {
 			}
 		}
 		return null;
+	}
+	
+	private void remarkAll() {
+		SqlMarkerUtil.getCreator().remarkAll(getProject());
 	}
 
 }
