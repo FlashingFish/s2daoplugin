@@ -76,7 +76,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		return listeners.containsKey(key);
 	}
 	
-	public void addDiconChangeListener(String key, IDiconChangeListener listener) {
+	public synchronized void addDiconChangeListener(String key, IDiconChangeListener listener) {
 		if (StringUtil.isEmpty(key) || listener == null) {
 			return;
 		}
@@ -89,7 +89,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		listeners.remove(key);
 	}
 	
-	public void buildModel() {
+	public synchronized void buildModel() {
 		DiconNature nature = DiconNature.getInstance(getProject());
 		if (nature != null) {
 			ModelManager model = nature.getModel();

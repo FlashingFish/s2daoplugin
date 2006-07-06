@@ -29,7 +29,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.KijimunaCore;
 import org.seasar.s2daoplugin.S2DaoPlugin;
-import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
@@ -40,7 +40,7 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 
 	private IProject project;
 	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
-	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
+	private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 	
 	public SqlMarkerDeltaVisitor(IProject project) {
 		if (project == null) {
@@ -99,7 +99,7 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 				!JavaProjectUtil.isInSourceFolder(resource)) {
 			return;
 		}
-		IMethod method = finder.findMethodFromSql((IFile) resource);
+		IMethod method = resolver.findMethodFromSql((IFile) resource);
 		if (method == null) {
 			return;
 		}

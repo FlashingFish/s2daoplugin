@@ -72,6 +72,9 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 	}
 	
 	/**
+	 * SQLファイル名から、DAOの名称と成り得るパターンを全て解決します。
+	 * 返却される配列は、最も可能性の高い名称から順に並んでいます。
+	 * 
 	 * @return {{"PackageName", "DaoTypeName", "MethodName"}, ...}
 	 */
 	public static String[][] resovleDao(IFile sql) {
@@ -84,11 +87,11 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 		IJavaElement element = JavaCore.create(sql.getParent());
 		String packageName = element.getElementName();
 		List ret = new ArrayList();
-		if (hasSuffix(sql.getName())) {
-			ret.addAll(createDaoNames(packageName, removeSuffix(removeExtension(
-					sql.getName()))));
+		String name = sql.getName();
+		if (hasSuffix(name)) {
+			ret.addAll(createDaoNames(packageName, removeSuffix(removeExtension(name))));
 		}
-		ret.addAll(createDaoNames(packageName, removeExtension(sql.getName())));
+		ret.addAll(createDaoNames(packageName, removeExtension(name)));
 		String[][] result = new String[ret.size()][];
 		for (int i = 0; i < ret.size(); i++) {
 			result[i] = (String[]) ret.get(i);
@@ -109,6 +112,15 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 		return ret;
 	}
 	
+	private static boolean contains(String value, char c) {
+		for (int i = 0; i < value.length(); i++) {
+			if (c == value.charAt(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private static String removeExtension(String value) {
 		String extension = getExtension(value);
 		return extension == null ? value :
@@ -124,14 +136,14 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 		return index != -1 ? value.substring(index + 1, value.length()) : null;
 	}
 	
-	private static boolean hasSuffix(String value) {
-		return getSuffix(value) != null;
-	}
-	
 	private static String removeSuffix(String value) {
 		String suffix = getSuffix(value);
 		return suffix == null ? value :
 			value.substring(0, value.lastIndexOf(suffix));
+	}
+	
+	private static boolean hasSuffix(String value) {
+		return getSuffix(value) != null;
 	}
 	
 	private static String getSuffix(String value) {
@@ -145,15 +157,6 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 			}
 		}
 		return null;
-	}
-	
-	private static boolean contains(String value, char c) {
-		for (int i = 0; i < value.length(); i++) {
-			if (c == value.charAt(i)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

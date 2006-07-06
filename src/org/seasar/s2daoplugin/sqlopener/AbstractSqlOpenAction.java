@@ -43,7 +43,7 @@ import org.eclipse.ui.PlatformUI;
 import org.seasar.s2daoplugin.Messages;
 import org.seasar.s2daoplugin.S2DaoNamingConventions;
 import org.seasar.s2daoplugin.S2DaoPlugin;
-import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizard;
 import org.seasar.s2daoplugin.util.IDEUtil;
@@ -51,7 +51,7 @@ import org.seasar.s2daoplugin.util.IDEUtil;
 public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 		IObjectActionDelegate {
 
-	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
+	private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 	private Shell shell;
 	
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -104,7 +104,7 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 	private IFile[] findSqlFiles(IMethod[] methods) {
 		Set sqlFiles = new HashSet();
 		for (int i = 0; i < methods.length; i++) {
-			sqlFiles.addAll(Arrays.asList(finder.findSqlFiles(methods[i])));
+			sqlFiles.addAll(Arrays.asList(resolver.findSqlFiles(methods[i])));
 		}
 		// sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
 		if (methods.length == 1 && sqlFiles.isEmpty()) {
@@ -150,7 +150,7 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 	}
 	
 	private void openSqlCreationWizard(IMethod method) {
-		IFolder folder = finder.guessSqlStoredFolder(method);
+		IFolder folder = resolver.resolveSqlStoredFolder(method);
 		IResource resource = folder != null ? folder : method.getResource();
 		
 		SqlCreationWizard wizard = new SqlCreationWizard();

@@ -29,9 +29,9 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
 
-public class S2DaoSqlFinder implements S2DaoConstants {
+public class S2DaoResourceResolver implements S2DaoConstants {
 
-	public IFolder guessSqlStoredFolder(IMethod method) {
+	public IFolder resolveSqlStoredFolder(IMethod method) {
 		if (method == null) {
 			return null;
 		}
@@ -51,7 +51,7 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 	}
 	
 	public IMethod findMethodFromSql(IFile file) {
-		if (file == null || !"sql".equals(file.getFileExtension())) {
+		if (file == null) {
 			return null;
 		}
 		String[][] daoNames = S2DaoNamingConventions.resovleDao(file);
@@ -80,9 +80,9 @@ public class S2DaoSqlFinder implements S2DaoConstants {
 		}
 		try {
 			IMethod[] methods = type.getMethods();
-			for (int j = 0; j < methods.length; j++) {
-				if (methods[j].getElementName().equals(methodName)) {
-					return methods[j];
+			for (int i = 0; i < methods.length; i++) {
+				if (methods[i].getElementName().equals(methodName)) {
+					return methods[i];
 				}
 			}
 		} catch (JavaModelException e) {

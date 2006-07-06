@@ -30,7 +30,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoPlugin;
-import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.util.TypeUtil;
@@ -64,10 +64,10 @@ public class SqlMarkerUtil {
 	
 	private static abstract class AbstractCreator implements ISqlMarkerCreator {
 		
-		private S2DaoSqlFinder finder = new S2DaoSqlFinder();
+		private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 		
 		protected boolean hasSql(IMethod method) {
-			return finder.findSqlFiles(method).length != 0;
+			return resolver.findSqlFiles(method).length != 0;
 		}
 		
 		protected void run(IJavaElement element, IWorkspaceRunnable runnable) {
