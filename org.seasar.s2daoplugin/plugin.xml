@@ -55,7 +55,7 @@
    		point="org.eclipse.core.resources.natures"
    		id="cachenature">
    		<runtime>
-   			<run class="org.seasar.s2daoplugin.cache.project.CacheNature"/>
+   			<run class="org.seasar.s2daoplugin.cache.CacheNature"/>
    		</runtime>
    		<builder id="org.seasar.s2daoplugin.cachebuilder"/>
    </extension>
@@ -64,7 +64,7 @@
    		id="cachebuilder"
    		name="%plugin.builder.cache">
    		<builder>
-   			<run class="org.seasar.s2daoplugin.cache.project.CacheBuilder"/>
+   			<run class="org.seasar.s2daoplugin.cache.CacheBuilder"/>
    		</builder>
    </extension>
    

@@ -9,7 +9,10 @@
 - SQLファイルを持つDAOのメソッドにマーカを付ける機能の追加
 - プラグインがアクティブになる前に*AutoRegisterおよびS2DaoInterceptorが存在しないとS2Daoの
   コンポーネントと判断できない問題を修正
-- <aspect>およびAspectAutoRegisterのpointcutに対応
+- <aspect>およびAspectAutoRegisterのpointcutに対応した
+- 継承元のタイプもS2Daoのコンポーネントと判断するようにした
+- abstractメソッドのSQLファイルも開けるようにした
+- SQLファイルの検索パスを「全てのソースフォルダ」から「同じ出力フォルダを持つソースフォルダ」に変更
 
 * 0.0.6 [2006/4/11]
 - SQLファイルを開くときにS2Daoのコンポーネントを判断する方法を、diconファイルにおいて

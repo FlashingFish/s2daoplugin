@@ -41,16 +41,17 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.seasar.s2daoplugin.Messages;
+import org.seasar.s2daoplugin.S2DaoNamingConventions;
 import org.seasar.s2daoplugin.S2DaoPlugin;
-import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizard;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
-public abstract class AbstractSqlOpenAction
-		implements IEditorActionDelegate, IObjectActionDelegate {
+public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
+		IObjectActionDelegate {
 
-	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
+	private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 	private Shell shell;
 	
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -103,9 +104,9 @@ public abstract class AbstractSqlOpenAction
 	private IFile[] findSqlFiles(IMethod[] methods) {
 		Set sqlFiles = new HashSet();
 		for (int i = 0; i < methods.length; i++) {
-			sqlFiles.addAll(Arrays.asList(finder.findSqlFiles(methods[i])));
+			sqlFiles.addAll(Arrays.asList(resolver.findSqlFiles(methods[i])));
 		}
-		// TODO: sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
+		// sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
 		if (methods.length == 1 && sqlFiles.isEmpty()) {
 			if (confirmCreation()) {
 				openSqlCreationWizard(methods[0]);
@@ -116,13 +117,13 @@ public abstract class AbstractSqlOpenAction
 	
 	private IMethod[] findS2DaoInterceptorAppliedMethods(IMember member) throws JavaModelException {
 		IMethod[] methods = getMethods(member);
-		Set appliedMethods = new HashSet();
+		Set result = new HashSet();
 		for (int i = 0; i < methods.length; i++) {
 			if (S2DaoUtil.isS2DaoInterceptorAppliedMethod(methods[i])) {
-				appliedMethods.add(methods[i]);
+				result.add(methods[i]);
 			}
 		}
-		return (IMethod[]) appliedMethods.toArray(new IMethod[appliedMethods.size()]);
+		return (IMethod[]) result.toArray(new IMethod[result.size()]);
 	}
 	
 	private IMethod[] getMethods(IMember member) throws JavaModelException {
@@ -149,11 +150,11 @@ public abstract class AbstractSqlOpenAction
 	}
 	
 	private void openSqlCreationWizard(IMethod method) {
-		IFolder folder = finder.guessSqlStoredFolder(method);
+		IFolder folder = resolver.resolveSqlStoredFolder(method);
 		IResource resource = folder != null ? folder : method.getResource();
 		
 		SqlCreationWizard wizard = new SqlCreationWizard();
-		wizard.setInitialFileName(S2DaoUtil.createSqlFileName(method));
+		wizard.setInitialFileName(S2DaoNamingConventions.createSqlFileName(method));
 		wizard.init(PlatformUI.getWorkbench(), new StructuredSelection(resource));
 		WizardDialog dialog = new WizardDialog(getShell(), wizard);
 		dialog.open();

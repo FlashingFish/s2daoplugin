@@ -18,19 +18,11 @@ package org.seasar.s2daoplugin;
 interface TODO {
 
 	/* 
-	 * TODO: 複数のdiconファイルでひとつのITypeを参照している場合、diconファイルの変更で
-	 * マーカを操作すると消すべきでないマーカまで消してしまう。diconファイルの変更では
-	 * 全てのマーカをリマークするかITypeの被参照数をカウントするか
-	 * 
 	 * TODO: マーカだけを無効にする
 	 * 
 	 * TODO: Daoを継承しているときのSQLファイルを探す順序
 	 * 
-	 * TODO: 継承元も対象のクラスと判断するかどうか
-	 * 
 	 * TODO: kijimunaを使わないで使える設定を作る
-	 * 
-	 * TODO: 各種AutoRegisterの挙動を実装
 	 * 
 	 * TODO: スレッドセーフに
 	 * 
@@ -38,14 +30,15 @@ interface TODO {
 	 * 
 	 * TODO: Hot Deploy(ComponentDefCustomizer)対応
 	 * 
-	 * TODO: キャッシュノシクミヲツクリナオシ
-	 *       - IComponentElementに依存しないComponent定義を作る
-	 *       - AutoRegister(Hot Deploy)もComponent定義に展開する
-	 *       -- Component定義は直接ITypeを参照しない
-	 *       -- diconビルド時に展開
-	 *       - Component定義が参照するITypeなどのリソースキャッシュみたいのを作る
-	 *       -- dicon以外のリソース変更時に更新
-	 *       -- AutoRegisterのComponent定義をビルド
+	 * TODO: diconファイルとAutoReigster対象のIType変更で2回ビルドが走ってしまう
+	 * 
+	 * TODO: キャッシュビルド中にプログレスモニタ
+	 * 
+	 * TODO: cacheパッケージ名の変更
+	 * 
+	 * TODO: build.xmlの調整
+	 * 
+	 * TODO: ネストしたTypeを変更（追加削除でなく）すると、autoregisterで補足できない
 	 * 
 	 */
 

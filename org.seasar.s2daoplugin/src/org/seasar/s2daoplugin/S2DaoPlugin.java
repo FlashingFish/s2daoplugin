@@ -17,12 +17,14 @@ package org.seasar.s2daoplugin;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
-public class S2DaoPlugin extends AbstractUIPlugin {
+public class S2DaoPlugin extends AbstractUIPlugin implements S2DaoConstants {
 
 	private static S2DaoPlugin plugin;
 	
@@ -41,12 +43,12 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 	
 	public void addS2DaoNature(IProject project) throws CoreException {
 		ProjectUtil.addNature(project, CacheConstants.ID_CACHE_NATURE);
-		ProjectUtil.addNature(project, S2DaoConstants.ID_S2DAO_NATURE);
+		ProjectUtil.addNature(project, ID_S2DAO_NATURE);
 	}
 	
 	public void removeS2DaoNature(IProject project) throws CoreException {
 		ProjectUtil.removeNature(project, CacheConstants.ID_CACHE_NATURE);
-		ProjectUtil.removeNature(project, S2DaoConstants.ID_S2DAO_NATURE);
+		ProjectUtil.removeNature(project, ID_S2DAO_NATURE);
 	}
 	
 	public static S2DaoPlugin getDefault() {
@@ -54,11 +56,17 @@ public class S2DaoPlugin extends AbstractUIPlugin {
 	}
 	
 	public static boolean isEnabled(IProject project) throws CoreException {
-		return project.hasNature(S2DaoConstants.ID_S2DAO_NATURE);
+		return project.hasNature(ID_S2DAO_NATURE);
 	}
 	
 	public static void log(CoreException e) {
+		// TODO: スタックトレースが出るように
 		getDefault().getLog().log(e.getStatus());
+	}
+	
+	public static void log(Throwable t) {
+		getDefault().getLog().log(
+				new Status(IStatus.ERROR, ID_PLUGIN, IStatus.OK, t.getMessage(), t));
 	}
 
 }

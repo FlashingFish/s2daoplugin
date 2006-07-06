@@ -25,9 +25,9 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 
 	private DiconModelManager manager;
 	private List listeners = new ArrayList();
-	private List addedContainers = new LinkedList();
-	private List updatedContainers = new LinkedList();
-	private List removedContainers = new LinkedList();
+	private List addedContainerList = new LinkedList();
+	private List updatedContainerList = new LinkedList();
+	private List removedContainerList = new LinkedList();
 	
 	public void setManager(DiconModelManager manager) {
 		if (manager == null) {
@@ -50,24 +50,15 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 	}
 	
 	public void diconAdded(IContainerElement container) {
-		if (container == null) {
-			return;
-		}
-		addedContainers.add(container);
+		addedContainerList.add(container);
 	}
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		if (old == null || young == null) {
-			return;
-		}
-		updatedContainers.add(new UpdatedContainerPair(old, young));
+		updatedContainerList.add(new UpdatedContainerPair(old, young));
 	}
 
 	public void diconRemoved(IContainerElement container) {
-		if (container == null) {
-			return;
-		}
-		removedContainers.add(container);
+		removedContainerList.add(container);
 	}
 
 	public void finishChanged() {
@@ -93,49 +84,40 @@ public class SequentializedListenerChain implements IDiconChangeListener {
 	}
 	
 	private void fireAdded(IDiconChangeListener listener) {
-		for (int i = 0; i < addedContainers.size(); i++) {
-			listener.diconAdded((IContainerElement) addedContainers.get(i));
+		for (int i = 0; i < addedContainerList.size(); i++) {
+			listener.diconAdded((IContainerElement) addedContainerList.get(i));
 		}
 	}
 	
 	private void fireUpdated(IDiconChangeListener listener) {
-		for (int i = 0; i < updatedContainers.size(); i++) {
-			UpdatedContainerPair pair = (UpdatedContainerPair) updatedContainers.get(i);
-			listener.diconUpdated(pair.getOld(), pair.getYoung());
+		for (int i = 0; i < updatedContainerList.size(); i++) {
+			UpdatedContainerPair pair = (UpdatedContainerPair) updatedContainerList.get(i);
+			listener.diconUpdated(pair.old, pair.young);
 		}
 	}
 	
 	private void fireRemoved(IDiconChangeListener listener) {
-		for (int i = 0; i < removedContainers.size(); i++) {
-			listener.diconRemoved((IContainerElement) removedContainers.get(i));
+		for (int i = 0; i < removedContainerList.size(); i++) {
+			listener.diconRemoved((IContainerElement) removedContainerList.get(i));
 		}
 	}
 	
 	private void clearContainers() {
-		addedContainers.clear();
-		updatedContainers.clear();
-		removedContainers.clear();
+		addedContainerList.clear();
+		updatedContainerList.clear();
+		removedContainerList.clear();
 	}
 	
 	
 	private static class UpdatedContainerPair {
 		
-		private IContainerElement old;
-		private IContainerElement young;
+		public final IContainerElement old;
+		public final IContainerElement young;
 		
 		public UpdatedContainerPair(IContainerElement old, IContainerElement young) {
 			this.old = old;
 			this.young = young;
 		}
-		
-		public IContainerElement getOld() {
-			return old;
-		}
-		
-		public IContainerElement getYoung() {
-			return young;
-		}
-		
 	}
 
 }

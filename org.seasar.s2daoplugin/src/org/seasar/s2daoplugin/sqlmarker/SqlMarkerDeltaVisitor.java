@@ -21,12 +21,17 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.KijimunaCore;
-import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoPlugin;
+import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
-import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 import org.seasar.s2daoplugin.util.JavaProjectUtil;
 import org.seasar.s2daoplugin.util.JavaUtil;
@@ -35,7 +40,7 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 
 	private IProject project;
 	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
-	private S2DaoSqlFinder finder = new S2DaoSqlFinder();
+	private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 	
 	public SqlMarkerDeltaVisitor(IProject project) {
 		if (project == null) {
@@ -45,10 +50,9 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	public boolean visit(IResourceDelta delta) throws CoreException {
-		String extension = delta.getFullPath().getFileExtension();
-		if ("java".equalsIgnoreCase(extension)) {
+		if (JavaUtil.isJavaFile(delta.getResource())) {
 			handleJava(delta);
-		} else if ("sql".equalsIgnoreCase(extension)) {
+		} else if ("sql".equalsIgnoreCase(delta.getFullPath().getFileExtension())) {
 			handleSql(delta);
 		} else if (".project".equals(delta.getResource().getName())) {
 			handleDotProject(delta);
@@ -57,23 +61,35 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	private void handleJava(IResourceDelta delta) {
-		final IType type = JavaUtil.findPrimaryType(delta.getResource());
-		marker.unmark(type);
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
 			return;
 		}
-		if (!cache.contains(type)) {
+		IJavaElement element = JavaCore.create(delta.getResource());
+		if (!(element instanceof ICompilationUnit)) {
 			return;
 		}
-		switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-				marker.mark(type);
-				break;
-			
-			case IResourceDelta.CHANGED:
-				marker.remark(type);
-				break;
+		IType[] types = null;
+		try {
+			types = ((ICompilationUnit) element).getAllTypes();
+		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
+			return;
+		}
+		for (int i = 0; i < types.length; i++) {
+			marker.unmark(types[i]);
+			if (!cache.contains(types[i])) {
+				continue;
+			}
+			switch (delta.getKind()) {
+				case IResourceDelta.ADDED:
+					marker.mark(types[i]);
+					break;
+				
+				case IResourceDelta.CHANGED:
+					marker.remark(types[i]);
+					break;
+			}
 		}
 	}
 	
@@ -83,16 +99,12 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 				!JavaProjectUtil.isInSourceFolder(resource)) {
 			return;
 		}
-		final IMethod method = finder.findMethodFromSql((IFile) resource);
+		IMethod method = resolver.findMethodFromSql((IFile) resource);
 		if (method == null) {
 			return;
 		}
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
-		if (cache == null) {
-			return;
-		}
-		IType type = method.getDeclaringType();
-		if (!cache.contains(type)) {
+		if (cache == null || !cache.contains(method.getDeclaringType())) {
 			return;
 		}
 		switch (delta.getKind()) {

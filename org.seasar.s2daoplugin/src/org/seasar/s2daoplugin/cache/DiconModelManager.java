@@ -25,6 +25,7 @@ import org.seasar.kijimuna.core.dicon.ModelManager;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.project.IProjectRecordChangeListener;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public class DiconModelManager implements IProjectRecordChangeListener {
@@ -75,7 +76,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		return listeners.containsKey(key);
 	}
 	
-	public void addDiconChangeListener(String key, IDiconChangeListener listener) {
+	public synchronized void addDiconChangeListener(String key, IDiconChangeListener listener) {
 		if (StringUtil.isEmpty(key) || listener == null) {
 			return;
 		}
@@ -88,7 +89,7 @@ public class DiconModelManager implements IProjectRecordChangeListener {
 		listeners.remove(key);
 	}
 	
-	public void buildModel() {
+	public synchronized void buildModel() {
 		DiconNature nature = DiconNature.getInstance(getProject());
 		if (nature != null) {
 			ModelManager model = nature.getModel();

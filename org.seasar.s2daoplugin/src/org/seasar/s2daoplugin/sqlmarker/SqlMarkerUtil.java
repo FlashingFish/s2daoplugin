@@ -30,9 +30,10 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoPlugin;
-import org.seasar.s2daoplugin.S2DaoSqlFinder;
+import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
-import org.seasar.s2daoplugin.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.util.TypeUtil;
 
 public class SqlMarkerUtil {
 
@@ -63,10 +64,10 @@ public class SqlMarkerUtil {
 	
 	private static abstract class AbstractCreator implements ISqlMarkerCreator {
 		
-		private S2DaoSqlFinder finder = new S2DaoSqlFinder();
+		private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 		
 		protected boolean hasSql(IMethod method) {
-			return finder.findSqlFiles(method).length != 0;
+			return resolver.findSqlFiles(method).length != 0;
 		}
 		
 		protected void run(IJavaElement element, IWorkspaceRunnable runnable) {
@@ -88,7 +89,7 @@ public class SqlMarkerUtil {
 		}
 		
 		protected IMarker createMarker(IMethod method) {
-			if (method.isBinary()) {
+			if (method.isBinary() || hasMarker(method)) {
 				return null;
 			}
 			try {
@@ -110,6 +111,36 @@ public class SqlMarkerUtil {
 			return map;
 		}
 		
+		protected boolean hasMarker(IMethod method) {
+			return getMarker(method) != null;
+		}
+		
+		protected IMarker getMarker(IMethod method) {
+			if (method == null || method.isBinary()) {
+				return null;
+			}
+			IMarker[] markers = null;
+			try {
+				markers = method.getResource().findMarkers(
+						S2DaoConstants.ID_SQL_MARKER, false, IResource.DEPTH_ZERO);
+			} catch (CoreException e) {
+				S2DaoPlugin.log(e);
+				return null;
+			}
+			for (int i = 0; i < markers.length; i++) {
+				try {
+					int start = getStart(method);
+					int end = start + getLength(method);
+					if (start == getStart(markers[i]) && end == getEnd(markers[i])) {
+						return markers[i];
+					}
+				} catch (CoreException e) {
+					S2DaoPlugin.log(e);
+				}
+			}
+			return null;
+		}
+		
 		protected int getStart(IMethod method) throws JavaModelException {
 			return method.getSourceRange().getOffset();
 		}
@@ -124,15 +155,6 @@ public class SqlMarkerUtil {
 		
 		protected int getEnd(IMarker marker) {
 			return marker.getAttribute(IMarker.CHAR_END, -1);
-		}
-		
-		protected boolean isInInterface(IMethod method) {
-			try {
-				return method != null && method.getDeclaringType().isInterface();
-			} catch (JavaModelException e) {
-				S2DaoPlugin.log(e);
-				return false;
-			}
 		}
 		
 	}
@@ -167,23 +189,13 @@ public class SqlMarkerUtil {
 		}
 
 		public void mark(IType type) {
-			if (type == null) {
-				return;
-			}
-			try {
-				IMethod[] methods = type.getMethods();
-				for (int i = 0; i < methods.length; i++) {
-					mark(methods[i]);
-				}
-			} catch (JavaModelException e) {
-				S2DaoPlugin.log(e);
+			IMethod[] methods = TypeUtil.getMethods(type);
+			for (int i = 0; i < methods.length; i++) {
+				mark(methods[i]);
 			}
 		}
 
 		public void mark(IMethod method) {
-			if (method == null || !isInInterface(method)) {
-				return;
-			}
 			if (hasSql(method) &&
 					S2DaoUtil.isS2DaoInterceptorAppliedMethod(method)) {
 				createMarker(method);
@@ -216,39 +228,25 @@ public class SqlMarkerUtil {
 				return;
 			}
 			try {
-				type.getResource().deleteMarkers(S2DaoConstants.ID_SQL_MARKER,
-						false, IResource.DEPTH_ZERO);
-			} catch (CoreException e) {
+				IMethod[] methods = type.getMethods();
+				for (int i = 0; i < methods.length; i++) {
+					unmark(methods[i]);
+				}
+			} catch (JavaModelException e) {
 				S2DaoPlugin.log(e);
 			}
 		}
 
 		public void unmark(IMethod method) {
-			if (method == null || method.isBinary()) {
-				return;
-			}
-			IMarker[] markers = null;
-			try {
-				markers = method.getResource().findMarkers(
-						S2DaoConstants.ID_SQL_MARKER, false, IResource.DEPTH_ZERO);
-			} catch (CoreException e) {
-				S2DaoPlugin.log(e);
-				return;
-			}
-			for (int i = 0; i < markers.length; i++) {
+			IMarker marker = getMarker(method);
+			if (marker != null) {
 				try {
-					int start = getStart(method);
-					int end = start + getLength(method);
-					if (start == getStart(markers[i]) && end == getEnd(markers[i])) {
-						markers[i].delete();
-						return;
-					}
+					marker.delete();
 				} catch (CoreException e) {
 					S2DaoPlugin.log(e);
 				}
 			}
 		}
-		
 	}
 
 	private static class Creator extends AbstractCreator {

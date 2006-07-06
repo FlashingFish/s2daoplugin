@@ -29,10 +29,11 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.seasar.s2daoplugin.Messages;
 import org.seasar.s2daoplugin.S2DaoConstants;
-import org.seasar.s2daoplugin.S2DaoUtil;
+import org.seasar.s2daoplugin.S2DaoNamingConventions;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
-public class SqlCreationWizardPage extends WizardNewFileCreationPage {
+public class SqlCreationWizardPage extends WizardNewFileCreationPage
+		implements S2DaoConstants {
 
 	private IWorkbench workbench;
 	private String initialFileName;
@@ -87,21 +88,21 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage {
 			Widget source = event.widget;
 			String filename = initialFileName;
 			if (defaultSuffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_DEFAULT, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_DEFAULT, filename);
 			} else if (oracleSuffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_ORACLE, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_ORACLE, filename);
 			} else if (db2Suffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_DB2, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_DB2, filename);
 			} else if (mssqlSuffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_MSSQL, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_MSSQL, filename);
 			} else if (mysqlSuffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_MYSQL, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_MYSQL, filename);
 			} else if (postgresqlSuffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_POSTGRESQL, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_POSTGRESQL, filename);
 			} else if (firebirdSuffix == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_FIREBIRD, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_FIREBIRD, filename);
 			} else if (hsqlSuffx == source) {
-				filename = S2DaoUtil.changeSuffix(S2DaoConstants.SUFFIX_HSQLDB, filename);
+				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_HSQLDB, filename);
 			}
 			// super.createControlを実行中にhandleEventが呼ばれる。
 			// 継承元のコントロールが作成途中にsetFileNameが呼ばれるとNullPointerExceptionが
