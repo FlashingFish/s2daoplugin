@@ -22,13 +22,11 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.KijimunaCore;
-import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
@@ -60,42 +58,36 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 		return true;
 	}
 	
-	private void handleJava(IResourceDelta delta) {
+	private void handleJava(IResourceDelta delta) throws JavaModelException {
+		IResource resource = delta.getResource();
+		if (resource instanceof IFile == false) {
+			return;
+		}
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(project);
 		if (cache == null) {
 			return;
 		}
-		IJavaElement element = JavaCore.create(delta.getResource());
-		if (!(element instanceof ICompilationUnit)) {
-			return;
-		}
-		IType[] types = null;
-		try {
-			types = ((ICompilationUnit) element).getAllTypes();
-		} catch (JavaModelException e) {
-			S2DaoPlugin.log(e);
-			return;
-		}
+		ICompilationUnit unit = JavaCore.createCompilationUnitFrom((IFile) resource);
+		IType[] types = unit.getAllTypes();
 		for (int i = 0; i < types.length; i++) {
 			marker.unmark(types[i]);
 			if (!cache.contains(types[i])) {
 				continue;
 			}
 			switch (delta.getKind()) {
-				case IResourceDelta.ADDED:
-					marker.mark(types[i]);
-					break;
-				
-				case IResourceDelta.CHANGED:
-					marker.remark(types[i]);
-					break;
+			case IResourceDelta.ADDED:
+				marker.mark(types[i]);
+				break;
+			case IResourceDelta.CHANGED:
+				marker.remark(types[i]);
+				break;
 			}
 		}
 	}
 	
 	private void handleSql(IResourceDelta delta) {
 		IResource resource = delta.getResource();
-		if (!(resource instanceof IFile) ||
+		if (resource instanceof IFile == false ||
 				!JavaProjectUtil.isInSourceFolder(resource)) {
 			return;
 		}
@@ -108,13 +100,12 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 			return;
 		}
 		switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-				marker.mark(method);
-				break;
-			
-			case IResourceDelta.REMOVED:
-				marker.unmark(method);
-				break;
+		case IResourceDelta.ADDED:
+			marker.mark(method);
+			break;
+		case IResourceDelta.REMOVED:
+			marker.unmark(method);
+			break;
 		}
 	}
 	

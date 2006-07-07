@@ -33,8 +33,7 @@ public class ComponentAutoRegisterDeployer extends
 	
 	public ComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement component) {
-		super(container, component);
-		assertValidComponentName(COMPONENT_AUTO_REGISTER);
+		super(container, component, COMPONENT_AUTO_REGISTER);
 		buildReferenceClasses();
 	}
 	

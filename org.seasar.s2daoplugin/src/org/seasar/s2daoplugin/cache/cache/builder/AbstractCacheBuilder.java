@@ -43,7 +43,6 @@ public abstract class AbstractCacheBuilder implements ICacheBuilder {
 	}
 	
 	public void initialize() {
-		filter.setManager(getManager());
 	}
 	
 	public void clear(IComponentElement[] components) {

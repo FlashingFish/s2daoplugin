@@ -27,8 +27,7 @@ public class FileSystemComponentAutoRegisterDeployer extends
 
 	public FileSystemComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
-		super(container, autoRegister);
-		assertValidComponentName(FILESYSTEM_COMPONENT_AUTO_REGISTER);
+		super(container, autoRegister, FILESYSTEM_COMPONENT_AUTO_REGISTER);
 	}
 	
 	public void doDeploy() {

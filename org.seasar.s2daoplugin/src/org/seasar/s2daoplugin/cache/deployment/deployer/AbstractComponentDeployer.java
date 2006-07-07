@@ -26,11 +26,19 @@ public abstract class AbstractComponentDeployer implements IComponentDeployer {
 	
 	public AbstractComponentDeployer(IDeploymentContainer container,
 			IComponentElement component) {
+		this(container, component, null);
+	}
+	
+	public AbstractComponentDeployer(IDeploymentContainer container,
+			IComponentElement component, String componentClassName) {
 		if (container == null || component == null) {
 			throw new IllegalArgumentException();
 		}
 		this.container = container;
 		this.component = component;
+		if (componentClassName != null) {
+			assertComponentClassName(componentClassName);
+		}
 	}
 	
 	public void deploy() {
@@ -48,7 +56,7 @@ public abstract class AbstractComponentDeployer implements IComponentDeployer {
 		return component;
 	}
 	
-	protected void assertValidComponentName(String componentClassName) {
+	protected void assertComponentClassName(String componentClassName) {
 		if (!component.getComponentClassName().equals(componentClassName)) {
 			throw new IllegalArgumentException();
 		}

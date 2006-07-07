@@ -16,11 +16,8 @@
 package org.seasar.s2daoplugin.cache.cache.filter;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.DiconModelManager;
 
 public interface IComponentFilter {
 
-	void setManager(DiconModelManager manager);
-	
 	boolean isPassable(IComponentElement component);
 }

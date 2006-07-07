@@ -39,8 +39,7 @@ public class JarComponentAutoRegisterDeployer extends
 	
 	public JarComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
-		super(container, autoRegister);
-		assertValidComponentName(JAR_COMPONENT_AUTO_REGISTER);
+		super(container, autoRegister, JAR_COMPONENT_AUTO_REGISTER);
 		buildReferenceClass();
 		buildJarFileNames();
 	}

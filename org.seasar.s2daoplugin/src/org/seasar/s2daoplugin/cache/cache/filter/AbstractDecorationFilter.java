@@ -15,9 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.cache.filter;
 
-import org.seasar.s2daoplugin.cache.DiconModelManager;
-
-public abstract class AbstractDecorationFilter extends AbstractComponentFilter {
+public abstract class AbstractDecorationFilter implements IComponentFilter {
 
 	private IComponentFilter filter;
 	
@@ -26,11 +24,6 @@ public abstract class AbstractDecorationFilter extends AbstractComponentFilter {
 			throw new IllegalArgumentException();
 		}
 		this.filter = filter;
-	}
-	
-	public void setManager(DiconModelManager manager) {
-		super.setManager(manager);
-		filter.setManager(manager);
 	}
 	
 	protected IComponentFilter getFilter() {

@@ -62,7 +62,7 @@
    <extension
    		point="org.eclipse.core.resources.builders"
    		id="cachebuilder"
-   		name="%plugin.builder.cache">
+   		name="%plugin.builder.registry">
    		<builder>
    			<run class="org.seasar.s2daoplugin.cache.CacheBuilder"/>
    		</builder>

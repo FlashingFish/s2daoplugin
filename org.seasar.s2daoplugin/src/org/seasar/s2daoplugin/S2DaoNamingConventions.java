@@ -78,10 +78,9 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 	 * @return {{"PackageName", "DaoTypeName", "MethodName"}, ...}
 	 */
 	public static String[][] resovleDao(IFile sql) {
-		if (sql == null || !SQL_EXTENSION.equalsIgnoreCase(sql.getFileExtension())) {
-			return EMPTY_RESOLVE;
-		}
-		if (!JavaProjectUtil.isInSourceFolder(sql)) {
+		if (sql == null || !SQL_EXTENSION.equalsIgnoreCase(sql
+				.getFileExtension()) ||
+				!JavaProjectUtil.isInSourceFolder(sql)) {
 			return EMPTY_RESOLVE;
 		}
 		IJavaElement element = JavaCore.create(sql.getParent());

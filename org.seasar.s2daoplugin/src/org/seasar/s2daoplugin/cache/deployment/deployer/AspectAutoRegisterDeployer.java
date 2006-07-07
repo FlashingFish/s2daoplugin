@@ -24,8 +24,7 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 
 	public AspectAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement component) {
-		super(container, component);
-		assertValidComponentName(ASPECT_AUTO_REGISTER);
+		super(container, component, ASPECT_AUTO_REGISTER);
 	}
 	
 	public void doDeploy() {

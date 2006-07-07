@@ -15,8 +15,6 @@
  */
 package org.seasar.s2daoplugin;
 
-import org.eclipse.core.resources.IFile;
-
 public interface S2DaoConstants {
 
 	String ID_PLUGIN = "org.seasar.s2daoplugin";
@@ -41,7 +39,5 @@ public interface S2DaoConstants {
 	};
 	
 	String S2DAO_INTERCEPTOR = "org.seasar.dao.interceptors.S2DaoInterceptor";
-	
-	IFile[] EMPTY_FILES = new IFile[0];
 
 }

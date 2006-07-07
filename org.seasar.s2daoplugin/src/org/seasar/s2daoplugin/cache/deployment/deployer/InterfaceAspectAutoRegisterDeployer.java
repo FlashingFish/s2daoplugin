@@ -31,8 +31,7 @@ public class InterfaceAspectAutoRegisterDeployer extends AbstractComponentDeploy
 	
 	public InterfaceAspectAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
-		super(container, autoRegister);
-		assertValidComponentName(INTERFACE_ASPECT_AUTO_REGISTER);
+		super(container, autoRegister, INTERFACE_ASPECT_AUTO_REGISTER);
 		buildTargetInterface();
 	}
 	
@@ -59,11 +58,10 @@ public class InterfaceAspectAutoRegisterDeployer extends AbstractComponentDeploy
 	private void buildTargetInterface() {
 		IPropertyElement prop = DiconUtil.getProperty(getAutoRegister(),
 				"targetInterface");
-		if (prop == null) {
-			return;
+		if (prop != null) {
+			IRtti rtti = findRttiReferencedClassField(prop.getBody());
+			targetInterface = rtti != null && rtti.isInterface() ? rtti : null;
 		}
-		IRtti rtti = findRttiReferencedClassField(prop.getBody());
-		targetInterface = rtti != null && rtti.isInterface() ? rtti : null;
 	}
 	
 	private boolean isApplied(IComponentElement component) {

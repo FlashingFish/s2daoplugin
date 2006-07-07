@@ -65,7 +65,7 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			if (!JavaUtil.isClassFile(delta.getResource())) {
 				return true;
 			}
-			// TODO: 内部クラスと匿名クラスを対象外にしたい
+			// TODO: 内部クラスと匿名クラスを対象外にしたいけどバイナリからうまく取れない…
 			listener.typeChanged();
 			throw new StopVisitingException();
 		}

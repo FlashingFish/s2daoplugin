@@ -30,8 +30,8 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		AbstractAutoRegisterDeployer {
 
 	public AbstractComponentAutoRegisterDeployer(IDeploymentContainer container,
-			IComponentElement component) {
-		super(container, component);
+			IComponentElement component, String componentClassName) {
+		super(container, component, componentClassName);
 	}
 	
 	public int getType() {
@@ -46,20 +46,20 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 			return;
 		}
 		for (int i = 0; i < elements.length; i++) {
-			if (elements[i].getElementType() != IJavaElement.PACKAGE_FRAGMENT) {
+			if (elements[i] instanceof IPackageFragment == false) {
 				continue;
 			}
 			IPackageFragment fragment = (IPackageFragment) elements[i];
 			for (int j = 0; j < getClassPatternSize(); j++) {
 				ClassPattern cp = getClassPattern(j);
 				if (cp.isAppliedPackageName(fragment.getElementName())) {
-					processChild(fragment);
+					processChildren(fragment);
 				}
 			}
 		}
 	}
 	
-	private void processChild(IPackageFragment pkg) {
+	private void processChildren(IPackageFragment pkg) {
 		try {
 			IJavaElement[] elements = pkg.getChildren();
 			for (int i = 0; i < elements.length; i++) {

@@ -38,6 +38,8 @@ public class SqlMarkerBuilder extends IncrementalProjectBuilder {
 			IResourceDelta delta = getDelta(getProject());
 			if (delta != null) {
 				delta.accept(new SqlMarkerDeltaVisitor(getProject()));
+			} else {
+				remarkAll();
 			}
 		}
 		return null;

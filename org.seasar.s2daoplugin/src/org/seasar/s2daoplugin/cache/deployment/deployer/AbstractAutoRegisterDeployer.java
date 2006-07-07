@@ -31,8 +31,8 @@ public abstract class AbstractAutoRegisterDeployer extends AbstractComponentDepl
 	private List ignoreClassPatterns = new ArrayList();
 	
 	public AbstractAutoRegisterDeployer(IDeploymentContainer container,
-			IComponentElement autoRegister) {
-		super(container, autoRegister);
+			IComponentElement autoRegister, String componentClassName) {
+		super(container, autoRegister, componentClassName);
 		buildPatterns(autoRegister);
 	}
 	

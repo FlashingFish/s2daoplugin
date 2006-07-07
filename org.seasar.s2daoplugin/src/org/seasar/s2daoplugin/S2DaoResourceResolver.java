@@ -31,11 +31,13 @@ import org.seasar.s2daoplugin.util.JavaProjectUtil;
 
 public class S2DaoResourceResolver implements S2DaoConstants {
 
+	private static final IFile[] EMPTY_FILES = new IFile[0];
+	
 	public IFolder resolveSqlStoredFolder(IMethod method) {
 		if (method == null) {
 			return null;
 		}
-		SqlCountingHandler handler = new SqlCountingHandler();
+		SqlStoredFolderFindingHandler handler = new SqlStoredFolderFindingHandler();
 		process(method, handler);
 		return handler.getResult();
 	}
@@ -158,7 +160,7 @@ public class S2DaoResourceResolver implements S2DaoConstants {
 		void nextLoop(IPackageFragment fragment);
 	}
 	
-	private static class SqlCountingHandler implements IFileHandler, ILoopNext {
+	private static class SqlStoredFolderFindingHandler implements IFileHandler, ILoopNext {
 
 		private int resultCount;
 		private int currentMax;
