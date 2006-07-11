@@ -79,7 +79,7 @@ public class JavaProjectUtil {
 	}
 	
 	public static IPackageFragmentRoot findPackageFragmentRoot(IType type) {
-		return type != null ? ascend(type.getPackageFragment().getParent()) : null;
+		return type != null ? ascend(type.getPackageFragment()) : null;
 	}
 	
 	public static IPackageFragmentRoot findPackageFragmentRoot(IResource resource) {
@@ -88,7 +88,8 @@ public class JavaProjectUtil {
 	
 	public static IPackageFragmentRoot[] findPackageFragmentRootsSharedOutputLocation(
 			IResource resource) {
-		return findPackageFragmentRootsSharedOutputLocation(findPackageFragmentRoot(resource));
+		return findPackageFragmentRootsSharedOutputLocation(findPackageFragmentRoot(
+				resource));
 	}
 	
 	public static IPackageFragmentRoot[] findPackageFragmentRootsSharedOutputLocation(

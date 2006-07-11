@@ -40,28 +40,23 @@ public class CacheRegistry {
 		factoryDef.unregister(key);
 	}
 	
-	public IComponentCache getComponentCache(String key) {
+	public synchronized IComponentCache getComponentCache(String key) {
 		if (StringUtil.isEmpty(key)) {
 			return null;
 		}
 		if (componentCacheMap.containsKey(key)) {
 			return (IComponentCache) componentCacheMap.get(key);
 		}
-		synchronized (componentCacheMap) {
-			if (componentCacheMap.containsKey(key)) {
-				return (IComponentCache) componentCacheMap.get(key);
-			}
-			IComponentCacheFactory factory = factoryDef.getFactory(key);
-			if (factory == null) {
-				return null;
-			}
-			IComponentCache cache = new CacheFacade(factory);
-			componentCacheMap.put(key, cache);
-			return cache;
+		IComponentCacheFactory factory = factoryDef.getFactory(key);
+		if (factory == null) {
+			return null;
 		}
+		IComponentCache cache = new CacheFacade(factory);
+		componentCacheMap.put(key, cache);
+		return cache;
 	}
 	
-	public void removeComponentCache(String key) {
+	public synchronized void removeComponentCache(String key) {
 		componentCacheMap.remove(key);
 	}
 	

@@ -40,6 +40,14 @@ interface TODO {
 	 * 
 	 * TODO: ネストしたTypeを変更（追加削除でなく）すると、autoregisterで補足できない
 	 * 
+	 * TODO: イベントはジョブ？
+	 * 
+	 * TODO: IdentityHashMap
+	 * 
+	 * TODO: DiconModelManagerとかIComponentCacheを同じように見る（フィルタ）
+	 * 
+	 * TODO: jarの中に含まれたdiconは大丈夫？
+	 * 
 	 */
 
 }

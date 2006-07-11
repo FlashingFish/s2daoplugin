@@ -63,19 +63,6 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	}
 
 	public void finishChanged() {
-//		System.out.print("\n");
-//		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
-//			List components = ((IContainerElement) it.next()).getComponentList();
-//			for (Iterator jt = components.iterator(); jt.hasNext();) {
-//				IComponentElement component = (IComponentElement) jt.next();
-//				List aspects = component.getAspectList();
-//				for (int i = 0; i < aspects.size(); i++) {
-//					IAspectElement aspect = (IAspectElement) aspects.get(i);
-//					if (i == 0) System.out.println(component);
-//					System.out.println("  " + DiconUtil.getChildComponent(aspect));
-//				}
-//			}
-//		}
 		affectedContainers.fireEvents();
 	}
 	

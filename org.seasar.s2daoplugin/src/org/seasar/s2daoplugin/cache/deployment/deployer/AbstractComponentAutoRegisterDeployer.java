@@ -42,49 +42,42 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		IJavaElement[] elements;
 		try {
 			elements = root.getChildren();
-		} catch (JavaModelException e) {
-			return;
-		}
-		for (int i = 0; i < elements.length; i++) {
-			if (elements[i] instanceof IPackageFragment == false) {
-				continue;
-			}
-			IPackageFragment fragment = (IPackageFragment) elements[i];
-			for (int j = 0; j < getClassPatternSize(); j++) {
-				ClassPattern cp = getClassPattern(j);
-				if (cp.isAppliedPackageName(fragment.getElementName())) {
-					processChildren(fragment);
-				}
-			}
-		}
-	}
-	
-	private void processChildren(IPackageFragment pkg) {
-		try {
-			IJavaElement[] elements = pkg.getChildren();
 			for (int i = 0; i < elements.length; i++) {
-				registerType(elements[i]);
-			}
-		} catch (JavaModelException e) {
-		}
-	}
-	
-	private void registerType(IJavaElement element) {
-		try {
-			if (element instanceof ICompilationUnit) {
-				IType[] types = ((ICompilationUnit) element).getAllTypes();
-				for (int i = 0; i < types.length; i++) {
-					register(types[i]);
+				if (elements[i] instanceof IPackageFragment == false) {
+					continue;
 				}
-			} else if (element instanceof IClassFile) {
-				IType type = ((IClassFile) element).getType();
-				register(type);
+				IPackageFragment fragment = (IPackageFragment) elements[i];
+				for (int j = 0; j < getClassPatternSize(); j++) {
+					ClassPattern cp = getClassPattern(j);
+					if (cp.isAppliedPackageName(fragment.getElementName())) {
+						processChildren(fragment);
+					}
+				}
 			}
 		} catch (JavaModelException e) {
 		}
 	}
 	
-	private void register(IType type) {
+	private void processChildren(IPackageFragment pkg) throws JavaModelException {
+		IJavaElement[] elements = pkg.getChildren();
+		for (int i = 0; i < elements.length; i++) {
+			registerType(elements[i]);
+		}
+	}
+	
+	private void registerType(IJavaElement element) throws JavaModelException {
+		if (element instanceof ICompilationUnit) {
+			IType[] types = ((ICompilationUnit) element).getAllTypes();
+			for (int i = 0; i < types.length; i++) {
+				register(types[i]);
+			}
+		} else if (element instanceof IClassFile) {
+			IType type = ((IClassFile) element).getType();
+			register(type);
+		}
+	}
+	
+	private void register(IType type) throws JavaModelException {
 		if (isRegisterableType(type) && isAppliedType(type)) {
 			IComponentElement component = ElementFactory.createComponentElement(
 					getAutoRegister(), type.getFullyQualifiedName());
@@ -92,12 +85,8 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		}
 	}
 
-	private boolean isRegisterableType(IType type) {
-		try {
-			if (type == null || type.isLocal() || type.isAnonymous()) {
-				return false;
-			}
-		} catch (JavaModelException e) {
+	private boolean isRegisterableType(IType type) throws JavaModelException {
+		if (type == null || type.isLocal() || type.isAnonymous()) {
 			return false;
 		}
 		return !isEnclosingType(type) || FlagsUtil.isInterface(type) ||

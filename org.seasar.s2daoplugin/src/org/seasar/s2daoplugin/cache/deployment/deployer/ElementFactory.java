@@ -73,6 +73,8 @@ public class ElementFactory implements ConstCore {
     		component.setAttributes(attribues);
     	}
     	
+    	// IComponentElement#setParentするとparent#addChildも動くため。
+    	// でもIContainerElementのラッパを作ったからいらないのか…
     	private static void setParent(IElement child, IElement parent) {
     		Field field = findParentField(child.getClass());
     		if (field == null) {
