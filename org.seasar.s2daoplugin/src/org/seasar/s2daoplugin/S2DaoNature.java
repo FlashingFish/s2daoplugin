@@ -90,8 +90,8 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	
 	private void addListenerIfNecessary(CacheNature nature, IComponentCache cache) {
 		IDeploymentDiconModelRegistry registry = nature.getDeploymentModelRegistry();
-		if (!registry.hasListener(S2DAO_CACHE_KEY)) {
-			registry.addListener(S2DAO_CACHE_KEY, createListener(cache));
+		if (!registry.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
+			registry.addDiconChangeListener(S2DAO_CACHE_KEY, createListener(cache));
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 		CacheRegistry registry = nature.getCacheRegistry();
 		registry.removeComponentCache(S2DAO_CACHE_KEY);
 		IDeploymentDiconModelRegistry modelRegistry = nature.getDeploymentModelRegistry();
-		modelRegistry.removeListener(S2DAO_CACHE_KEY);
+		modelRegistry.removeDiconChangeListener(S2DAO_CACHE_KEY);
 	}
 	
 	private IDiconChangeListener createListener(IComponentCache cache) {

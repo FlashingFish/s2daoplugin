@@ -19,28 +19,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public class SequentializedListenerChain implements IDiconChangeListener {
 
-	private DiconModelManager manager;
 	private List listeners = new ArrayList();
 	private List addedContainerList = new LinkedList();
 	private List updatedContainerList = new LinkedList();
 	private List removedContainerList = new LinkedList();
 	
-	public void setManager(DiconModelManager manager) {
-		if (manager == null) {
-			return;
-		}
+	public void setProject(IProject project) {
 		for (int i = 0; i < listeners.size(); i++) {
-			((IDiconChangeListener) listeners.get(i)).setManager(manager);
+			((IDiconChangeListener) listeners.get(i)).setProject(project);
 		}
-		this.manager = manager;
-	}
-	
-	public DiconModelManager getManager() {
-		return manager;
 	}
 	
 	public void initialize() {

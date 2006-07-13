@@ -30,7 +30,7 @@ import org.seasar.kijimuna.core.parser.IElement;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
-public class ElementFactory implements ConstCore {
+public class IsolatedElementFactory implements ConstCore {
 
 	private static final DiconElementFactory factory = new DiconElementFactory();
 	

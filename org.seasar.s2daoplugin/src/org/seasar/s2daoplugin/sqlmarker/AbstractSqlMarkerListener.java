@@ -19,7 +19,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.S2DaoUtil;
-import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
@@ -29,7 +28,7 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 	protected static final IType[] EMPTY_TYPES = new IType[0];
 	
 	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
-	private DiconModelManager manager;
+	private IProject project;
 	private SqlMarkerListenerContext context;
 	
 	public AbstractSqlMarkerListener(SqlMarkerListenerContext context) {
@@ -39,14 +38,10 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		this.context = context;
 	}
 	
-	public void setManager(DiconModelManager manager) {
-		this.manager = manager;
+	public void setProject(IProject project) {
+		this.project = project;
 	}
-
-	public DiconModelManager getManager() {
-		return manager;
-	}
-
+	
 	public void initialize() {
 	}
 	
@@ -54,7 +49,7 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 	}
 	
 	protected IProject getProject() {
-		return manager.getProject();
+		return project;
 	}
 	
 	protected ISqlMarkerCreator getMarker() {

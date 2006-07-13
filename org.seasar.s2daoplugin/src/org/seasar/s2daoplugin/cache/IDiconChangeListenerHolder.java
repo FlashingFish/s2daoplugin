@@ -13,13 +13,17 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment;
+package org.seasar.s2daoplugin.cache;
 
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
-import org.seasar.s2daoplugin.cache.IDiconChangeListenerHolder;
-import org.seasar.s2daoplugin.cache.ITypeChangeListener;
+import org.eclipse.core.resources.IProject;
 
-public interface IDeploymentDiconModelRegistry extends IDiconChangeListener,
-		IDiconChangeListenerHolder, ITypeChangeListener {
+public interface IDiconChangeListenerHolder {
 
+	void setProject(IProject project);
+	
+	void addDiconChangeListener(String key, IDiconChangeListener listener);
+	
+	void removeDiconChangeListener(String key);
+	
+	boolean hasDiconChangeListener(String key);
 }

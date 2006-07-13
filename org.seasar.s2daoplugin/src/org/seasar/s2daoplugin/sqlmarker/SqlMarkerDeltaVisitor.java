@@ -68,6 +68,10 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 			return;
 		}
 		ICompilationUnit unit = JavaCore.createCompilationUnitFrom((IFile) resource);
+//		IJavaProject jproj = JavaCore.create(project);
+//		if (jproj == null || !jproj.isOnClasspath(unit)) {
+//			return;
+//		}
 		IType[] types = unit.getAllTypes();
 		for (int i = 0; i < types.length; i++) {
 			marker.unmark(types[i]);

@@ -18,6 +18,7 @@ package org.seasar.s2daoplugin.cache.cache;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class ComponentCache extends AbstractComponentCache {
 
 	private IPath containerPath;
 	private Map componentsByFqcn = new HashMap();
-	private Map fqcnsByComponent = new HashMap();
+	private Map fqcnsByComponent = new IdentityHashMap();
 	
 	public ComponentCache(IComponentFilter filter) {
 		this(new ComponentCacheBuilder(filter));

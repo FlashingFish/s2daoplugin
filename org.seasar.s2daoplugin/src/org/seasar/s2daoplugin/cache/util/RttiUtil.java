@@ -18,7 +18,10 @@ package org.seasar.s2daoplugin.cache.util;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
+import org.seasar.kijimuna.core.dicon.DiconNature;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public class RttiUtil {
@@ -48,6 +51,11 @@ public class RttiUtil {
 	
 	public static boolean existsType(IRtti rtti) {
 		return rtti != null && rtti.getType() != null;
+	}
+	
+	public static RttiLoader getRttiLoader(IProject project) {
+		DiconNature nature = DiconNature.getInstance(project);
+		return nature != null ? nature.getRttiLoader() : null;
 	}
 
 }

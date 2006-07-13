@@ -79,7 +79,7 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 	
 	private void register(IType type) throws JavaModelException {
 		if (isRegisterableType(type) && isAppliedType(type)) {
-			IComponentElement component = ElementFactory.createComponentElement(
+			IComponentElement component = IsolatedElementFactory.createComponentElement(
 					getAutoRegister(), type.getFullyQualifiedName());
 			addPreparedComponent(component);
 		}

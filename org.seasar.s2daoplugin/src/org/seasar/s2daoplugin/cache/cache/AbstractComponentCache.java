@@ -17,10 +17,11 @@ package org.seasar.s2daoplugin.cache.cache;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.kijimuna.core.rtti.HasErrorRtti;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.cache.builder.ICacheBuilder;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
+import org.seasar.s2daoplugin.cache.util.RttiUtil;
 
 public abstract class AbstractComponentCache extends AbstractCache {
 
@@ -64,8 +65,8 @@ public abstract class AbstractComponentCache extends AbstractCache {
 	}
 	
 	protected IRtti getRtti(String fullyQualifiedClassName) {
-		IRtti rtti = getManager().getRtti(fullyQualifiedClassName);
-		return rtti instanceof HasErrorRtti ? null : rtti;
+		RttiLoader loader = RttiUtil.getRttiLoader(getProject());
+		return loader != null ? loader.loadRtti(fullyQualifiedClassName) : null;
 	}
 
 }

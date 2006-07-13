@@ -64,7 +64,7 @@ public abstract class AbstractComponentDeployer implements IComponentDeployer {
 	
 	protected IRtti findRttiReferencedClassField(String staticOgnl) {
 		int begin = staticOgnl.indexOf('@');
-		int end = staticOgnl.lastIndexOf('@');
+		int end = staticOgnl.lastIndexOf("@class");
 		if (begin == -1 || end == -1 || begin == end) {
 			return null;
 		}

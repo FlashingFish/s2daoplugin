@@ -32,7 +32,7 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			throws CoreException {
 		CacheNature nature = CacheNature.getInstance(getProject());
 		if (nature != null) {
-			nature.getDiconModelManager().buildModel();
+			nature.getDiconCacheBuilder().buildCache();
 			IResourceDelta delta = getDelta(getProject());
 			if (delta != null) {
 				try {

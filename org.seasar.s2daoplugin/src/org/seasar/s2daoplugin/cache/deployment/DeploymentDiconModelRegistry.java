@@ -17,30 +17,18 @@ package org.seasar.s2daoplugin.cache.deployment;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-import org.seasar.s2daoplugin.cache.DiconModelManager;
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
+import org.seasar.s2daoplugin.cache.AbstractListenerHoldableCache;
 
-public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegistry {
+public class DeploymentDiconModelRegistry extends AbstractListenerHoldableCache
+		implements IDeploymentDiconModelRegistry {
 
-	private DiconModelManager manager;
 	private Map containerMap = new HashMap();
-	private AffectedContainers affectedContainers = new AffectedContainers();
 	
 	public DeploymentDiconModelRegistry() {
-	}
-	
-	public void setManager(DiconModelManager manager) {
-		this.manager = manager;
-	}
-
-	public DiconModelManager getManager() {
-		return manager;
 	}
 
 	public void initialize() {
@@ -48,36 +36,22 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 
 	public void diconAdded(IContainerElement container) {
 		addContainer(container);
-		affectedContainers.addAddedContainer(getContainer(container));
+		getAffectedContainers().addAddedContainer(getContainer(container));
 	}
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
 		IContainerElement removing = getContainer(old);
 		addContainer(young);
-		affectedContainers.addUpdatedContainer(removing, getContainer(young));
+		getAffectedContainers().addUpdatedContainer(removing, getContainer(young));
 	}
 
 	public void diconRemoved(IContainerElement container) {
-		affectedContainers.addRemovedContainer(getContainer(container));
+		getAffectedContainers().addRemovedContainer(getContainer(container));
 		removeContainer(container);
 	}
 
 	public void finishChanged() {
-		affectedContainers.fireEvents();
-	}
-	
-	public boolean hasListener(String key) {
-		return affectedContainers.hasListener(key);
-	}
-	
-	public void addListener(String key, IDiconChangeListener listener) {
-		affectedContainers.addListener(key, listener);
-		listener.setManager(getManager());
-		fireInitialEvent(listener);
-	}
-	
-	public void removeListener(String key) {
-		affectedContainers.removeListener(key);
+		getAffectedContainers().fireEvents();
 	}
 	
 	public void typeChanged() {
@@ -91,15 +65,16 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 		finishChanged();
 	}
 	
-	private void fireInitialEvent(IDiconChangeListener listener) {
-		listener.initialize();
+	protected IContainerElement[] getInitialTargetContainers() {
+		IContainerElement[] containers = new IContainerElement[containerMap.size()];
+		int i = 0;
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
-			IDeploymentContainer container = (IDeploymentContainer) it.next();
-			listener.diconAdded(container.getDeployedContainer());
+			IDeploymentContainer deployment = (IDeploymentContainer) it.next();
+			containers[i++] = deployment.getDeployedContainer();
 		}
-		listener.finishChanged();
+		return containers;
 	}
-
+	
 	private void addContainer(IContainerElement container) {
 		addContainerMap(container.getStorage().getFullPath(), container);
 	}
@@ -130,75 +105,6 @@ public class DeploymentDiconModelRegistry implements IDeploymentDiconModelRegist
 	
 	private IDeploymentContainer getDeploymentContainer(IPath containerPath) {
 		return (IDeploymentContainer) containerMap.get(containerPath);
-	}
-
-
-	private class AffectedContainers {
-
-		private Map listeners = new HashMap();
-		private List containers = new LinkedList(); 
-		
-		public boolean hasListener(String key) {
-			return listeners.containsKey(key);
-		}
-		
-		public void addListener(String key, IDiconChangeListener listener) {
-			listeners.put(key, listener);
-		}
-		
-		public void removeListener(String key) {
-			listeners.remove(key);
-		}
-		
-		public void addAddedContainer(final IContainerElement container) {
-			containers.add(new EventFirer() {
-				public void process(IDiconChangeListener listener) {
-					listener.diconAdded(container);
-				}
-			});
-		}
-		
-		public void addUpdatedContainer(final IContainerElement old,
-				final IContainerElement young) {
-			containers.add(new EventFirer() {
-				public void process(IDiconChangeListener listener) {
-					listener.diconUpdated(old, young);
-				}
-			});
-		}
-		
-		public void addRemovedContainer(final IContainerElement container) {
-			containers.add(new EventFirer() {
-				public void process(IDiconChangeListener listener) {
-					listener.diconRemoved(container);
-				}
-			});
-		}
-		
-		public void fireEvents() {
-			try {
-				for (int i = 0; i < containers.size(); i++) {
-					((EventFirer) containers.get(i)).fire();
-				}
-				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					((IDiconChangeListener) it.next()).finishChanged();
-				}
-			} finally {
-				containers.clear();
-			}
-		}
-		
-		
-		private abstract class EventFirer {
-			
-			public void fire() {
-				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					process((IDiconChangeListener) it.next());
-				}
-			}
-			
-			protected abstract void process(IDiconChangeListener listener);
-		}
 	}
 
 }

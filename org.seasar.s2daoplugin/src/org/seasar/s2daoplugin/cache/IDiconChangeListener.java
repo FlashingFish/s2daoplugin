@@ -15,13 +15,12 @@
  */
 package org.seasar.s2daoplugin.cache;
 
+import org.eclipse.core.resources.IProject;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
 public interface IDiconChangeListener {
 
-	void setManager(DiconModelManager manager);
-	
-	DiconModelManager getManager();
+	void setProject(IProject project);
 	
 	void initialize();
 	

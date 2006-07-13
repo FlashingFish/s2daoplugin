@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
@@ -54,26 +52,6 @@ public class JavaProjectUtil {
 		}
 	}
 	
-	public static void visitSourceFolders(IJavaProject project, String packageName,
-			IResourceVisitor visitor) {
-		if (project == null || packageName == null || visitor == null) {
-			return;
-		}
-		IPath[] srcPaths = getSourceFolderPaths(project);
-		for (int i = 0; i < srcPaths.length; i++) {
-			try {
-				IPackageFragment pack =
-					project.findPackageFragment(srcPaths[i].append(toPathName(packageName)));
-				if (pack == null) {
-					continue;
-				}
-				pack.getResource().accept(visitor, IResource.DEPTH_INFINITE, false);
-			} catch (CoreException e) {
-				S2DaoPlugin.log(e);
-			}
-		}
-	}
-
 	public static boolean isInSourceFolder(IResource resource) {
 		return resource != null && JavaCore.create(resource.getParent()) != null;
 	}
@@ -104,7 +82,7 @@ public class JavaProjectUtil {
 			if (output1 == null) {
 				output1 = project.getOutputLocation();
 			}
-			IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
+			IPackageFragmentRoot[] roots = project.getPackageFragmentRoots();
 			for (int i = 0; i < roots.length; i++) {
 				if (roots[i].getKind() == IPackageFragmentRoot.K_BINARY) {
 					continue;
@@ -130,10 +108,6 @@ public class JavaProjectUtil {
 		}
 		return element instanceof IPackageFragmentRoot ?
 				(IPackageFragmentRoot) element : null;
-	}
-	
-	private static String toPathName(String packageName) {
-		return packageName.replace('.', '/');
 	}
 
 }

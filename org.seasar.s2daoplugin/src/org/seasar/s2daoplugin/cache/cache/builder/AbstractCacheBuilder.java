@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.s2daoplugin.cache.DiconModelManager;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
 
@@ -53,10 +52,6 @@ public abstract class AbstractCacheBuilder implements ICacheBuilder {
 		return filter;
 	}
 	
-	protected DiconModelManager getManager() {
-		return cache.getManager();
-	}
-
 	protected void addComponents(IComponentElement[] components) {
 		addComponents(Arrays.asList(components));
 	}

@@ -15,24 +15,18 @@
  */
 package org.seasar.s2daoplugin.cache.cache;
 
-import org.seasar.s2daoplugin.cache.DiconModelManager;
+import org.eclipse.core.resources.IProject;
 
 public abstract class AbstractCache implements IComponentCache {
 
-	private DiconModelManager manager;
+	private IProject project;
 	
-	public void setManager(DiconModelManager manager) {
-		if (manager == null) {
-			throw new IllegalArgumentException();
-		}
-		this.manager = manager;
+	public void setProject(IProject project) {
+		this.project = project;
 	}
 	
-	public DiconModelManager getManager() {
-		if (manager == null) {
-			throw new IllegalStateException();
-		}
-		return manager;
+	protected IProject getProject() {
+		return project;
 	}
 
 }

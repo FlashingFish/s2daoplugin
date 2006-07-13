@@ -130,7 +130,7 @@ public class CacheFacade extends AbstractCache {
 		IPath path = container.getStorage().getFullPath();
 		IComponentCache cache = factory.createComponentCache();
 		// atomic begin
-		cache.setManager(getManager());
+		cache.setProject(getProject());
 		cache.setContainerPath(path);
 		cache.initialize();
 		cache.diconAdded(container);

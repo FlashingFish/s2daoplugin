@@ -26,20 +26,28 @@ import org.seasar.s2daoplugin.util.ProjectUtil;
 
 public class CacheNature implements IProjectNature {
 
+	private boolean initialized;
 	private IProject project;
-	private DiconModelManager manager;
+	private IRowDiconCache rowDiconCache;
 	private IDeploymentDiconModelRegistry deploymentModelRegistry =
 		new DeploymentDiconModelRegistry();
 	private CacheRegistry cacheRegistry = new CacheRegistry();
 	
-	public static CacheNature getInstance(IProject project) {
+	private DiconCacheBuilder diconCacheBuilder;
+	
+	public synchronized static CacheNature getInstance(IProject project) {
 		IProjectNature nature = null;
 		try {
 			nature = ProjectUtil.getNature(project, CacheConstants.ID_CACHE_NATURE);
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 		}
-		return nature instanceof CacheNature ? (CacheNature) nature : null;
+		if (nature instanceof CacheNature) {
+			CacheNature cacheNature = (CacheNature) nature;
+			cacheNature.initialize();
+			return cacheNature;
+		}
+		return null;
 	}
 	
 	public void configure() throws CoreException {
@@ -58,26 +66,29 @@ public class CacheNature implements IProjectNature {
 		this.project = project;
 	}
 	
+	public DiconCacheBuilder getDiconCacheBuilder() {
+		return diconCacheBuilder;
+	}
+	
 	public IDeploymentDiconModelRegistry getDeploymentModelRegistry() {
-		createDiconModelManagerIfNecessary();
 		return deploymentModelRegistry;
 	}
 	
-	public DiconModelManager getDiconModelManager() {
-		createDiconModelManagerIfNecessary();
-		return manager;
-	}
-	
 	public CacheRegistry getCacheRegistry() {
-		createDiconModelManagerIfNecessary();
 		return cacheRegistry;
 	}
 	
-	private synchronized void createDiconModelManagerIfNecessary() {
-		if (manager == null) {
-			manager = new DiconModelManager(getProject());
-			manager.addDiconChangeListener("deploymentmodel", deploymentModelRegistry);
+	private void initialize() {
+		if (initialized) {
+			return;
 		}
+		initialized = true;
+		rowDiconCache = new RowDiconCache();
+		rowDiconCache.setProject(getProject());
+		rowDiconCache.addDiconChangeListener("deploymentmodel", deploymentModelRegistry);
+		diconCacheBuilder = new DiconCacheBuilder(rowDiconCache);
+		diconCacheBuilder.setProject(getProject());
+		diconCacheBuilder.buildCache();
 	}
 
 }

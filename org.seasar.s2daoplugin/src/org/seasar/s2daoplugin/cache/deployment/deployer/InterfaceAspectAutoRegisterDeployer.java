@@ -71,7 +71,7 @@ public class InterfaceAspectAutoRegisterDeployer extends AbstractComponentDeploy
 	}
 	
 	private void process(IComponentElement component) {
-		IAspectElement aspect = ElementFactory.createAspectElement(getAutoRegister());
+		IAspectElement aspect = IsolatedElementFactory.createAspectElement(getAutoRegister());
 		aspect.setParent(component);
 	}
 

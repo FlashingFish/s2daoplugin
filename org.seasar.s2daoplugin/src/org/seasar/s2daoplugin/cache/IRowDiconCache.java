@@ -13,13 +13,13 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment;
+package org.seasar.s2daoplugin.cache;
 
-import org.seasar.s2daoplugin.cache.IDiconChangeListener;
-import org.seasar.s2daoplugin.cache.IDiconChangeListenerHolder;
-import org.seasar.s2daoplugin.cache.ITypeChangeListener;
+import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
-public interface IDeploymentDiconModelRegistry extends IDiconChangeListener,
-		IDiconChangeListenerHolder, ITypeChangeListener {
+public interface IRowDiconCache extends IDiconChangeListenerHolder {
 
+	void buildModel(IContainerElement[] containers);
+	
+	void clearModel();
 }
