@@ -24,13 +24,9 @@ interface TODO {
 	 * 
 	 * TODO: kijimunaを使わないで使える設定を作る
 	 * 
-	 * TODO: スレッドセーフに
-	 * 
 	 * TODO: テストコード書く
 	 * 
 	 * TODO: Hot Deploy(ComponentDefCustomizer)対応
-	 * 
-	 * TODO: diconファイルとAutoReigster対象のIType変更で2回ビルドが走ってしまう
 	 * 
 	 * TODO: キャッシュビルド中にプログレスモニタ
 	 * 
@@ -38,11 +34,12 @@ interface TODO {
 	 * 
 	 * TODO: ネストしたTypeを変更（追加削除でなく）すると、autoregisterで補足できない
 	 * 
-	 * TODO: イベントはジョブ？
+	 * TODO: 2重ビルド対策。イベントはジョブ？スケジュール、いや単にロックか？
+	 * 		その間のキャッシュからの値取得はどうする？
 	 * 
 	 * TODO: jarの中に含まれたdiconは大丈夫？
 	 * 
-	 * TODO: getRowClasspath
+	 * TODO: ビルド中の失敗をトラップして安全な状態にする
 	 * 
 	 */
 

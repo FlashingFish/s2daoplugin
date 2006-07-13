@@ -16,13 +16,10 @@
 package org.seasar.s2daoplugin.util;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -34,24 +31,6 @@ import org.seasar.s2daoplugin.S2DaoPlugin;
 
 public class JavaProjectUtil {
 
-	private static final IPath[] EMPTY_PATHS = new IPath[0];
-	
-	public static IPath[] getSourceFolderPaths(IJavaProject project) {
-		try {
-			IClasspathEntry[] buildPaths = project.getRawClasspath();
-			List sourcePathList = new LinkedList();
-			for (int i = 0; i < buildPaths.length; i++) {
-				if (buildPaths[i].getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-					sourcePathList.add(buildPaths[i].getPath());
-				}
-			}
-			return (IPath[]) sourcePathList.toArray(new IPath[sourcePathList.size()]);
-		} catch (JavaModelException e) {
-			S2DaoPlugin.log(e);
-			return EMPTY_PATHS;
-		}
-	}
-	
 	public static boolean isInSourceFolder(IResource resource) {
 		return resource != null && JavaCore.create(resource.getParent()) != null;
 	}

@@ -15,30 +15,10 @@
  */
 package org.seasar.s2daoplugin.util;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 
 public class JavaUtil {
 
-	public static IPath getPackagePath(IFile file) {
-		if (file == null) {
-			return null;
-		}
-		IJavaProject project = JavaCore.create(file.getProject());
-		IPath[] srcPaths = JavaProjectUtil.getSourceFolderPaths(project);
-		for (int i = 0; i < srcPaths.length; i++) {
-			if (srcPaths[i].matchingFirstSegments(file.getFullPath())
-					== srcPaths[i].segmentCount()) {
-				return file.getFullPath().removeFirstSegments(
-						srcPaths[i].segmentCount()).removeLastSegments(1);
-			}
-		}
-		return null;
-	}
-	
 	public static boolean isJavaFile(IResource resource) {
 		return hasExtension(resource, "java");
 	}

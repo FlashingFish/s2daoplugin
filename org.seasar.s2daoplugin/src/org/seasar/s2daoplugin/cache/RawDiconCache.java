@@ -22,8 +22,8 @@ import java.util.Map;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
-public class RowDiconCache extends AbstractListenerHoldableCache
-		implements IRowDiconCache {
+public class RawDiconCache extends AbstractListenerHoldableCache
+		implements IRawDiconCache {
 
 	// youngは更新されたdicon、oldは更新されていないdicon
 	private Map oldContainerMap1 = new HashMap();
@@ -31,7 +31,7 @@ public class RowDiconCache extends AbstractListenerHoldableCache
 	private Map oldContainerMap2 = new HashMap();
 	private Map youngContainerMap2 = new HashMap();
 	
-	public RowDiconCache() {
+	public RawDiconCache() {
 	}
 	
 	public void buildModel(IContainerElement[] containers) {

@@ -54,6 +54,9 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 		getAffectedContainers().fireEvents();
 	}
 	
+	// TODO: AutoRegisterを持っており、追加/削除のあったITypeがClassPatternにマッチ
+	// するかどうかで判断すればムダがない。が、すでにdicon自体の変更でビルドされている
+	// なら、再度ビルドしてもムダなだけ…
 	public void typeChanged() {
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
 			IDeploymentContainer container = (IDeploymentContainer) it.next();

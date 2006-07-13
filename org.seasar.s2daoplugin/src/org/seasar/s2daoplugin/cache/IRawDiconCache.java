@@ -17,7 +17,7 @@ package org.seasar.s2daoplugin.cache;
 
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
-public interface IRowDiconCache extends IDiconChangeListenerHolder {
+public interface IRawDiconCache extends IDiconChangeListenerHolder {
 
 	void buildModel(IContainerElement[] containers);
 	

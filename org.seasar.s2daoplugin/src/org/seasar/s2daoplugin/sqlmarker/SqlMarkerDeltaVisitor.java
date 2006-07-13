@@ -48,11 +48,12 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 	}
 	
 	public boolean visit(IResourceDelta delta) throws CoreException {
-		if (JavaUtil.isJavaFile(delta.getResource())) {
+		IResource resource = delta.getResource();
+		if (JavaUtil.isJavaFile(resource)) {
 			handleJava(delta);
-		} else if ("sql".equalsIgnoreCase(delta.getFullPath().getFileExtension())) {
+		} else if ("sql".equalsIgnoreCase(resource.getFileExtension())) {
 			handleSql(delta);
-		} else if (".project".equals(delta.getResource().getName())) {
+		} else if (".project".equals(resource.getName())) {
 			handleDotProject(delta);
 		}
 		return true;
@@ -67,11 +68,11 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 		if (cache == null) {
 			return;
 		}
-		ICompilationUnit unit = JavaCore.createCompilationUnitFrom((IFile) resource);
-//		IJavaProject jproj = JavaCore.create(project);
-//		if (jproj == null || !jproj.isOnClasspath(unit)) {
-//			return;
-//		}
+		ICompilationUnit unit = JavaCore.createCompilationUnitFrom((IFile)
+				resource);
+		if (!unit.exists()) {
+			return;
+		}
 		IType[] types = unit.getAllTypes();
 		for (int i = 0; i < types.length; i++) {
 			marker.unmark(types[i]);
@@ -80,10 +81,8 @@ public class SqlMarkerDeltaVisitor implements IResourceDeltaVisitor {
 			}
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-				marker.mark(types[i]);
-				break;
 			case IResourceDelta.CHANGED:
-				marker.remark(types[i]);
+				marker.mark(types[i]);
 				break;
 			}
 		}

@@ -28,7 +28,7 @@ public class CacheNature implements IProjectNature {
 
 	private boolean initialized;
 	private IProject project;
-	private IRowDiconCache rowDiconCache;
+	private IRawDiconCache rawDiconCache;
 	private IDeploymentDiconCache deploymentDiconCache =
 		new DeploymentDiconCache();
 	private CacheRegistry cacheRegistry = new CacheRegistry();
@@ -83,10 +83,10 @@ public class CacheNature implements IProjectNature {
 			return;
 		}
 		initialized = true;
-		rowDiconCache = new RowDiconCache();
-		rowDiconCache.setProject(getProject());
-		rowDiconCache.addDiconChangeListener("deploymentmodel", deploymentDiconCache);
-		diconCacheBuilder = new DiconCacheBuilder(rowDiconCache);
+		rawDiconCache = new RawDiconCache();
+		rawDiconCache.setProject(getProject());
+		rawDiconCache.addDiconChangeListener("deploymentmodel", deploymentDiconCache);
+		diconCacheBuilder = new DiconCacheBuilder(rawDiconCache);
 		diconCacheBuilder.setProject(getProject());
 		diconCacheBuilder.buildCache();
 	}

@@ -21,11 +21,11 @@ import org.seasar.kijimuna.core.dicon.ModelManager;
 
 public class DiconCacheBuilder {
 
-	private IRowDiconCache cache;
+	private IRawDiconCache cache;
 	private boolean modelInitialized;
 	private IProject project;
 	
-	public DiconCacheBuilder(IRowDiconCache cache) {
+	public DiconCacheBuilder(IRawDiconCache cache) {
 		this.cache = cache;
 	}
 	
@@ -33,7 +33,6 @@ public class DiconCacheBuilder {
 		this.project = project;
 	}
 	
-	// TODO: job
 	public synchronized void buildCache() {
 		DiconNature nature = DiconNature.getInstance(project);
 		if (nature != null) {
