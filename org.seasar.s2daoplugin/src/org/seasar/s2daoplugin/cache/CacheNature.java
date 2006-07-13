@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
-import org.seasar.s2daoplugin.cache.deployment.DeploymentDiconModelRegistry;
-import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.DeploymentDiconCache;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconCache;
 import org.seasar.s2daoplugin.util.ProjectUtil;
 
 public class CacheNature implements IProjectNature {
@@ -29,8 +29,8 @@ public class CacheNature implements IProjectNature {
 	private boolean initialized;
 	private IProject project;
 	private IRowDiconCache rowDiconCache;
-	private IDeploymentDiconModelRegistry deploymentModelRegistry =
-		new DeploymentDiconModelRegistry();
+	private IDeploymentDiconCache deploymentDiconCache =
+		new DeploymentDiconCache();
 	private CacheRegistry cacheRegistry = new CacheRegistry();
 	
 	private DiconCacheBuilder diconCacheBuilder;
@@ -70,8 +70,8 @@ public class CacheNature implements IProjectNature {
 		return diconCacheBuilder;
 	}
 	
-	public IDeploymentDiconModelRegistry getDeploymentModelRegistry() {
-		return deploymentModelRegistry;
+	public IDeploymentDiconCache getDeploymentDiconCache() {
+		return deploymentDiconCache;
 	}
 	
 	public CacheRegistry getCacheRegistry() {
@@ -85,7 +85,7 @@ public class CacheNature implements IProjectNature {
 		initialized = true;
 		rowDiconCache = new RowDiconCache();
 		rowDiconCache.setProject(getProject());
-		rowDiconCache.addDiconChangeListener("deploymentmodel", deploymentModelRegistry);
+		rowDiconCache.addDiconChangeListener("deploymentmodel", deploymentDiconCache);
 		diconCacheBuilder = new DiconCacheBuilder(rowDiconCache);
 		diconCacheBuilder.setProject(getProject());
 		diconCacheBuilder.buildCache();

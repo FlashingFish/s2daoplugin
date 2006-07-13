@@ -26,7 +26,7 @@ import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.cache.factory.CacheRegistry;
 import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.cache.filter.AspectFilter;
-import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconModelRegistry;
+import org.seasar.s2daoplugin.cache.deployment.IDeploymentDiconCache;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerListenerContext;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerPostListener;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerPreListener;
@@ -89,9 +89,9 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 	}
 	
 	private void addListenerIfNecessary(CacheNature nature, IComponentCache cache) {
-		IDeploymentDiconModelRegistry registry = nature.getDeploymentModelRegistry();
-		if (!registry.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
-			registry.addDiconChangeListener(S2DAO_CACHE_KEY, createListener(cache));
+		IDeploymentDiconCache ddc = nature.getDeploymentDiconCache();
+		if (!ddc.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
+			ddc.addDiconChangeListener(S2DAO_CACHE_KEY, createListener(cache));
 		}
 	}
 	
@@ -102,7 +102,7 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 		}
 		CacheRegistry registry = nature.getCacheRegistry();
 		registry.removeComponentCache(S2DAO_CACHE_KEY);
-		IDeploymentDiconModelRegistry modelRegistry = nature.getDeploymentModelRegistry();
+		IDeploymentDiconCache modelRegistry = nature.getDeploymentDiconCache();
 		modelRegistry.removeDiconChangeListener(S2DAO_CACHE_KEY);
 	}
 	

@@ -36,7 +36,7 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			IResourceDelta delta = getDelta(getProject());
 			if (delta != null) {
 				try {
-					delta.accept(new CacheDeltaVisitor(nature.getDeploymentModelRegistry()));
+					delta.accept(new CacheDeltaVisitor(nature.getDeploymentDiconCache()));
 				} catch (StopVisitingException ignore) {
 				}
 			}

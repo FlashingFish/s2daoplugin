@@ -19,7 +19,8 @@ import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.IDiconChangeListenerHolder;
 import org.seasar.s2daoplugin.cache.ITypeChangeListener;
 
-public interface IDeploymentDiconModelRegistry extends IDiconChangeListener,
+public interface IDeploymentDiconCache extends IDiconChangeListener,
 		IDiconChangeListenerHolder, ITypeChangeListener {
 
+	// deploymentƒ‚ƒfƒ‹‚ğæ“¾‚·‚éê‡
 }

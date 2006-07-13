@@ -23,12 +23,12 @@ import org.eclipse.core.runtime.IPath;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.AbstractListenerHoldableCache;
 
-public class DeploymentDiconModelRegistry extends AbstractListenerHoldableCache
-		implements IDeploymentDiconModelRegistry {
+public class DeploymentDiconCache extends AbstractListenerHoldableCache
+		implements IDeploymentDiconCache {
 
 	private Map containerMap = new HashMap();
 	
-	public DeploymentDiconModelRegistry() {
+	public DeploymentDiconCache() {
 	}
 
 	public void initialize() {
