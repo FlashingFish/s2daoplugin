@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- don't edit start -->
+<head>
+<title>Seasar - DI Container with AOP - </title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link href="http://www.seasar.org/seasar_b.css" type="text/css" rel="stylesheet" media="screen" />
+<link href="../css/style.css" type="text/css" rel="stylesheet" media="screen"/>
+<script src="../js/seasar_b.js" type="text/JavaScript" language="JavaScript"></script>
+</head>
+<body onload="preload('ja')">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="left"><tr>
+<td align="left" valign="top" width="780"><table width="780" border="0" cellspacing="0" cellpadding="0" class="white">
+<tr><td colspan="7"><img height="5" width="780" src="http://www.seasar.org/images/top01_b.gif" alt=""></td></tr>
+<tr><td><img height="117" width="235" src="http://www.seasar.org/images/top02_b.gif" alt="Seasar"></td>
+<td colspan="3"><img height="117" width="289" src="http://www.seasar.org/images/top03.gif" alt="DI Container with AOP"></td>
+<td colspan="3"></td>
+</tr><tr><td rowspan="2"><img src="http://www.seasar.org/images/top04.gif" alt="" height="49" width="235"></td>
+<td><a href="http://www.seasar.org/index.html"><img src="http://www.seasar.org/images/menu01_b_ja.gif" height="30" width="78" border="0" alt="" id="menu01" onmouseover="swap(1)" onmouseout="restore(1)"></a></td>
+<td><a href="http://www.seasar.org/projects.html"><img src="http://www.seasar.org/images/menu02_b_ja.gif" height="30" width="101" border="0" alt="" id="menu02" onmouseover="swap(2)" onmouseout="restore(2)"></a></td>
+<td><a href="http://www.seasar.org/products.html"><img src="http://www.seasar.org/images/menu03_b_ja.gif" height="30" width="110" border="0" alt="" id="menu03" onmouseover="swap(3)" onmouseout="restore(3)"></a></td>
+<td><a href="http://www.seasar.org/resources.html"><img src="http://www.seasar.org/images/menu04_b_ja.gif" height="30" width="113" border="0" alt="" id="menu04" onmouseover="swap(4)" onmouseout="restore(4)"></a></td>
+<td><img src="http://www.seasar.org/images/menu05_b_ja.gif" height="30" width="109" border="0" alt="" id="menu05" onmouseover="swap(5)" onmouseout="restore(5)"></td>
+<td><img height="30" width="34" src="http://www.seasar.org/images/menu06.gif" alt=""></td></tr><tr>
+<td colspan="6"><img height="19" width="545" src="http://www.seasar.org/images/spacer.gif" alt=""></td></tr></table>
+<table  width="780" border="0" cellspacing="0" cellpadding="0" class="white">
+<tr align="left" valign="top"><td width="14"><img height="14" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td><td width="740" class="main">
+<!-- don't edit end -->
+<!-- document start -->
+
+
+<h4><span>使い方</span></h4>
+<ul>
+  <li><a href="#func_sql_open">SQLファイルを開く</a>
+    <ul>
+      <li><a href="#func_sql_open_01">エディタから開く</a></li>
+      <li><a href="#func_sql_open_02">パッケージエクスプローラーやタイプ・メンバービューから開く</a></li>
+    </ul>
+  </li>
+  <li><a href="#func_sql_create">SQLファイルを作成する</a></li>
+  <li><a href="#func_sql_marker">SQLファイルのあるメソッドにマーカを付ける</a></li>
+</ul>
+
+<h5><a name="func_sql_open">SQLファイルを開く</a></h5>
+<ul>
+  <li><a name="func_sql_open_01">エディタから開く</a></li>
+  <p>DAOの呼び出し元や、開いているDAOのインターフェースからSQLファイルを開くことができます。
+  メソッドを選択した場合はそのメソッドに対応するSQLファイルを、インターフェースを選択した場合はすべてのメソッドで対応する
+  SQLファイルを開きます。複数DBMS対応を行っていてメソッドに対応するSQLファイルが複数ある場合は、それらすべてを開きます。
+  </p>
+  <div>
+  <b>DAOの呼び出し元から開く場合</b><br/>
+  DAOの呼び出し元を開いてメソッドを選択し、コンテキストメニューから「対応するSQLを開く」をクリックします。<br clear="all"/><br/>
+  <img class="ss" src="images/10.png" alt="10"/>
+  </div>
+  <br/>
+  <div>
+  <b>DAOから開く場合</b><br/>
+  または、DAOを開いてメソッドを選択し、同じように「対応するSQLを開く」をクリックします。<br clear="all"/><br/>
+  <img class="ss" src="images/11.png" alt="11"/>
+  </div>
+  <br/>
+  <li><a name="func_sql_open_02">パッケージエクスプローラーやタイプ・メンバービューから開く</a></li>
+  <p>パッケージエクスプローラー上でDAOのjavaファイルを選択することや、javaファイルを展開してメソッドを選択することでも
+  SQLファイルを開くことができます。Java参照パースペクティブでも同じように使うことができます。</p>
+  <div>
+  <b>「パッケージエクスプローラ」から開く場合</b><br/>
+  Javaファイルを展開してメソッド、またはタイプを選択します。Javaファイルを選択した場合は、トップレベルのタイプを選択したことになります。<br clear="all"/><br/>
+  <img class="ss" src="images/12.png" alt="12"/>
+  </div>
+</ul>
+
+<h5><a name="func_sql_create">SQLファイルを作成する</a></h5>
+<ul>
+  <p>SQLファイルを開こうとして対応するSQLファイルが存在しない場合は、SQLファイル作成用のウィザードを使って新規に作成する
+  ことができます。ファイル名や保存するフォルダは自動的に決定されるのでほとんどの場合変更する必要はありませんが、
+  複数DBMS対応を行いたいときなどは、使用するDBMSを選択することでサフィックスを追加することができます。</p>
+</ul>
+
+<h5><a name="func_sql_marker">SQLファイルのあるメソッドにマーカを付ける</a></h5>
+<ul>
+  <p>対応するSQLファイルのあるメソッドにマーカが付きます。S2Daoプラグインが有効になっている限り自動的に付くので何もする必要はありません。</p>
+</ul>
+
+
+<br/>
+<!-- document end -->
+<!-- don't edit start -->
+</td>
+<td width="14"><img height="14" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+</tr><tr>
+<td width="14"><img height="30" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+<td width="766"><img height="30" width="592" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+</tr><tr>
+<td width="14"><img height="14" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+<td width="766" class="copyright">Copyright&copy; 2004-2006, The Seasar Foundation and the others. All rights reserved.</td>
+</tr></table>
+<td class="backright" align="left" valign="top">&nbsp;</td></tr><tr>
+<td class="backunder" align="left"  valign="top" width="780" height="16">&nbsp;</td>
+<td class="backcorner" align="left" valign="top" height="16">&nbsp;</td>
+</tr>
+</table>
+</body>
+<!-- document end -->
+</html>

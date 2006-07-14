@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- don't edit start -->
+<head>
+<title>Seasar - DI Container with AOP - </title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link href="http://www.seasar.org/seasar_b.css" type="text/css" rel="stylesheet" media="screen" />
+<link href="../css/style.css" type="text/css" rel="stylesheet" media="screen"/>
+<script src="../js/seasar_b.js" type="text/JavaScript" language="JavaScript"></script>
+</head>
+<body onload="preload('ja')">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="left"><tr>
+<td align="left" valign="top" width="780"><table width="780" border="0" cellspacing="0" cellpadding="0" class="white">
+<tr><td colspan="7"><img height="5" width="780" src="http://www.seasar.org/images/top01_b.gif" alt=""></td></tr>
+<tr><td><img height="117" width="235" src="http://www.seasar.org/images/top02_b.gif" alt="Seasar"></td>
+<td colspan="3"><img height="117" width="289" src="http://www.seasar.org/images/top03.gif" alt="DI Container with AOP"></td>
+<td colspan="3"></td>
+</tr><tr><td rowspan="2"><img src="http://www.seasar.org/images/top04.gif" alt="" height="49" width="235"></td>
+<td><a href="http://www.seasar.org/index.html"><img src="http://www.seasar.org/images/menu01_b_ja.gif" height="30" width="78" border="0" alt="" id="menu01" onmouseover="swap(1)" onmouseout="restore(1)"></a></td>
+<td><a href="http://www.seasar.org/projects.html"><img src="http://www.seasar.org/images/menu02_b_ja.gif" height="30" width="101" border="0" alt="" id="menu02" onmouseover="swap(2)" onmouseout="restore(2)"></a></td>
+<td><a href="http://www.seasar.org/products.html"><img src="http://www.seasar.org/images/menu03_b_ja.gif" height="30" width="110" border="0" alt="" id="menu03" onmouseover="swap(3)" onmouseout="restore(3)"></a></td>
+<td><a href="http://www.seasar.org/resources.html"><img src="http://www.seasar.org/images/menu04_b_ja.gif" height="30" width="113" border="0" alt="" id="menu04" onmouseover="swap(4)" onmouseout="restore(4)"></a></td>
+<td><img src="http://www.seasar.org/images/menu05_b_ja.gif" height="30" width="109" border="0" alt="" id="menu05" onmouseover="swap(5)" onmouseout="restore(5)"></td>
+<td><img height="30" width="34" src="http://www.seasar.org/images/menu06.gif" alt=""></td></tr><tr>
+<td colspan="6"><img height="19" width="545" src="http://www.seasar.org/images/spacer.gif" alt=""></td></tr></table>
+<table  width="780" border="0" cellspacing="0" cellpadding="0" class="white">
+<tr align="left" valign="top"><td width="14"><img height="14" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td><td width="740" class="main">
+<!-- don't edit end -->
+<!-- document start -->
+
+
+<h4><span>S2DaoPluginとは</span></h4>
+<p>S2Daoを使った開発を支援するためのEclipseプラグインです。次の機能を提供しています。</p>
+<ul>
+  <li>Daoのメソッドに対応したSQLファイルを開く・作成する</li>
+  <li>SQLファイルのあるメソッドにマーカを表示する</li>
+</ul>
+
+<h4><span>ドキュメント</span></h4>
+<ul>
+  <li><a href="document.html">使い方</a></li>
+</ul>
+
+<h4><span>動作環境</span></h4>
+<p>S2DaoPluginを使うには次の環境が必要です。</p>
+<ul>
+  <li>J2SE 1.4.2以降</li>
+  <li>Eclipse 3.1.2</li>
+  <li><a href="http://kijimuna.seasar.org/">Kijimuna</a> 1.1以降</li>
+</ul>
+
+<h4><span>セットアップ</span></h4>
+<p>Eclipseの更新サイトを提供しています。Eclipseのメニューから、「ヘルプ > ソフトウェア更新 > 検索とインストール > 
+インストールする新規フィーチャーを検索」を選択して次のURLを追加してインストールします。</p>
+<ul>
+  <li><a href="http://eclipse.seasar.org/updates/3.1/">http://eclipse.seasar.org/updates/3.1/</a></li>
+</ul>
+<p>インストールが完了したら、S2Daoを使うプロジェクトのプロパティを開いて、S2Daoカテゴリから
+「S2Daoプラグインを有効にする」にチェックを入れれば完了です。</p>
+<img class="ss" src="images/01.png" alt="01"/>
+
+<h4><span>うまく動かないのだけど</span></h4>
+<p>S2DaoPluginはKijimunaの機能を利用しています。Kijimunaがインストールされており、プロジェクトのプロパティで
+「Seasar プロジェクト」にチェックが入っていることを確認してください。</p>
+<p>次に、ビルダーカテゴリを選択してビルダーの順序が下記のイメージと同じになっていることを確認してください。
+それでも動かない場合はバグの可能性があります。お手数ですがバグトラッキングへ報告いただけると幸いです。</p>
+<img class="ss" src="images/02.png" alt="02"/>
+
+<h4><span>バグトラッキング</span></h4>
+<a href="https://www.seasar.org/issues/browse/DAOPLUGIN">JIRA</a>
+
+<h4><span>更新履歴</span></h4>
+<a href="https://www.seasar.org/svn/sandbox/s2daoplugin/trunk/org.seasar.s2daoplugin/ChangeLog.txt">ChangeLog.txt</a>
+<ul>
+  <li>2006/07/00 - 0.1.0リリース</li>
+</ul>
+
+
+<br/>
+<!-- document end -->
+<!-- don't edit start -->
+</td>
+<td width="14"><img height="14" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+</tr><tr>
+<td width="14"><img height="30" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+<td width="766"><img height="30" width="592" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+</tr><tr>
+<td width="14"><img height="14" width="14" src="http://www.seasar.org/images/spacer.gif" alt=""></td>
+<td width="766" class="copyright">Copyright&copy; 2004-2006, The Seasar Foundation and the others. All rights reserved.</td>
+</tr></table>
+<td class="backright" align="left" valign="top">&nbsp;</td></tr><tr>
+<td class="backunder" align="left"  valign="top" width="780" height="16">&nbsp;</td>
+<td class="backcorner" align="left" valign="top" height="16">&nbsp;</td>
+</tr>
+</table>
+</body>
+<!-- don't edit end -->
+</html>
