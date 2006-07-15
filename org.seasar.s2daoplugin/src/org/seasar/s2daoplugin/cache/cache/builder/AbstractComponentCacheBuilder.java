@@ -22,12 +22,12 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
 
-public abstract class AbstractCacheBuilder implements ICacheBuilder {
+public abstract class AbstractComponentCacheBuilder implements IComponentCacheBuilder {
 
 	private IComponentFilter filter;
 	private IComponentCache cache;
 	
-	public AbstractCacheBuilder(IComponentFilter filter) {
+	public AbstractComponentCacheBuilder(IComponentFilter filter) {
 		if (filter == null) {
 			throw new IllegalArgumentException();
 		}

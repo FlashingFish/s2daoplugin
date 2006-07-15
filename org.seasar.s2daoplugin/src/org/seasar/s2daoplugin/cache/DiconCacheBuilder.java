@@ -16,6 +16,8 @@
 package org.seasar.s2daoplugin.cache;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.seasar.kijimuna.core.dicon.DiconNature;
 import org.seasar.kijimuna.core.dicon.ModelManager;
 
@@ -24,6 +26,7 @@ public class DiconCacheBuilder {
 	private IRawDiconCache cache;
 	private boolean modelInitialized;
 	private IProject project;
+	private ILock lock = Platform.getJobManager().newLock();
 	
 	public DiconCacheBuilder(IRawDiconCache cache) {
 		this.cache = cache;
@@ -33,24 +36,37 @@ public class DiconCacheBuilder {
 		this.project = project;
 	}
 	
-	public synchronized void buildCache() {
+	public void buildCache() {
+		try {
+			lock.acquire();
+			build();
+		} finally {
+			lock.release();
+		}
+	}
+	
+	private void build() {
 		DiconNature nature = DiconNature.getInstance(project);
 		if (nature != null) {
 			ModelManager model = nature.getModel();
 			if (model == null) {
 				return;
 			}
-			// kijimuna OFF -> ONでモデルが空の時を回避するため。
-			// だが完璧ではなく、ビルドされる前にdiconエディタを起動されると
-			// そのdiconだけビルドされてしまうのでdirtyになってしまう。
-			if (!modelInitialized && !model.isDirty()) {
-				model.init(null);
-			}
-			modelInitialized = true;
+			buildKijimunaModelIfModelIsEmpty(model);
 			cache.buildModel(model.getContainers(null));
 		} else {
 			cache.clearModel();
 		}
+	}
+	
+	private void buildKijimunaModelIfModelIsEmpty(ModelManager model) {
+		// プロジェクト close -> open でkijimunaのモデルが空の時を回避するため。
+		// だが完璧ではなく、ビルドされる前にdiconエディタを起動されると
+		// そのdiconだけビルドされてしまうのでdirtyになってしまう。
+		if (!modelInitialized && !model.isDirty()) {
+			model.init(null);
+		}
+		modelInitialized = true;
 	}
 
 }

@@ -19,16 +19,16 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.kijimuna.core.rtti.RttiLoader;
-import org.seasar.s2daoplugin.cache.cache.builder.ICacheBuilder;
+import org.seasar.s2daoplugin.cache.cache.builder.IComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.cache.util.RttiUtil;
 
 public abstract class AbstractComponentCache extends AbstractCache {
 
-	private ICacheBuilder builder;
+	private IComponentCacheBuilder builder;
 	private boolean initialized;
 	
-	public AbstractComponentCache(ICacheBuilder builder) {
+	public AbstractComponentCache(IComponentCacheBuilder builder) {
 		if (builder == null) {
 			throw new IllegalArgumentException();
 		}

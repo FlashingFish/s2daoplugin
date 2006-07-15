@@ -15,9 +15,6 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-import org.seasar.kijimuna.core.dicon.model.IComponentElement;
-import org.seasar.kijimuna.core.dicon.model.IContainerElement;
-
 public interface CacheConstants {
 
 	String INTERCEPTOR_CHAIN = "org.seasar.framework.aop.interceptors.InterceptorChain";
@@ -35,9 +32,6 @@ public interface CacheConstants {
 			ASPECT_AUTO_REGISTER,
 			INTERFACE_ASPECT_AUTO_REGISTER,
 	};
-	
-	IContainerElement[] EMPTY_CONTAINERS = new IContainerElement[0];
-	IComponentElement[] EMPTY_COMPONENTS = new IComponentElement[0];
 
 	String ID_CACHE_NATURE = "org.seasar.s2daoplugin.cachenature";
 	String ID_CACHE_BUILDER = "org.seasar.s2daoplugin.cachebuilder";

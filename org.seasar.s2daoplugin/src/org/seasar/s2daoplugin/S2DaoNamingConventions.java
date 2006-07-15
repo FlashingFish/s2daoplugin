@@ -29,12 +29,12 @@ import org.seasar.s2daoplugin.util.StringUtil;
 
 public class S2DaoNamingConventions implements S2DaoConstants {
 
-	private static final String SQL_EXTENSION = "sql";
+	private static final String SQL_EXTENSION = ".sql";
 	private static final char SEPARATOR = '_';
 	private static final String[][] EMPTY_RESOLVE = new String[0][0]; 
 
 	public static String createSqlFileName(IMethod method) {
-		return createBaseSqlFileName(method) + '.' + SQL_EXTENSION;
+		return createBaseSqlFileName(method) + SQL_EXTENSION;
 	}
 	
 	public static String createBaseSqlFileName(IMethod method) {
@@ -51,7 +51,7 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 		}
 		for (int i = 0; i < DBMS_SUFFIXES.length; i++) {
 			if (file.getName().equals(filename + DBMS_SUFFIXES[i] +
-					'.' + SQL_EXTENSION)) {
+					SQL_EXTENSION)) {
 				return true;
 			}
 		}
@@ -68,7 +68,7 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 			extensionDeleted = true;
 		}
 		filename = removeSuffix(filename) + newSuffix;
-		return extensionDeleted ? filename + '.' + SQL_EXTENSION : filename;
+		return extensionDeleted ? filename + SQL_EXTENSION : filename;
 	}
 	
 	/**
@@ -78,8 +78,7 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 	 * @return {{"PackageName", "DaoTypeName", "MethodName"}, ...}
 	 */
 	public static String[][] resovleDao(IFile sql) {
-		if (sql == null || !SQL_EXTENSION.equalsIgnoreCase(sql
-				.getFileExtension()) ||
+		if (sql == null || !sql.getName().toLowerCase().endsWith(SQL_EXTENSION) ||
 				!JavaProjectUtil.isInSourceFolder(sql)) {
 			return EMPTY_RESOLVE;
 		}
@@ -88,7 +87,8 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 		List ret = new ArrayList();
 		String name = sql.getName();
 		if (hasSuffix(name)) {
-			ret.addAll(createDaoNames(packageName, removeSuffix(removeExtension(name))));
+			ret.addAll(createDaoNames(packageName, removeSuffix(removeExtension(
+					name))));
 		}
 		ret.addAll(createDaoNames(packageName, removeExtension(name)));
 		String[][] result = new String[ret.size()][];

@@ -28,7 +28,7 @@ import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
 import org.seasar.s2daoplugin.cache.cache.builder.ComponentCacheBuilder;
-import org.seasar.s2daoplugin.cache.cache.builder.ICacheBuilder;
+import org.seasar.s2daoplugin.cache.cache.builder.IComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.cache.util.RttiUtil;
@@ -44,18 +44,18 @@ public class ComponentCache extends AbstractComponentCache {
 		this(new ComponentCacheBuilder(filter));
 	}
 	
-	public ComponentCache(ICacheBuilder builder) {
+	public ComponentCache(IComponentCacheBuilder builder) {
 		super(builder);
 	}
 	
 	public IComponentElement[] getComponents(IType type) {
-		return type != null ?
-				getComponents(type.getFullyQualifiedName()) : EMPTY_COMPONENTS;
+		return type != null ? getComponents(type.getFullyQualifiedName()) :
+			DiconUtil.EMPTY_COMPONENTS;
 	}
 
 	public IComponentElement[] getComponents(String fullyQualifiedClassName) {
 		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
-			return EMPTY_COMPONENTS;
+			return DiconUtil.EMPTY_COMPONENTS;
 		}
 		Set result = new HashSet();
 		IRtti[] rtties = getAllTypes(fullyQualifiedClassName);

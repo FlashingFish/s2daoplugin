@@ -66,8 +66,8 @@ public class CacheNature implements IProjectNature {
 		this.project = project;
 	}
 	
-	public DiconCacheBuilder getDiconCacheBuilder() {
-		return diconCacheBuilder;
+	public IRawDiconCache getRawDiconCache() {
+		return rawDiconCache;
 	}
 	
 	public IDeploymentDiconCache getDeploymentDiconCache() {
@@ -76,6 +76,10 @@ public class CacheNature implements IProjectNature {
 	
 	public CacheRegistry getCacheRegistry() {
 		return cacheRegistry;
+	}
+	
+	public DiconCacheBuilder getDiconCacheBuilder() {
+		return diconCacheBuilder;
 	}
 	
 	private void initialize() {

@@ -33,8 +33,9 @@ public abstract class AbstractListenerHoldableCache implements
 		if (StringUtil.isEmpty(key) || listener == null) {
 			return;
 		}
-		affectedContainers.addListener(key, listener);
+		assertProjectIsNotNull();
 		listener.setProject(project);
+		affectedContainers.addListener(key, listener);
 		fireInitialEvent(listener);
 	}
 
@@ -63,6 +64,12 @@ public abstract class AbstractListenerHoldableCache implements
 	
 	protected IProject getProject() {
 		return project;
+	}
+	
+	protected void assertProjectIsNotNull() {
+		if (project == null) {
+			throw new IllegalStateException();
+		}
 	}
 
 }

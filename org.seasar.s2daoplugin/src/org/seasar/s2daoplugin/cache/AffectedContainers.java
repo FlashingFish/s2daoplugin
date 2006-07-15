@@ -74,7 +74,7 @@ public class AffectedContainers {
 			for (int i = 0; i < containers.size(); i++) {
 				((EventFirer) containers.get(i)).fire();
 			}
-			if (containers.size() > 0) {
+			if (!containers.isEmpty()) {
 				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
 					((IDiconChangeListener) it.next()).finishChanged();
 				}

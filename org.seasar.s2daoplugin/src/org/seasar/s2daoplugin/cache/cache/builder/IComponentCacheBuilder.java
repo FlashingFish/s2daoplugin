@@ -16,8 +16,11 @@
 package org.seasar.s2daoplugin.cache.cache.builder;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 
-public interface IBuilderLifecycle {
+public interface IComponentCacheBuilder {
+
+	void setComponentCache(IComponentCache cache);
 	
 	void initialize();
 	
@@ -26,4 +29,5 @@ public interface IBuilderLifecycle {
 	void clear(IComponentElement[] components);
 	
 	void finishBuild();
+
 }

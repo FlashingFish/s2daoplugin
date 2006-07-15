@@ -67,7 +67,7 @@ public final class AspectUtil implements CacheConstants {
 	
 	public static IComponentElement[] getAllInterceptors(IComponentElement interceptor) {
 		if (interceptor == null) {
-			return EMPTY_COMPONENTS;
+			return DiconUtil.EMPTY_COMPONENTS;
 		}
 		Set result = new HashSet();
 		if (isInterceptorChain(interceptor)) {

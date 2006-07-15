@@ -43,13 +43,13 @@ public class CacheFacade extends AbstractCache {
 	}
 	
 	public IComponentElement[] getComponents(IType type) {
-		return type != null ?
-				getComponents(type.getFullyQualifiedName()) : EMPTY_COMPONENTS;
+		return type != null ? getComponents(type.getFullyQualifiedName()) :
+			DiconUtil.EMPTY_COMPONENTS;
 	}
 
 	public IComponentElement[] getComponents(String fullyQualifiedClassName) {
 		if (StringUtil.isEmpty(fullyQualifiedClassName)) {
-			return EMPTY_COMPONENTS;
+			return DiconUtil.EMPTY_COMPONENTS;
 		}
 		Set result = new HashSet();
 		for (Iterator it = cacheByContainerPath.values().iterator(); it.hasNext();) {

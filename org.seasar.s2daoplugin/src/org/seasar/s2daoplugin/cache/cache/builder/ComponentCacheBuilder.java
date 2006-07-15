@@ -19,7 +19,7 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.cache.filter.ClassNameFilter;
 import org.seasar.s2daoplugin.cache.cache.filter.IComponentFilter;
 
-public class ComponentCacheBuilder extends AbstractCacheBuilder {
+public class ComponentCacheBuilder extends AbstractComponentCacheBuilder {
 
 	public ComponentCacheBuilder(String className) {
 		this(new String[] {className});

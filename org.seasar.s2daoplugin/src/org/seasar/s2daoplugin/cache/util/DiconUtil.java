@@ -27,6 +27,11 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 
 public final class DiconUtil implements CacheConstants {
 
+	public static final IContainerElement[] EMPTY_CONTAINERS =
+		new IContainerElement[0];
+	public static final IComponentElement[] EMPTY_COMPONENTS =
+		new IComponentElement[0];
+	
 	public static IContainerElement[] toContainerArray(Collection collection) {
 		return collection != null ? (IContainerElement[]) collection.toArray(
 				new IContainerElement[collection.size()]) : EMPTY_CONTAINERS;
