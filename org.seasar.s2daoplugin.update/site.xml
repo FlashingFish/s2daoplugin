@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.seasar.s2daoplugin.feature_0.1.0.jar" id="org.seasar.s2daoplugin.feature" version="0.1.0">
+      <category name="s2daoplugin"/>
+   </feature>
+   <category-def name="s2daoplugin" label="s2daoplugin"/>
+</site>
