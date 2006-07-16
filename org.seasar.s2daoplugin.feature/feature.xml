@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.seasar.s2daoplugin.feature"
+      id="org.seasar.s2daoplugin"
       label="%feature.name"
       version="0.1.0"
       provider-name="%feature.provider">
@@ -218,7 +218,7 @@
    </license>
 
    <url>
-      <update label="Seasar Plugin Update Site" url="http://eclipse.seasar.org/updates/3.1/"/>
+      <update label="Seasar Plugin Update Site" url="http://eclipse.seasar.org/updates/3.1beta/"/>
    </url>
 
    <requires>
