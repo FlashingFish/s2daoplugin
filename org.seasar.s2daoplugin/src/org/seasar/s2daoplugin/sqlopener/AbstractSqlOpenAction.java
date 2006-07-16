@@ -83,7 +83,14 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 				return;
 			}
 			IMethod[] methods = findS2DaoInterceptorAppliedMethods(member);
-			IDEUtil.openEditors(findSqlFiles(methods));
+			IFile[] sqls = findSqlFiles(methods);
+			if (sqls.length == 0 && member instanceof IMethod) {
+				if (confirmCreation()) {
+					openSqlCreationWizard(methods[0]);
+					return;
+				}
+			}
+			IDEUtil.openEditors(sqls);
 		} catch (CoreException e) {
 			S2DaoPlugin.log(e);
 		}
@@ -105,12 +112,6 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 		Set sqlFiles = new HashSet();
 		for (int i = 0; i < methods.length; i++) {
 			sqlFiles.addAll(Arrays.asList(resolver.findSqlFiles(methods[i])));
-		}
-		// sql新規作成ウィザードを作り変えたらsqlFiles.isEmpty()だけで判断する
-		if (methods.length == 1 && sqlFiles.isEmpty()) {
-			if (confirmCreation()) {
-				openSqlCreationWizard(methods[0]);
-			}
 		}
 		return (IFile[]) sqlFiles.toArray(new IFile[sqlFiles.size()]);
 	}
