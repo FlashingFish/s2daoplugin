@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IPropertyElement;
 import org.seasar.kijimuna.core.parser.IElement;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 
 public class IsolatedElementFactory implements ConstCore {
@@ -59,7 +61,7 @@ public class IsolatedElementFactory implements ConstCore {
     		IComponentElement component = (IComponentElement) createElement(
     				DICON_TAG_COMPONENT, autoRegister);
     		createAttributes(component, fullyQualifiedClassName);
-//    		setParent(component, autoRegister.getParent());
+    		setParent(component, autoRegister.getParent());
     		return component;
     	}
     	
@@ -71,36 +73,35 @@ public class IsolatedElementFactory implements ConstCore {
     		component.setAttributes(attribues);
     	}
     	
-    	// IComponentElement#setParentするとparent#addChildも動くため。
-    	// でもIContainerElementのラッパを作ったからいらないのか…
-//    	private static void setParent(IElement child, IElement parent) {
-//    		Field field = findParentField(child.getClass());
-//    		if (field == null) {
-//    			throw new IllegalStateException("found no parent field");
-//    		}
-//    		try {
-//    			field.set(child, parent);
-//    		} catch (IllegalArgumentException e) {
-//    			S2DaoPlugin.log(e);
-//    		} catch (IllegalAccessException e) {
-//    			S2DaoPlugin.log(e);
-//    		}
-//    	}
-//    	
-//    	private static Field findParentField(Class clazz) {
-//    		Field[] fields = clazz.getDeclaredFields();
-//    		for (int i = 0; i < fields.length; i++) {
-//    			fields[i].setAccessible(true);
-//    			if ("parent".equals(fields[i].getName())) {
-//    				return fields[i];
-//    			}
-//    		}
-//    		Class superClass = clazz.getSuperclass();
-//    		if (clazz != Object.class && superClass != null) {
-//    			return findParentField(superClass);
-//    		}
-//    		return null;
-//    	}
+    	// IComponentElement#setParentするとparent#addChildも動くため
+    	private static void setParent(IElement child, IElement parent) {
+    		Field field = findParentField(child.getClass());
+    		if (field == null) {
+    			throw new IllegalStateException("found no parent field");
+    		}
+    		try {
+    			field.set(child, parent);
+    		} catch (IllegalArgumentException e) {
+    			S2DaoPlugin.log(e);
+    		} catch (IllegalAccessException e) {
+    			S2DaoPlugin.log(e);
+    		}
+    	}
+    	
+    	private static Field findParentField(Class clazz) {
+    		Field[] fields = clazz.getDeclaredFields();
+    		for (int i = 0; i < fields.length; i++) {
+    			fields[i].setAccessible(true);
+    			if ("parent".equals(fields[i].getName())) {
+    				return fields[i];
+    			}
+    		}
+    		Class superClass = clazz.getSuperclass();
+    		if (clazz != Object.class && superClass != null) {
+    			return findParentField(superClass);
+    		}
+    		return null;
+    	}
     }
 	
 	private static class AspectElementCreator {

@@ -100,7 +100,7 @@ public class DeploymentContainer implements IDeploymentContainer {
 	private void createDeployedContainer() {
 		IContainerElement newContainer = new ContainerElementWrapper(originalContainer);
 		while (!deployedQueue.isEmpty()) {
-			deployedQueue.poll().setParent(newContainer);
+			newContainer.addChild(deployedQueue.poll());
 		}
 		deployedContainer = newContainer;
 	}

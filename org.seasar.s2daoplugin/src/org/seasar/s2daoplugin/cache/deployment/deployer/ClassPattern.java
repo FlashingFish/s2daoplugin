@@ -16,6 +16,7 @@
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.seasar.s2daoplugin.util.StringUtil;
 
@@ -49,7 +50,10 @@ public class ClassPattern {
         shortClassNamePatterns = new Pattern[classNames.length];
         for (int i = 0; i < classNames.length; ++i) {
             String s = classNames[i].trim();
-            shortClassNamePatterns[i] = Pattern.compile(s);
+            try {
+            	shortClassNamePatterns[i] = Pattern.compile(s);
+            } catch (PatternSyntaxException ignore) {
+            }
         }
     }
     
@@ -58,7 +62,8 @@ public class ClassPattern {
             return true;
         }
         for (int i = 0; i < shortClassNamePatterns.length; ++i) {
-            if (shortClassNamePatterns[i].matcher(shortClassName).matches()) {
+            if (shortClassNamePatterns[i] != null &&
+            		shortClassNamePatterns[i].matcher(shortClassName).matches()) {
                 return true;
             }
         }
