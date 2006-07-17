@@ -21,12 +21,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.Platform;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 
+// TODO: リスナ別イベントに
 public class AffectedContainers {
 
 	private Map listeners = new HashMap();
-	private List containers = new LinkedList(); 
+	private List events = new LinkedList(); 
 	
 	public boolean hasListener(String key) {
 		return listeners.containsKey(key);
@@ -41,7 +45,7 @@ public class AffectedContainers {
 	}
 	
 	public void addAddedContainer(final IContainerElement container) {
-		containers.add(new EventFirer() {
+		events.add(new EventFirer() {
 			public void process(IDiconChangeListener listener) {
 				listener.diconAdded(container);
 			}
@@ -50,7 +54,7 @@ public class AffectedContainers {
 	
 	public void addUpdatedContainer(final IContainerElement old,
 			final IContainerElement young) {
-		containers.add(new EventFirer() {
+		events.add(new EventFirer() {
 			public void process(IDiconChangeListener listener) {
 				listener.diconUpdated(old, young);
 			}
@@ -58,7 +62,7 @@ public class AffectedContainers {
 	}
 	
 	public void addRemovedContainer(final IContainerElement container) {
-		containers.add(new EventFirer() {
+		events.add(new EventFirer() {
 			public void process(IDiconChangeListener listener) {
 				listener.diconRemoved(container);
 			}
@@ -66,22 +70,45 @@ public class AffectedContainers {
 	}
 	
 	public void clearContainers() {
-		containers.clear();
+		events.clear();
 	}
 	
 	public void fireEvents() {
 		try {
-			for (int i = 0; i < containers.size(); i++) {
-				((EventFirer) containers.get(i)).fire();
+			for (int i = 0; i < events.size(); i++) {
+				((EventFirer) events.get(i)).fire();
 			}
-			if (!containers.isEmpty()) {
-				for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-					((IDiconChangeListener) it.next()).finishChanged();
-				}
+			if (events.isEmpty()) {
+				return;
+			}
+			for (Iterator it = listeners.values().iterator(); it.hasNext();) {
+				final IDiconChangeListener listener = (IDiconChangeListener) it.next();
+				run(new ISafeRunnable() {
+					public void handleException(Throwable t) {
+						AffectedContainers.this.handleException(t, listener);
+					}
+					public void run() throws Exception {
+						listener.finishChanged();
+					}
+				});
 			}
 		} finally {
 			clearContainers();
 		}
+	}
+	
+	private void handleException(Throwable t, IDiconChangeListener listener) {
+		S2DaoPlugin.log(t);
+		if (listener instanceof IExceptionHandler) {
+			try {
+				((IExceptionHandler) listener).handleException(t);
+			} catch (Throwable ignore) {
+			}
+		}
+	}
+	
+	private void run(ISafeRunnable runnable) {
+		Platform.run(runnable);
 	}
 	
 	
@@ -89,7 +116,16 @@ public class AffectedContainers {
 		
 		public void fire() {
 			for (Iterator it = listeners.values().iterator(); it.hasNext();) {
-				process((IDiconChangeListener) it.next());
+				final IDiconChangeListener listener =
+					(IDiconChangeListener) it.next();
+				run(new ISafeRunnable() {
+					public void handleException(Throwable t) {
+						AffectedContainers.this.handleException(t, listener);
+					}
+					public void run() throws Exception {
+						process(listener);
+					}
+				});
 			}
 		}
 		

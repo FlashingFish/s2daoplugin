@@ -83,6 +83,9 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 				return;
 			}
 			IMethod[] methods = findS2DaoInterceptorAppliedMethods(member);
+			if (methods.length == 0) {
+				return;
+			}
 			IFile[] sqls = findSqlFiles(methods);
 			if (sqls.length == 0 && member instanceof IMethod) {
 				if (confirmCreation()) {

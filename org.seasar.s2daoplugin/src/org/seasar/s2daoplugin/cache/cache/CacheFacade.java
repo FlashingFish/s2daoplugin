@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
@@ -30,16 +31,21 @@ import org.seasar.s2daoplugin.cache.cache.factory.IComponentCacheFactory;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.util.StringUtil;
 
-public class CacheFacade extends AbstractCache {
+public class CacheFacade implements IComponentCache {
 
 	private Map cacheByContainerPath = new HashMap();
 	private IComponentCacheFactory factory;
+	private IProject project;
 	
 	public CacheFacade(IComponentCacheFactory factory) {
 		if (factory == null) {
 			throw new IllegalArgumentException();
 		}
 		this.factory = factory;
+	}
+	
+	public void setProject(IProject project) {
+		this.project = project;
 	}
 	
 	public IComponentElement[] getComponents(IType type) {
@@ -129,12 +135,10 @@ public class CacheFacade extends AbstractCache {
 	public void diconAdded(IContainerElement container) {
 		IPath path = container.getStorage().getFullPath();
 		IComponentCache cache = factory.createComponentCache();
-		// atomic begin
 		cache.setProject(getProject());
 		cache.setContainerPath(path);
 		cache.initialize();
 		cache.diconAdded(container);
-		// atomic end
 		cacheByContainerPath.put(path, cache);
 	}
 
@@ -158,6 +162,10 @@ public class CacheFacade extends AbstractCache {
 		for (Iterator it = cacheByContainerPath.values().iterator(); it.hasNext();) {
 			((IComponentCache) it.next()).finishChanged();
 		}
+	}
+	
+	protected IProject getProject() {
+		return project;
 	}
 
 }

@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.cache;
 
+import org.eclipse.core.resources.IProject;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
@@ -23,9 +24,10 @@ import org.seasar.s2daoplugin.cache.cache.builder.IComponentCacheBuilder;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.cache.util.RttiUtil;
 
-public abstract class AbstractComponentCache extends AbstractCache {
+public abstract class AbstractComponentCache implements IComponentCache {
 
 	private IComponentCacheBuilder builder;
+	private IProject project;
 	private boolean initialized;
 	
 	public AbstractComponentCache(IComponentCacheBuilder builder) {
@@ -34,6 +36,10 @@ public abstract class AbstractComponentCache extends AbstractCache {
 		}
 		builder.setComponentCache(this);
 		this.builder = builder;
+	}
+	
+	public void setProject(IProject project) {
+		this.project = project;
 	}
 	
 	public void initialize() {
@@ -58,6 +64,10 @@ public abstract class AbstractComponentCache extends AbstractCache {
 
 	public void finishChanged() {
 		builder.finishBuild();
+	}
+	
+	protected IProject getProject() {
+		return project;
 	}
 	
 	protected IRtti getRtti(IComponentElement component) {

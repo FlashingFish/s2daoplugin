@@ -50,12 +50,13 @@ public abstract class AbstractListenerHoldableCache implements
 	protected abstract IContainerElement[] getInitialTargetContainers();
 	
 	protected void fireInitialEvent(IDiconChangeListener listener) {
-		listener.initialize();
+		AffectedContainers ac = new AffectedContainers();
+		ac.addListener("init", listener);
 		IContainerElement[] containers = getInitialTargetContainers();
 		for (int i = 0; i < containers.length; i++) {
-			listener.diconAdded(containers[i]);
+			ac.addAddedContainer(containers[i]);
 		}
-		listener.finishChanged();
+		ac.fireEvents();
 	}
 	
 	protected AffectedContainers getAffectedContainers() {

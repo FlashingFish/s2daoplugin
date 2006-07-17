@@ -13,20 +13,9 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.cache;
+package org.seasar.s2daoplugin.cache;
 
-import org.eclipse.core.resources.IProject;
+public interface IExceptionHandler {
 
-public abstract class AbstractCache implements IComponentCache {
-
-	private IProject project;
-	
-	public void setProject(IProject project) {
-		this.project = project;
-	}
-	
-	protected IProject getProject() {
-		return project;
-	}
-
+	void handleException(Throwable t);
 }

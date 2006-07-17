@@ -59,14 +59,9 @@ public class S2DaoPlugin extends AbstractUIPlugin implements S2DaoConstants {
 		return project.hasNature(ID_S2DAO_NATURE);
 	}
 	
-	public static void log(CoreException e) {
-		// TODO: スタックトレースが出るように
-		getDefault().getLog().log(e.getStatus());
-	}
-	
 	public static void log(Throwable t) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, ID_PLUGIN, IStatus.OK, t.getMessage(), t));
+		getDefault().getLog().log(new Status(IStatus.ERROR, ID_PLUGIN,
+				IStatus.ERROR, t.getMessage(), t));
 	}
 
 }

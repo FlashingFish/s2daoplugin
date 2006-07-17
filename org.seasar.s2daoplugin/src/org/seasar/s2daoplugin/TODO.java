@@ -39,8 +39,6 @@ interface TODO {
 	 * 
 	 * TODO: jarの中に含まれたdiconは大丈夫？
 	 * 
-	 * TODO: ビルド中の失敗をトラップして安全な状態にする
-	 * 
 	 */
 
 }
