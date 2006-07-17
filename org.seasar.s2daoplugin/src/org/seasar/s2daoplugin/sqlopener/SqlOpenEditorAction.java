@@ -39,7 +39,7 @@ public class SqlOpenEditorAction extends AbstractSqlOpenAction {
 	
 	protected IJavaElement getSelectedJavaElement() throws CoreException {
 		ICompilationUnit unit = getCompilationUnit();
-		if (unit == null) {
+		if (unit == null || !unit.exists()) {
 			return null;
 		}
 		ITextSelection selection = getSelectedText();
