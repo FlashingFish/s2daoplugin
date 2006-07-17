@@ -93,7 +93,8 @@ public class SqlMarkerUtil {
 				return null;
 			}
 			try {
-				IMarker marker = method.getResource().createMarker(S2DaoConstants.ID_SQL_MARKER);
+				IMarker marker = method.getResource().createMarker(
+						S2DaoConstants.ID_SQL_MARKER);
 				marker.setAttributes(createMarkerAttributes(method));
 				return marker;
 			} catch (CoreException e) {
@@ -228,11 +229,10 @@ public class SqlMarkerUtil {
 				return;
 			}
 			try {
-				IMethod[] methods = type.getMethods();
-				for (int i = 0; i < methods.length; i++) {
-					unmark(methods[i]);
-				}
-			} catch (JavaModelException e) {
+				type.getResource().deleteMarkers(S2DaoConstants.ID_SQL_MARKER,
+						false, IResource.DEPTH_ZERO);
+				markAfterUnmark(type.getCompilationUnit().getAllTypes());
+			} catch (CoreException e) {
 				S2DaoPlugin.log(e);
 			}
 		}
@@ -247,6 +247,17 @@ public class SqlMarkerUtil {
 				}
 			}
 		}
+		
+		private void markAfterUnmark(IType[] types) {
+			for (int i = 0; i < types.length; i++) {
+				try {
+					markAfterUnmark(types[i].getTypes());
+				} catch (JavaModelException ignore) {
+				}
+				mark(types[i]);
+			}
+		}
+		
 	}
 
 	private static class Creator extends AbstractCreator {
