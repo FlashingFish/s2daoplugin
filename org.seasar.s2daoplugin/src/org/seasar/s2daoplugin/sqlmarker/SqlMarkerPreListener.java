@@ -30,11 +30,11 @@ public class SqlMarkerPreListener extends AbstractSqlMarkerListener {
 	}
 	
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
-		addTypes(getAppliedTypes(old));
+		addTypes(getAllAppliedTypes(old));
 	}
 
 	public void diconRemoved(IContainerElement container) {
-		addTypes(getAppliedTypes(container));
+		addTypes(getAllAppliedTypes(container));
 	}
 	
 	public void finishChanged() {

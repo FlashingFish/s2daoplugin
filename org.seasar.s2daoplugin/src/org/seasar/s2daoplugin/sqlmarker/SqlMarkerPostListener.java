@@ -42,7 +42,7 @@ public class SqlMarkerPostListener extends AbstractSqlMarkerListener {
 	}
 	
 	private void mark(IContainerElement container) {
-		getMarker().mark(getAppliedTypes(container));
+		getMarker().mark(getAllAppliedTypes(container));
 	}
 	
 	private void unmark() {

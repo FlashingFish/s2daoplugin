@@ -45,8 +45,6 @@ interface TODO {
 	 * 
 	 * FIXME: ITypeの変更は一括で通知
 	 * 
-	 * FIXME: diconファイルの依存関係を見てビルド範囲を決める
-	 * 
 	 */
 
 }

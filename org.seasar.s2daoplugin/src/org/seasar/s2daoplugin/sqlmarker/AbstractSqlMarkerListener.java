@@ -15,13 +15,19 @@
  */
 package org.seasar.s2daoplugin.sqlmarker;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
+import org.seasar.s2daoplugin.cache.util.DiconUtil;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
+import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public abstract class AbstractSqlMarkerListener implements IDiconChangeListener {
 
@@ -60,7 +66,7 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		return context;
 	}
 	
-	protected IType[] getAppliedTypes(IContainerElement container) {
+	protected IType[] getAllAppliedTypes(IContainerElement container) {
 		if (container == null) {
 			return EMPTY_TYPES;
 		}
@@ -68,8 +74,17 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 		if (cache == null) {
 			return EMPTY_TYPES;
 		}
-		cache = cache.getComponentCache(container.getStorage().getFullPath());
-		return cache != null ? cache.getAllAppliedTypes() : EMPTY_TYPES;
+		Set ret = new HashSet();
+		IContainerElement[] containers = (IContainerElement[]) ArrayUtil.add(
+				DiconUtil.getParentContainers(container), container);
+		for (int i = 0; i < containers.length; i++) {
+			IComponentCache c = cache.getComponentCache(containers[i].getStorage()
+					.getFullPath());
+			if (c != null) {
+				ret.addAll(Arrays.asList(c.getAllAppliedTypes()));
+			}
+		}
+		return (IType[]) ret.toArray(new IType[ret.size()]);
 	}
 
 }

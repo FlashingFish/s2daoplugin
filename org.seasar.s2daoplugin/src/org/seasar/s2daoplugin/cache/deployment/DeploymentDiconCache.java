@@ -41,6 +41,11 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 	public DeploymentDiconCache() {
 	}
 
+	public IContainerElement getContainer(IPath path) {
+		IDeploymentContainer container = getDeploymentContainer(path);
+		return container != null ? container.getDeployedContainer() : null;
+	}
+	
 	public void initialize() {
 	}
 

@@ -1,6 +1,7 @@
 * 0.1.1 []
 - diconファイルを変更せずにクラス（インターフェース）が作成または削除されたとき、正しく認識しない
   場合がある問題を修正
+- マーカを付ける・消すときにdiconのinclude関係を見るように修正
 
 * 0.1.0 [2006/7/17]
 - ライセンスを Common Public License Version 1.0 から Apache License, Version 2.0 へ変更
