@@ -15,9 +15,11 @@
  */
 package org.seasar.s2daoplugin.cache.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentHolderElement;
@@ -93,10 +95,11 @@ public final class DiconUtil implements CacheConstants {
 		if (nature == null) {
 			return EMPTY_CONTAINERS;
 		}
-		List ret = new ArrayList();
+		Set ret = new HashSet();
 		List parents = ModelUtils.getParentContaienrs(container);
 		for (int i = 0; i < parents.size(); i++) {
 			IContainerElement org = (IContainerElement) parents.get(i);
+			ret.addAll(Arrays.asList(getParentContainers(org)));
 			IContainerElement c = nature.getDeploymentDiconCache().getContainer(
 					org.getStorage().getFullPath());
 			if (c != null) {
