@@ -93,6 +93,9 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 		if (!ddc.hasDiconChangeListener(S2DAO_CACHE_KEY)) {
 			ddc.addDiconChangeListener(S2DAO_CACHE_KEY, createListener(cache));
 		}
+		if (!ddc.hasComponentChangeListener(S2DAO_CACHE_KEY)) {
+			ddc.addComponentChangeListener(S2DAO_CACHE_KEY, cache);
+		}
 	}
 	
 	public void removeComponentCache() {

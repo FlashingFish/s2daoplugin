@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -23,11 +24,12 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 import org.seasar.s2daoplugin.cache.util.FlagsUtil;
 
 public abstract class AbstractComponentAutoRegisterDeployer extends
-		AbstractAutoRegisterDeployer {
+		AbstractAutoRegisterDeployer implements ITypeDeployable {
 
 	public AbstractComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement component, String componentClassName) {
@@ -36,6 +38,52 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 	
 	public int getType() {
 		return TYPE_COMPONENT_AUTO;
+	}
+	
+	public void deployType(final IType type) {
+		try {
+			doDeploy(new IHandler() {
+				public void processPackageFragmentRoot(IPackageFragmentRoot root) {
+					processType(root, type);
+				}
+			});
+		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
+		}
+	}
+	
+	protected abstract void doDeploy(IHandler handler) throws CoreException;
+	
+	protected void doDeploy() {
+		try {
+			doDeploy(new IHandler() {
+				public void processPackageFragmentRoot(IPackageFragmentRoot root) {
+					process(root);
+				}
+			});
+		} catch (CoreException e) {
+			S2DaoPlugin.log(e);
+		}
+	}
+	
+	protected void processType(IPackageFragmentRoot root, IType type) {
+		IJavaElement[] elements;
+		try {
+			elements = root.getChildren();
+		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
+			return;
+		}
+		for (int i = 0; i < elements.length; i++) {
+			if (elements[i].equals(type.getPackageFragment())) {
+				try {
+					register(type);
+					break;
+				} catch (JavaModelException e) {
+					S2DaoPlugin.log(e);
+				}
+			}
+		}
 	}
 	
 	protected void process(IPackageFragmentRoot root) {
@@ -55,6 +103,7 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 				}
 			}
 		} catch (JavaModelException e) {
+			S2DaoPlugin.log(e);
 		}
 	}
 	
@@ -104,6 +153,11 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		String packageName = type.getPackageFragment().getElementName();
 		String typeName = type.getElementName();
 		return isApplied(packageName, typeName);
+	}
+	
+	
+	protected interface IHandler {
+		void processPackageFragmentRoot(IPackageFragmentRoot root);
 	}
 
 }

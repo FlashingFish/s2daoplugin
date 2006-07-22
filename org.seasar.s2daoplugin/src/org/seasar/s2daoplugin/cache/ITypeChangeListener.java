@@ -15,8 +15,12 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-// TODO: 変更のあったITypeだけを通知できるようにする
+import org.eclipse.jdt.core.IType;
+
 public interface ITypeChangeListener {
 
-	void typeChanged();
+	void typeAdded(IType type);
+	
+	// 出力フォルダが変更された上に削除された場合正しく扱えない
+	void typeRemoved(String fullyQualifiedClassName);
 }

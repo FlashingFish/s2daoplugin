@@ -15,8 +15,10 @@
  */
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
@@ -29,17 +31,21 @@ import org.seasar.s2daoplugin.util.JavaProjectUtil;
 public class ComponentAutoRegisterDeployer extends
 		AbstractComponentAutoRegisterDeployer {
 
-	private List referenceClasses = new ArrayList();
+	private Set referenceClasses = new HashSet();
 	
 	public ComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement component) {
 		super(container, component, COMPONENT_AUTO_REGISTER);
-		buildReferenceClasses();
+		setUp();
 	}
 	
-	public void doDeploy() {
-		for (int i = 0; i < referenceClasses.size(); i++) {
-			IRtti rtti = (IRtti) referenceClasses.get(i);
+	public boolean setUp() {
+		return setUpReferenceClasses();
+	}
+	
+	protected void doDeploy(IHandler handler) {
+		for (Iterator it = referenceClasses.iterator(); it.hasNext();) {
+			IRtti rtti = (IRtti) it.next();
 			IPackageFragmentRoot root = JavaProjectUtil.findPackageFragmentRoot(
 					rtti.getType());
 			if (isJar(root)) {
@@ -48,13 +54,14 @@ public class ComponentAutoRegisterDeployer extends
 				IPackageFragmentRoot[] roots =
 					JavaProjectUtil.findPackageFragmentRootsSharedOutputLocation(root);
 				for (int j = 0; j < roots.length; j++) {
-					process(roots[j]);
+					handler.processPackageFragmentRoot(roots[j]);
 				}
 			}
 		}
 	}
 	
-	private void buildReferenceClasses() {
+	private boolean setUpReferenceClasses() {
+		boolean dirty = false;
 		List methods = getAutoRegister().getInitMethodList();
 		for (int i = 0; i < methods.size(); i++) {
 			IInitMethodElement method = (IInitMethodElement) methods.get(i);
@@ -68,9 +75,10 @@ public class ComponentAutoRegisterDeployer extends
 			IArgElement arg = (IArgElement) args.get(0);
 			IRtti rtti = findRttiReferencedClassField(arg.getBody());
 			if (rtti != null) {
-				referenceClasses.add(rtti);
+				dirty |= referenceClasses.add(rtti);
 			}
 		}
+		return dirty;
 	}
 
 	private boolean isJar(IPackageFragmentRoot root) {

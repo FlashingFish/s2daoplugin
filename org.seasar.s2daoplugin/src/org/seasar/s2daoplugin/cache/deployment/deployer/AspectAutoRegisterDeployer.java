@@ -17,14 +17,34 @@ package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
+import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 import org.seasar.s2daoplugin.util.JavaUtil;
 
 public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 
+	private IRtti aspectAutoRegisterRtti;
+	
 	public AspectAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement component) {
 		super(container, component, ASPECT_AUTO_REGISTER);
+		setUp();
+	}
+	
+	public boolean setUp() {
+		boolean dirty = false;
+		RttiLoader loader = getAutoRegister().getRttiLoader();
+		IRtti rtti = loader.loadRtti(ASPECT_AUTO_REGISTER);
+		dirty = willReplaceAspectAutoRegisterRtti(rtti);
+		aspectAutoRegisterRtti = rtti;
+		return dirty;
+	}
+	
+	private boolean willReplaceAspectAutoRegisterRtti(IRtti rtti) {
+		return (aspectAutoRegisterRtti == null && rtti != null) ||
+				(aspectAutoRegisterRtti != null &&
+						!aspectAutoRegisterRtti.equals(rtti));
 	}
 	
 	public void doDeploy() {
@@ -48,7 +68,8 @@ public class AspectAutoRegisterDeployer extends AbstractAutoRegisterDeployer {
 	}
 	
 	private void process(IComponentElement component) {
-		IAspectElement aspect = IsolatedElementFactory.createAspectElement(getAutoRegister());
+		IAspectElement aspect = IsolatedElementFactory.createAspectElement(
+				getAutoRegister());
 		aspect.setParent(component);
 	}
 

@@ -25,6 +25,10 @@ public class DefaultComponentDeployer extends AbstractComponentDeployer {
 		super(container, component);
 	}
 	
+	public boolean setUp() {
+		return false;
+	}
+	
 	public void doDeploy() {
 	}
 	

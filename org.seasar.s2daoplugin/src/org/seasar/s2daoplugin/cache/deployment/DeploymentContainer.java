@@ -17,12 +17,17 @@ package org.seasar.s2daoplugin.cache.deployment;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.deployment.deployer.ComponentDeployerFactory;
+import org.seasar.s2daoplugin.cache.deployment.deployer.ITypeDeployable;
 import org.seasar.s2daoplugin.cache.deployment.deployer.IComponentDeployer;
 import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
 import org.seasar.s2daoplugin.cache.deployment.model.ContainerElementWrapper;
@@ -39,6 +44,8 @@ public class DeploymentContainer implements IDeploymentContainer {
 	private ComponentQueue deployedQueue = new ComponentQueue();
 	private boolean hasComponentAuto;
 	
+	private Set autoRegisterDeployers = new LinkedHashSet();
+	
 	public void setOriginalContainer(IContainerElement originalContainer) {
 		this.originalContainer = originalContainer;
 	}
@@ -47,17 +54,34 @@ public class DeploymentContainer implements IDeploymentContainer {
 		return originalContainer;
 	}
 	
-	public void deploy() {
-		prepare();
-		while (!preparedQueue.isEmpty()) {
-			IComponentElement component = preparedQueue.poll();
-			IComponentDeployer deployer = factory.createComponentDeployer(component);
-			deployer.deploy();
-			if (deployer.getType() == IComponentDeployer.TYPE_COMPONENT_AUTO) {
-				hasComponentAuto = true;
+	public boolean needsToBuild() {
+		for (Iterator it = autoRegisterDeployers.iterator(); it.hasNext();) {
+			if (((IComponentDeployer) it.next()).setUp()) {
+				return true;
 			}
 		}
+		return false;
+	}
+	
+	public void deploy() {
+		prepare();
+		doDeploy();
 		createDeployedContainer();
+	}
+	
+	public IComponentElement[] deployType(IType type) {
+		for (Iterator it = autoRegisterDeployers.iterator(); it.hasNext();) {
+			IComponentDeployer deployer = (IComponentDeployer) it.next();
+			if (deployer instanceof ITypeDeployable) {
+				((ITypeDeployable) deployer).deployType(type);
+			} else {
+				deployer.deploy();
+			}
+		}
+		IComponentElement[] added = preparedQueue.toArray();
+		doDeploy();
+		updateDeployedContainer();
+		return added;
 	}
 	
 	public void addPreparedComponent(IComponentElement component) {
@@ -85,24 +109,49 @@ public class DeploymentContainer implements IDeploymentContainer {
 		List components = originalContainer.getComponentList();
 		Collections.sort(components, comparator);
 		for (int i = 0; i < components.size(); i++) {
-			addPreparedComponent(new ComponentElementWrapper(
-					(IComponentElement) components.get(i)));
+			addPreparedComponent(new ComponentElementWrapper((IComponentElement)
+					components.get(i)));
+		}
+	}
+
+	private void doDeploy() {
+		while (!preparedQueue.isEmpty()) {
+			IComponentElement component = preparedQueue.poll();
+			IComponentDeployer deployer = factory.createComponentDeployer(component);
+			deployer.deploy();
+			switch (deployer.getType()) {
+			case IComponentDeployer.TYPE_COMPONENT_AUTO:
+				hasComponentAuto = true;
+			case IComponentDeployer.TYPE_COMPONENT_TARGET_AUTO:
+				autoRegisterDeployers.add(deployer);
+				break;
+			}
 		}
 	}
 	
 	private void clear() {
 		preparedQueue.clear();
 		deployedQueue.clear();
+		autoRegisterDeployers.clear();
 		deployedContainer = null;
 		hasComponentAuto = false;
 	}
 	
 	private void createDeployedContainer() {
-		IContainerElement newContainer = new ContainerElementWrapper(originalContainer);
-		while (!deployedQueue.isEmpty()) {
-			newContainer.addChild(deployedQueue.poll());
-		}
+		IContainerElement newContainer = new ContainerElementWrapper(
+				originalContainer);
+		addComponentToContainer(newContainer);
 		deployedContainer = newContainer;
+	}
+	
+	private void updateDeployedContainer() {
+		addComponentToContainer(deployedContainer);
+	}
+	
+	private void addComponentToContainer(IContainerElement container) {
+		while (!deployedQueue.isEmpty()) {
+			container.addChild(deployedQueue.poll());
+		}
 	}
 	
 	

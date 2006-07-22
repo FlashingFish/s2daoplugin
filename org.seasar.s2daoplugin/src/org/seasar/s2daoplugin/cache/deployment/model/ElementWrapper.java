@@ -17,7 +17,9 @@ package org.seasar.s2daoplugin.cache.deployment.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.seasar.kijimuna.core.parser.IElement;
 
@@ -26,7 +28,7 @@ public class ElementWrapper extends ElementAdaptor {
 	private IElement element;
 	private IElement root;
 //	private IElement parent;
-	private List children = new ArrayList();
+	private Set children = new LinkedHashSet();
 	
 	public ElementWrapper(IElement element) {
 		super(element);
@@ -48,6 +50,10 @@ public class ElementWrapper extends ElementAdaptor {
 	
 	public void addChild(IElement child) {
 		children.add(child);
+	}
+	
+	public void removeChild(IElement child) {
+		children.remove(child);
 	}
 	
 	public List getChildren() {

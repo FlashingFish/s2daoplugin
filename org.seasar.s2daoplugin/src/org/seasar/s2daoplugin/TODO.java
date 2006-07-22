@@ -26,7 +26,9 @@ interface TODO {
 	 * 
 	 * TODO: テストコード書く
 	 * 
-	 * TODO: Hot Deploy(ComponentDefCustomizer)対応
+	 * TODO: Hot Deploy対応
+	 * 
+	 * TODO: Cool Deploy対応
 	 * 
 	 * TODO: キャッシュビルド中にプログレスモニタ
 	 * 
@@ -38,6 +40,12 @@ interface TODO {
 	 * 		その間のキャッシュからの値取得はどうする？
 	 * 
 	 * TODO: jarの中に含まれたdiconは大丈夫？
+	 * 
+	 * TODO: リスナ系の仕組み見直し（dicon -> cache <- IType）
+	 * 
+	 * FIXME: ITypeの変更は一括で通知
+	 * 
+	 * FIXME: diconファイルの依存関係を見てビルド範囲を決める
 	 * 
 	 */
 

@@ -13,19 +13,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment.deployer;
+package org.seasar.s2daoplugin.cache;
 
-public interface IComponentDeployer {
+public interface IComponentChangeListenerAware {
 
-	int TYPE_UNKNOWN = -1;
-	int TYPE_COMPONENT = 0;
-	int TYPE_COMPONENT_AUTO = 1;
-	int TYPE_COMPONENT_TARGET_AUTO = 2;
-
-	boolean setUp();
+	void addComponentChangeListener(String key, IComponentChangeListener listener);
 	
-	void deploy();
+	void removeComponentChangeListener(String key);
 	
-	int getType();
+	boolean hasComponentChangeListener(String key);
 
 }

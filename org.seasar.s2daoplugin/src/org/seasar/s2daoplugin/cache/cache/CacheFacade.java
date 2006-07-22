@@ -144,18 +144,19 @@ public class CacheFacade implements IComponentCache {
 
 	public void diconUpdated(IContainerElement old, IContainerElement young) {
 		IPath path = old.getStorage().getFullPath();
-		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
-		cache.diconUpdated(old, young);
+		IComponentCache cache = getComponentCache(path);
+		if (cache != null) {
+			cache.diconUpdated(old, young);
+		}
 	}
 
 	public void diconRemoved(IContainerElement container) {
 		IPath path = container.getStorage().getFullPath();
-		IComponentCache cache = (IComponentCache) cacheByContainerPath.get(path);
-		if (cache == null) {
-			return;
+		IComponentCache cache = getComponentCache(path);
+		if (cache != null) {
+			cache.diconRemoved(container);
+			cacheByContainerPath.remove(path);
 		}
-		cache.diconRemoved(container);
-		cacheByContainerPath.remove(path);
 	}
 
 	public void finishChanged() {
@@ -164,8 +165,27 @@ public class CacheFacade implements IComponentCache {
 		}
 	}
 	
+	public void componentAdded(IComponentElement component) {
+		IComponentCache cache = getComponentCacheContains(component);
+		if (cache != null) {
+			cache.componentAdded(component);
+		}
+	}
+	
+	public void componentRemoved(IComponentElement component) {
+		IComponentCache cache = getComponentCacheContains(component);
+		if (cache != null) {
+			cache.componentRemoved(component);
+		}
+	}
+	
 	protected IProject getProject() {
 		return project;
+	}
+	
+	private IComponentCache getComponentCacheContains(IComponentElement component) {
+		IPath path = component.getStorage().getFullPath();
+		return getComponentCache(path);
 	}
 
 }

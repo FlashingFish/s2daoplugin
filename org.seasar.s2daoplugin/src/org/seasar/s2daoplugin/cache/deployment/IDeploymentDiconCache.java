@@ -15,12 +15,14 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
+import org.seasar.s2daoplugin.cache.IComponentChangeListenerAware;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.IDiconChangeListenerHolder;
 import org.seasar.s2daoplugin.cache.ITypeChangeListener;
 
 public interface IDeploymentDiconCache extends IDiconChangeListener,
-		IDiconChangeListenerHolder, ITypeChangeListener {
+		IDiconChangeListenerHolder, ITypeChangeListener,
+		IComponentChangeListenerAware {
 
 	// deploymentƒ‚ƒfƒ‹‚ğæ“¾‚·‚éê‡
 }

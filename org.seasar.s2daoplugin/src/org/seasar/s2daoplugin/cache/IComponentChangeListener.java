@@ -13,19 +13,13 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin.cache.deployment.deployer;
+package org.seasar.s2daoplugin.cache;
 
-public interface IComponentDeployer {
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
-	int TYPE_UNKNOWN = -1;
-	int TYPE_COMPONENT = 0;
-	int TYPE_COMPONENT_AUTO = 1;
-	int TYPE_COMPONENT_TARGET_AUTO = 2;
+public interface IComponentChangeListener {
 
-	boolean setUp();
+	void componentAdded(IComponentElement component);
 	
-	void deploy();
-	
-	int getType();
-
+	void componentRemoved(IComponentElement component);
 }

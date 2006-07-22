@@ -56,7 +56,7 @@ public class S2DaoResourceResolver implements S2DaoConstants {
 		if (file == null) {
 			return null;
 		}
-		String[][] daoNames = S2DaoNamingConventions.resovleDao(file);
+		String[][] daoNames = S2DaoNamingConventions.resolveDao(file);
 		IPackageFragmentRoot[] roots = JavaProjectUtil
 				.findPackageFragmentRootsSharedOutputLocation(file);
 		for (int i = 0; i < daoNames.length; i++) {

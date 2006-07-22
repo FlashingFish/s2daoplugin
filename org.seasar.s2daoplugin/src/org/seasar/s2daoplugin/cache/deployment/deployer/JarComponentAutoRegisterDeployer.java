@@ -40,11 +40,15 @@ public class JarComponentAutoRegisterDeployer extends
 	public JarComponentAutoRegisterDeployer(IDeploymentContainer container,
 			IComponentElement autoRegister) {
 		super(container, autoRegister, JAR_COMPONENT_AUTO_REGISTER);
-		buildReferenceClass();
-		buildJarFileNames();
+		setUp();
+		setUpJarFileNames();
 	}
 	
-	public void doDeploy() {
+	public boolean setUp() {
+		return setUpReferenceClass(); 
+	}
+	
+	protected void doDeploy(IHandler handler) throws CoreException {
 		if (referenceClass == null) {
 			return;
 		}
@@ -54,12 +58,7 @@ public class JarComponentAutoRegisterDeployer extends
 			return;
 		}
 		IContainer base = jar.getResource().getParent();
-		IResource[] archives = null;
-		try {
-			archives = base.members();
-		} catch (CoreException e) {
-			return;
-		}
+		IResource[] archives = archives = base.members();
 		IJavaProject project = jar.getJavaProject();
 		for (int i = 0; i < archives.length; i++) {
 			if (!"jar".equalsIgnoreCase(archives[i].getFileExtension())) {
@@ -70,20 +69,31 @@ public class JarComponentAutoRegisterDeployer extends
 				continue;
 			}
 			if (isAppliedJar(jar)) {
-				process(jar);
+				handler.processPackageFragmentRoot(jar);
 			}
 		}
 	}
 	
-	private void buildReferenceClass() {
+	private boolean setUpReferenceClass() {
+		boolean dirty = false;
 		IPropertyElement prop = DiconUtil.getProperty(getAutoRegister(), "referenceClass");
 		if (prop != null) {
-			referenceClass = findRttiReferencedClassField(prop.getBody());
+			IRtti newReferenceClass = findRttiReferencedClassField(prop.getBody());
+			dirty = willReplaceReferenceClass(newReferenceClass);
+			referenceClass = newReferenceClass;
 		}
+		return dirty;
 	}
 	
-	private void buildJarFileNames() {
-		IPropertyElement prop = DiconUtil.getProperty(getAutoRegister(), "jarFileNames");
+	private boolean willReplaceReferenceClass(IRtti newReferenceClass) {
+		return (referenceClass == null && newReferenceClass != null) ||
+				(referenceClass != null &&
+						!referenceClass.equals(newReferenceClass));
+	}
+	
+	private void setUpJarFileNames() {
+		IPropertyElement prop = DiconUtil.getProperty(getAutoRegister(),
+				"jarFileNames");
 		if (prop == null) {
 			return;
 		}

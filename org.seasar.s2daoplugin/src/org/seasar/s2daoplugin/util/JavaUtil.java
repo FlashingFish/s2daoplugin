@@ -15,7 +15,15 @@
  */
 package org.seasar.s2daoplugin.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaModelException;
 
 public class JavaUtil {
 
@@ -52,6 +60,54 @@ public class JavaUtil {
             return className.substring(i + 1);
         }
         return className;
+    }
+    
+    // 不完全。output locationが変わりかつ、classFile.existsがfalseなら一意に
+    // 特定できるとは限らない。。。というか特定する術がない気が…
+    public static String getFullyQualifiedNameFromClassFile(IClassFile classFile) {
+    	if (classFile == null) {
+    		return null;
+    	}
+    	IJavaProject project = classFile.getJavaProject();
+    	IPath[] outputs = getOutputLocationPaths(project);
+    	for (int i = 0; i < outputs.length; i++) {
+    		if (classFile.getPath().matchingFirstSegments(outputs[i]) ==
+    			outputs[i].segmentCount()) {
+    			IPath path = classFile.getPath().removeFirstSegments(
+    					outputs[i].segmentCount()).removeFileExtension();
+				return path.removeFileExtension().toString()
+						.replace('/', '.').replace('$', '.');
+    		}
+    	}
+    	return null;
+    }
+    
+    private static IPath[] getOutputLocationPaths(IJavaProject project) {
+    	IPackageFragmentRoot[] roots;
+		try {
+			roots = project.getPackageFragmentRoots();
+		} catch (JavaModelException e) {
+			return null;
+		}
+		Set ret = new HashSet();
+		try {
+			ret.add(project.getOutputLocation());
+		} catch (JavaModelException e) {
+			return new IPath[0];
+		}
+    	for (int i = 0; i < roots.length; i++) {
+    		if (roots[i].isArchive()) {
+    			continue;
+    		}
+    		try {
+	    		IPath output = roots[i].getRawClasspathEntry().getOutputLocation();
+	    		if (output != null) {
+	    			ret.add(output);
+	    		}
+    		} catch (JavaModelException ignore) {
+    		}
+    	}
+    	return (IPath[]) ret.toArray(new IPath[ret.size()]);
     }
 
 }

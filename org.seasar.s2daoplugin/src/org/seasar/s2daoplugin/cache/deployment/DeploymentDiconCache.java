@@ -15,18 +15,28 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IType;
+import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.AbstractListenerHoldableCache;
+import org.seasar.s2daoplugin.cache.IComponentChangeListener;
+import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
+import org.seasar.s2daoplugin.cache.deployment.model.ContainerElementWrapper;
 
 public class DeploymentDiconCache extends AbstractListenerHoldableCache
 		implements IDeploymentDiconCache {
 
 	private Map containerMap = new HashMap();
+	private Map componentChangeListenerMap = new HashMap();
 	
 	public DeploymentDiconCache() {
 	}
@@ -54,18 +64,73 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 		getAffectedContainers().fireEvents();
 	}
 	
+	public void addComponentChangeListener(String key,
+			IComponentChangeListener listener) {
+		componentChangeListenerMap.put(key, listener);
+	}
+	
+	public void removeComponentChangeListener(String key) {
+		componentChangeListenerMap.remove(key);
+	}
+	
+	public boolean hasComponentChangeListener(String key) {
+		return componentChangeListenerMap.containsKey(key);
+	}
+	
 	// TODO: AutoRegisterを持っており、追加/削除のあったITypeがClassPatternにマッチ
 	// するかどうかで判断すればムダがない。が、すでにdicon自体の変更でビルドされている
 	// なら、再度ビルドしてもムダなだけ…
-	public void typeChanged() {
+	public void typeAdded(IType type) {
+		if (rebuilt()) {
+			return;
+		}
+		Set ret = new HashSet();
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
 			IDeploymentContainer container = (IDeploymentContainer) it.next();
 			if (container.hasComponentAuto()) {
-				diconUpdated(container.getOriginalContainer(),
-						container.getOriginalContainer());
+				ret.addAll(Arrays.asList(container.deployType(type)));
 			}
 		}
-		finishChanged();
+		for (Iterator it = componentChangeListenerMap.values().iterator();
+				it.hasNext();) {
+			IComponentChangeListener listener = (IComponentChangeListener)
+					it.next();
+			for (Iterator jt = ret.iterator(); jt.hasNext();) {
+				listener.componentAdded((IComponentElement) jt.next());
+			}
+		}
+	}
+	
+	public void typeRemoved(String fullyQualifiedClassName) {
+		if (rebuilt()) {
+			return;
+		}
+		Set ret = new HashSet();
+		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
+			IDeploymentContainer container = (IDeploymentContainer) it.next();
+			if (!container.hasComponentAuto()) {
+				continue;
+			}
+			IContainerElement c = container.getDeployedContainer();
+			List components = c.getComponentList();
+			for (int i = 0; i < components.size(); i++) {
+				IComponentElement component = (IComponentElement) components.get(i);
+				if (!(component instanceof ComponentElementWrapper) &&
+						fullyQualifiedClassName.equals(component
+								.getComponentClassName())) {
+					ret.add(component);
+					((ContainerElementWrapper) c).removeChild(component);
+				}
+			}
+		}
+		for (Iterator it = componentChangeListenerMap.values().iterator();
+				it.hasNext();) {
+			IComponentChangeListener listener = (IComponentChangeListener)
+					it.next();
+			for (Iterator jt = ret.iterator(); jt.hasNext();) {
+				listener.componentRemoved((IComponentElement) jt.next());
+			}
+		}
 	}
 	
 	protected IContainerElement[] getInitialTargetContainers() {
@@ -76,6 +141,19 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 			containers[i++] = deployment.getDeployedContainer();
 		}
 		return containers;
+	}
+
+	private boolean rebuilt() {
+		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
+			IDeploymentContainer container = (IDeploymentContainer) it.next();
+			if (container.needsToBuild()) {
+				diconUpdated(container.getOriginalContainer(),
+						container.getOriginalContainer());
+				finishChanged();
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private void addContainer(IContainerElement container) {

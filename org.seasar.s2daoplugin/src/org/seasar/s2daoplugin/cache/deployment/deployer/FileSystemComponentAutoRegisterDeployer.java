@@ -30,7 +30,11 @@ public class FileSystemComponentAutoRegisterDeployer extends
 		super(container, autoRegister, FILESYSTEM_COMPONENT_AUTO_REGISTER);
 	}
 	
-	public void doDeploy() {
+	public boolean setUp() {
+		return false;
+	}
+	
+	protected void doDeploy(IHandler handler) {
 		IStorage s = getAutoRegister().getStorage();
 		if (!(s instanceof IResource)) {
 			return;
@@ -38,7 +42,7 @@ public class FileSystemComponentAutoRegisterDeployer extends
 		IPackageFragmentRoot[] packages =
 			JavaProjectUtil.findPackageFragmentRootsSharedOutputLocation((IResource) s);
 		for (int i = 0; i < packages.length; i++) {
-			process(packages[i]);
+			handler.processPackageFragmentRoot(packages[i]);
 		}
 	}
 

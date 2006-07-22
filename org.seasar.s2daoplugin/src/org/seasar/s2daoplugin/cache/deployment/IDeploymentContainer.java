@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.cache.deployment;
 
+import org.eclipse.jdt.core.IType;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 
@@ -23,6 +24,8 @@ public interface IDeploymentContainer {
 	void setOriginalContainer(IContainerElement container);
 	
 	void deploy();
+	
+	IComponentElement[] deployType(IType type);
 	
 	void addPreparedComponent(IComponentElement component);
 	
@@ -35,4 +38,7 @@ public interface IDeploymentContainer {
 	IContainerElement getDeployedContainer();
 
 	boolean hasComponentAuto();
+	
+	boolean needsToBuild();
+
 }

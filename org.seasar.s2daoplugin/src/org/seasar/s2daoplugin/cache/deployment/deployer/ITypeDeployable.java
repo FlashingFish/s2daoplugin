@@ -15,17 +15,9 @@
  */
 package org.seasar.s2daoplugin.cache.deployment.deployer;
 
-public interface IComponentDeployer {
+import org.eclipse.jdt.core.IType;
 
-	int TYPE_UNKNOWN = -1;
-	int TYPE_COMPONENT = 0;
-	int TYPE_COMPONENT_AUTO = 1;
-	int TYPE_COMPONENT_TARGET_AUTO = 2;
+public interface ITypeDeployable {
 
-	boolean setUp();
-	
-	void deploy();
-	
-	int getType();
-
+	void deployType(IType type);
 }

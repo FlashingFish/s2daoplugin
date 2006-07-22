@@ -22,6 +22,9 @@ import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
 public class ComponentDeployerFactory implements CacheConstants {
 
 	private static final IComponentDeployer NULL_DEPLOYER = new IComponentDeployer() {
+		public boolean setUp() {
+			return false;
+		}
 		public void deploy() {
 		}
 		public int getType() {

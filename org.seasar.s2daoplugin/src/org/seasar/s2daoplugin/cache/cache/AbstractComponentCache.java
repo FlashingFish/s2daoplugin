@@ -66,6 +66,14 @@ public abstract class AbstractComponentCache implements IComponentCache {
 		builder.finishBuild();
 	}
 	
+	public void componentAdded(IComponentElement component) {
+		addComponent(component);
+	}
+	
+	public void componentRemoved(IComponentElement component) {
+		removeComponent(component);
+	}
+	
 	protected IProject getProject() {
 		return project;
 	}
