@@ -15,6 +15,8 @@
  */
 package org.seasar.s2daoplugin.cache;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -43,19 +45,28 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			nature.getDiconCacheBuilder().buildCache();
 			IResourceDelta delta = getDelta(getProject());
 			if (delta != null) {
-				delta.accept(new CacheDeltaVisitor(nature.getDeploymentDiconCache()));
+				CacheDeltaVisitor visitor = new CacheDeltaVisitor();
+				delta.accept(visitor);
+				fireTypeChangeEvent(nature.getDeploymentDiconCache(),
+						visitor.getEvents());
 			}
 		}
 		return null;
 	}
 	
+	private void fireTypeChangeEvent(ITypeChangeListener listener,
+			ITypeChangeEvent[] events) {
+		listener.typeChanged(events);
+	}
+	
 	
 	private static class CacheDeltaVisitor implements IResourceDeltaVisitor {
 
-		private ITypeChangeListener listener;
-
-		public CacheDeltaVisitor(ITypeChangeListener listener) {
-			this.listener = listener;
+		private List events = new ArrayList();
+		
+		public ITypeChangeEvent[] getEvents() {
+			return (ITypeChangeEvent[]) events.toArray(
+					new ITypeChangeEvent[events.size()]);
 		}
 		
 		public boolean visit(IResourceDelta delta) throws CoreException {
@@ -79,7 +90,7 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 		private void fireTypeAdded(IResourceDelta delta) {
 			IType type = findTypeFromClassFile(delta);
 			if (type != null) {
-				listener.typeAdded(type);
+				events.add(new TypeAddedEvent(type));
 			}
 		}
 		
@@ -87,7 +98,7 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			IClassFile classFile = getClassFile(delta);
 			String fqcn = JavaUtil.getFullyQualifiedNameFromClassFile(classFile);
 			if (fqcn != null) {
-				listener.typeRemoved(fqcn);
+				events.add(new TypeRemovedEvent(fqcn));
 			}
 		}
 
@@ -115,6 +126,50 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 			IResource resource = delta.getResource();
 			return resource instanceof IFile ? JavaCore.createClassFileFrom(
 					(IFile) resource) : null;
+		}
+	}
+	
+	
+	private static class TypeAddedEvent implements ITypeChangeEvent {
+
+		private IType type;
+		
+		public TypeAddedEvent(IType type) {
+			this.type = type;
+		}
+		
+		public IType getType() {
+			return type;
+		}
+
+		public String getFullyQualifiedClassName() {
+			return type.getFullyQualifiedName();
+		}
+		
+		public int getEventType() {
+			return TYPE_ADDED;
+		}
+		
+	}
+
+	private static class TypeRemovedEvent implements ITypeChangeEvent {
+
+		private String fullyQualifiedClassName;
+		
+		private TypeRemovedEvent(String fullyQualifiedClassName) {
+			this.fullyQualifiedClassName = fullyQualifiedClassName;
+		}
+		
+		public IType getType() {
+			return null;
+		}
+
+		public String getFullyQualifiedClassName() {
+			return fullyQualifiedClassName;
+		}
+		
+		public int getEventType() {
+			return TYPE_REMOVED;
 		}
 	}
 

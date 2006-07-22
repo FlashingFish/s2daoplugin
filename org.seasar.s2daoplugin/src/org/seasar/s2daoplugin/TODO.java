@@ -26,11 +26,11 @@ interface TODO {
 	 * 
 	 * TODO: テストコード書く
 	 * 
-	 * TODO: Hot Deploy対応
+	 * FIXME: Hot Deploy対応
 	 * 
-	 * TODO: Cool Deploy対応
+	 * FIXME: Cool Deploy対応
 	 * 
-	 * TODO: キャッシュビルド中にプログレスモニタ
+	 * FIXME: キャッシュビルド中にプログレスモニタ
 	 * 
 	 * TODO: cacheパッケージ名の変更
 	 * 
@@ -41,9 +41,7 @@ interface TODO {
 	 * 
 	 * TODO: jarの中に含まれたdiconは大丈夫？
 	 * 
-	 * TODO: リスナ系の仕組み見直し（dicon -> cache <- IType）
-	 * 
-	 * FIXME: ITypeの変更は一括で通知
+	 * TODO: リスナ系の仕組み見直し（dicon -> cache <- IType）。イベント発行に一貫性を。
 	 * 
 	 */
 

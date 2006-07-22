@@ -15,7 +15,17 @@
  */
 package org.seasar.s2daoplugin.cache;
 
-public interface ITypeChangeListener {
+import org.eclipse.jdt.core.IType;
 
-	void typeChanged(ITypeChangeEvent[] events);
+public interface ITypeChangeEvent {
+
+	int TYPE_ADDED = 0;
+	int TYPE_REMOVED = 1;
+	
+	IType getType();
+	
+	// 出力フォルダが変更されつつIClassFileが削除された場合正しく扱えないかもしれない
+	String getFullyQualifiedClassName();
+	
+	int getEventType();
 }

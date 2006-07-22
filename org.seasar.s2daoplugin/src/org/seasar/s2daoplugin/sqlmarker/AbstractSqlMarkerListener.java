@@ -26,13 +26,12 @@ import org.seasar.s2daoplugin.S2DaoUtil;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.util.DiconUtil;
+import org.seasar.s2daoplugin.cache.util.TypeUtil;
 import org.seasar.s2daoplugin.sqlmarker.SqlMarkerUtil.ISqlMarkerCreator;
 import org.seasar.s2daoplugin.util.ArrayUtil;
 
 public abstract class AbstractSqlMarkerListener implements IDiconChangeListener {
 
-	protected static final IType[] EMPTY_TYPES = new IType[0];
-	
 	private ISqlMarkerCreator marker = SqlMarkerUtil.getCreator();
 	private IProject project;
 	private SqlMarkerListenerContext context;
@@ -68,11 +67,11 @@ public abstract class AbstractSqlMarkerListener implements IDiconChangeListener 
 	
 	protected IType[] getAllAppliedTypes(IContainerElement container) {
 		if (container == null) {
-			return EMPTY_TYPES;
+			return TypeUtil.EMPTY_TYPES;
 		}
 		IComponentCache cache = S2DaoUtil.getS2DaoComponentCache(getProject());
 		if (cache == null) {
-			return EMPTY_TYPES;
+			return TypeUtil.EMPTY_TYPES;
 		}
 		Set ret = new HashSet();
 		IContainerElement[] containers = (IContainerElement[]) ArrayUtil.add(

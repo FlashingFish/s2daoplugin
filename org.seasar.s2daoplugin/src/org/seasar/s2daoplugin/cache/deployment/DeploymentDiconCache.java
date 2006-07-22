@@ -29,6 +29,7 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.AbstractListenerHoldableCache;
 import org.seasar.s2daoplugin.cache.IComponentChangeListener;
+import org.seasar.s2daoplugin.cache.ITypeChangeEvent;
 import org.seasar.s2daoplugin.cache.deployment.model.ComponentElementWrapper;
 import org.seasar.s2daoplugin.cache.deployment.model.ContainerElementWrapper;
 
@@ -82,13 +83,23 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 		return componentChangeListenerMap.containsKey(key);
 	}
 	
-	// TODO: AutoRegisterを持っており、追加/削除のあったITypeがClassPatternにマッチ
-	// するかどうかで判断すればムダがない。が、すでにdicon自体の変更でビルドされている
-	// なら、再度ビルドしてもムダなだけ…
-	public void typeAdded(IType type) {
+	public void typeChanged(ITypeChangeEvent[] events) {
 		if (rebuilt()) {
 			return;
 		}
+		for (int i = 0; i < events.length; i++) {
+			if (events[i].getEventType() == ITypeChangeEvent.TYPE_ADDED) {
+				processTypeAdded(events[i].getType());
+			} else if (events[i].getEventType() == ITypeChangeEvent.TYPE_REMOVED) {
+				processTypeRemoved(events[i].getFullyQualifiedClassName());
+			}
+		}
+	}
+	
+	// TODO: AutoRegisterを持っており、追加/削除のあったITypeがClassPatternにマッチ
+	// するかどうかで判断すればムダがない。が、すでにdicon自体の変更でビルドされている
+	// なら、再度ビルドしてもムダなだけ…
+	private void processTypeAdded(IType type) {
 		Set ret = new HashSet();
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
 			IDeploymentContainer container = (IDeploymentContainer) it.next();
@@ -106,10 +117,7 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 		}
 	}
 	
-	public void typeRemoved(String fullyQualifiedClassName) {
-		if (rebuilt()) {
-			return;
-		}
+	private void processTypeRemoved(String fullyQualifiedClassName) {
 		Set ret = new HashSet();
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
 			IDeploymentContainer container = (IDeploymentContainer) it.next();
@@ -149,16 +157,19 @@ public class DeploymentDiconCache extends AbstractListenerHoldableCache
 	}
 
 	private boolean rebuilt() {
+		boolean built = false;
 		for (Iterator it = containerMap.values().iterator(); it.hasNext();) {
 			IDeploymentContainer container = (IDeploymentContainer) it.next();
 			if (container.needsToBuild()) {
 				diconUpdated(container.getOriginalContainer(),
 						container.getOriginalContainer());
-				finishChanged();
-				return true;
+				built = true;
 			}
 		}
-		return false;
+		if (built) {
+			finishChanged();
+		}
+		return built;
 	}
 	
 	private void addContainer(IContainerElement container) {
