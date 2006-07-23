@@ -3,5 +3,8 @@
    <feature url="features/org.seasar.s2daoplugin_0.1.0.jar" id="org.seasar.s2daoplugin" version="0.1.0">
       <category name="s2daoplugin"/>
    </feature>
+   <feature url="features/org.seasar.s2daoplugin_0.1.1.jar" id="org.seasar.s2daoplugin" version="0.1.1">
+      <category name="s2daoplugin"/>
+   </feature>
    <category-def name="s2daoplugin" label="s2daoplugin"/>
 </site>
