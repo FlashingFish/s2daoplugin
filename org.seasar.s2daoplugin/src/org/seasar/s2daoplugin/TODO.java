@@ -22,7 +22,7 @@ interface TODO {
 	 * 
 	 * TODO: Daoを継承しているときのSQLファイルを探す順序
 	 * 
-	 * TODO: kijimunaを使わないで使える設定を作る
+	 * TODO: S2Containerをプラグイン上で動かすことを考えた方が良いのか……
 	 * 
 	 * TODO: テストコード書く
 	 * 

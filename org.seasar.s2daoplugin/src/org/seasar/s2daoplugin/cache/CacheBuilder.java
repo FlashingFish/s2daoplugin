@@ -79,22 +79,22 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 		private void process(IResourceDelta delta) throws JavaModelException {
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-				fireTypeAdded(delta);
+				processAdded(delta);
 				break;
 			case IResourceDelta.REMOVED:
-				fireTypeRemoved(delta);
+				processRemoved(delta);
 				break;
 			}
 		}
 		
-		private void fireTypeAdded(IResourceDelta delta) {
+		private void processAdded(IResourceDelta delta) {
 			IType type = findTypeFromClassFile(delta);
 			if (type != null) {
 				events.add(new TypeAddedEvent(type));
 			}
 		}
 		
-		private void fireTypeRemoved(IResourceDelta delta) {
+		private void processRemoved(IResourceDelta delta) {
 			IClassFile classFile = getClassFile(delta);
 			String fqcn = JavaUtil.getFullyQualifiedNameFromClassFile(classFile);
 			if (fqcn != null) {
@@ -128,7 +128,6 @@ public class CacheBuilder extends IncrementalProjectBuilder {
 					(IFile) resource) : null;
 		}
 	}
-	
 	
 	private static class TypeAddedEvent implements ITypeChangeEvent {
 
