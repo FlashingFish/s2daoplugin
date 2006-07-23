@@ -2,7 +2,7 @@
 <feature
       id="org.seasar.s2daoplugin"
       label="%feature.name"
-      version="0.1.0"
+      version="0.1.1"
       provider-name="%feature.provider">
 
    <description url="http://s2daoplugin.sandbox.seasar.org/">
@@ -236,7 +236,7 @@
          id="org.seasar.s2daoplugin"
          download-size="0"
          install-size="0"
-         version="0.1.0"
+         version="0.1.1"
          unpack="false"/>
 
 </feature>
