@@ -20,7 +20,7 @@ import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.util.StringUtil;
 
 public abstract class AbstractListenerHoldableCache implements
-		IDiconChangeListenerHolder {
+		IDiconChangeListenerAware {
 
 	private AffectedContainers affectedContainers = new AffectedContainers();
 	private IProject project;

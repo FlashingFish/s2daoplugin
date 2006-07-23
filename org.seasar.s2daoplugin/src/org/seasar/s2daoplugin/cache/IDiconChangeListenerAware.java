@@ -17,7 +17,7 @@ package org.seasar.s2daoplugin.cache;
 
 import org.eclipse.core.resources.IProject;
 
-public interface IDiconChangeListenerHolder {
+public interface IDiconChangeListenerAware {
 
 	void setProject(IProject project);
 	

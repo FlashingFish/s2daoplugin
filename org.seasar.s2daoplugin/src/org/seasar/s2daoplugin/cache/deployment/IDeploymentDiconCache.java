@@ -19,11 +19,11 @@ import org.eclipse.core.runtime.IPath;
 import org.seasar.kijimuna.core.dicon.model.IContainerElement;
 import org.seasar.s2daoplugin.cache.IComponentChangeListenerAware;
 import org.seasar.s2daoplugin.cache.IDiconChangeListener;
-import org.seasar.s2daoplugin.cache.IDiconChangeListenerHolder;
+import org.seasar.s2daoplugin.cache.IDiconChangeListenerAware;
 import org.seasar.s2daoplugin.cache.ITypeChangeListener;
 
 public interface IDeploymentDiconCache extends IDiconChangeListener,
-		IDiconChangeListenerHolder, ITypeChangeListener,
+		IDiconChangeListenerAware, ITypeChangeListener,
 		IComponentChangeListenerAware {
 
 	IContainerElement getContainer(IPath path);
