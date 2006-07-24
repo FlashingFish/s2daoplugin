@@ -38,27 +38,44 @@ import org.seasar.s2daoplugin.cache.CacheConstants;
 public final class AspectUtil implements CacheConstants {
 
 	public static boolean hasInterceptor(IAspectElement aspect, IType interceptorType) {
-		return hasInterceptor(DiconUtil.getChildComponent(aspect), interceptorType);
+		return hasInterceptor(aspect, new IType[] {interceptorType});
+	}
+	
+	public static boolean hasInterceptor(IAspectElement aspect, IType[] interceptorTypes) {
+		return hasInterceptor(DiconUtil.getChildComponent(aspect), interceptorTypes);
 	}
 	
 	public static boolean hasInterceptor(IComponentElement interceptor,
 			IType interceptorType) {
-		if (interceptor == null || interceptorType == null) {
+		return hasInterceptor(interceptor, new IType[] {interceptorType});
+	}
+	
+	public static boolean hasInterceptor(IComponentElement interceptor,
+			IType[] interceptorTypes) {
+		if (interceptor == null || interceptorTypes == null ||
+				interceptorTypes.length == 0) {
 			return false;
 		}
 		if (isInterceptorChain(interceptor)) {
 			IComponentElement[] interceptors = getInterceptors(interceptor);
 			for (int i = 0; i < interceptors.length; i++) {
-				if (hasInterceptor(interceptors[i], interceptorType)) {
+				if (hasInterceptor(interceptors[i], interceptorTypes)) {
 					return true;
 				}
 			}
-			return false;
 		} else {
 			IRtti rtti = interceptor.getRttiLoader().loadRtti(
 					interceptor.getComponentClassName());
-			return rtti != null && interceptorType.equals(rtti.getType());
+			if (rtti != null) {
+				for (int i = 0; i < interceptorTypes.length; i++) {
+					if (interceptorTypes[i] != null &&
+							interceptorTypes[i].equals(rtti.getType())) {
+						return true;
+					}
+				}
+			}
 		}
+		return false;
 	}
 	
 	public static IComponentElement[] getAllInterceptors(IComponentHolderElement aspect) {

@@ -41,7 +41,8 @@ public class S2DaoNature implements IProjectNature, S2DaoConstants {
 			CacheRegistry.registerFactory(
 					S2DAO_CACHE_KEY, new IComponentCacheFactory() {
 						public IComponentCache createComponentCache() {
-							return new ComponentCache(new AspectFilter(S2DAO_INTERCEPTOR));
+							return new ComponentCache(new AspectFilter(new String[] {
+									S2DAO_INTERCEPTOR, S2DAO_PAGER_INTERCEPTOR}));
 						}
 					});
 		}

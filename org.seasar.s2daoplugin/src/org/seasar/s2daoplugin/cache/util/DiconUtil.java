@@ -15,8 +15,8 @@
  */
 package org.seasar.s2daoplugin.cache.util;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -91,22 +91,26 @@ public final class DiconUtil implements CacheConstants {
 	
 	public static IContainerElement[] getParentContainers(
 			IContainerElement container) {
+		return toContainerArray(getParentContainerSet(container));
+	}
+	
+	private static Set getParentContainerSet(IContainerElement container) {
 		CacheNature nature = CacheNature.getInstance(container.getProject());
 		if (nature == null) {
-			return EMPTY_CONTAINERS;
+			return Collections.EMPTY_SET;
 		}
 		Set ret = new HashSet();
 		List parents = ModelUtils.getParentContaienrs(container);
 		for (int i = 0; i < parents.size(); i++) {
 			IContainerElement org = (IContainerElement) parents.get(i);
-			ret.addAll(Arrays.asList(getParentContainers(org)));
+			ret.addAll(getParentContainerSet(org));
 			IContainerElement c = nature.getDeploymentDiconCache().getContainer(
 					org.getStorage().getFullPath());
 			if (c != null) {
 				ret.add(c);
 			}
 		}
-		return toContainerArray(ret);
+		return ret;
 	}
 
 }

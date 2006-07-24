@@ -39,5 +39,6 @@ public interface S2DaoConstants {
 	};
 	
 	String S2DAO_INTERCEPTOR = "org.seasar.dao.interceptors.S2DaoInterceptor";
+	String S2DAO_PAGER_INTERCEPTOR = "org.seasar.dao.pager.PagerS2DaoInterceptorWrapper";
 
 }

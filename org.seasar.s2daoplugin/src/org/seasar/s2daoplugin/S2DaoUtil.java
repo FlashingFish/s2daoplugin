@@ -24,6 +24,7 @@ import org.seasar.kijimuna.core.dicon.model.IAspectElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.kijimuna.core.dicon.model.IDiconElement;
 import org.seasar.kijimuna.core.rtti.IRtti;
+import org.seasar.kijimuna.core.rtti.RttiLoader;
 import org.seasar.s2daoplugin.cache.CacheConstants;
 import org.seasar.s2daoplugin.cache.cache.IComponentCache;
 import org.seasar.s2daoplugin.cache.util.AspectUtil;
@@ -49,7 +50,7 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 			List aspects = components[i].getAspectList();
 			for (int j = 0; j < aspects.size(); j++) {
 				IAspectElement aspect = (IAspectElement) aspects.get(j);
-				if (!AspectUtil.hasInterceptor(aspect, getS2DaoInterceptorType(aspect))) {
+				if (!AspectUtil.hasInterceptor(aspect, getS2DaoInterceptorTypes(aspect))) {
 					continue;
 				}
 				if (AspectUtil.isApplied(aspect, method)) {
@@ -65,9 +66,14 @@ public class S2DaoUtil implements S2DaoConstants, CacheConstants {
 		return FlagsUtil.isInterface(type) || FlagsUtil.isAbstract(method);
 	}
 	
-	private static IType getS2DaoInterceptorType(IDiconElement element) {
-		IRtti rtti = element.getRttiLoader().loadRtti(S2DAO_INTERCEPTOR);
-		return rtti != null ? rtti.getType() : null;
+	private static IType[] getS2DaoInterceptorTypes(IDiconElement element) {
+		RttiLoader loader = element.getRttiLoader();
+		return new IType[] {
+				getType(loader.loadRtti(S2DAO_INTERCEPTOR)),
+				getType(loader.loadRtti(S2DAO_PAGER_INTERCEPTOR))};
 	}
 
+	private static IType getType(IRtti rtti) {
+		return rtti != null ? rtti.getType() : null;
+	}
 }

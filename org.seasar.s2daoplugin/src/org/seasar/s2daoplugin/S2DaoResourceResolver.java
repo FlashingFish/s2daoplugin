@@ -20,6 +20,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -131,8 +133,8 @@ public class S2DaoResourceResolver implements S2DaoConstants {
 			}
 			Object[] resources;
 			try {
-				resources = fragment.getNonJavaResources();
-			} catch (JavaModelException e) {
+				resources = getNonJavaResources(fragment);
+			} catch (CoreException e) {
 				S2DaoPlugin.log(e);
 				continue;
 			}
@@ -149,6 +151,26 @@ public class S2DaoResourceResolver implements S2DaoConstants {
 
 	private String getPackageName(IMethod method) {
 		return method.getDeclaringType().getPackageFragment().getElementName().toString();
+	}
+	
+	private Object[] getNonJavaResources(IPackageFragment fragment)
+			throws CoreException {
+		if (!fragment.isDefaultPackage()) {
+			return fragment.getNonJavaResources();
+		}
+		IResource resource = fragment.getResource();
+		if (resource.getType() != IResource.FOLDER) {
+			return new Object[0];
+		}
+		IFolder folder = (IFolder) resource;
+		IResource[] resources = folder.members();
+		Set ret = new HashSet();
+		for (int i = 0; i < resources.length; i++) {
+			if (resources[i] instanceof IFile) {
+				ret.add(resources[i]);
+			}
+		}
+		return (Object[]) ret.toArray(new Object[ret.size()]);
 	}
 	
 	

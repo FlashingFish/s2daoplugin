@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.seasar.s2daoplugin.util.ArrayUtil;
@@ -83,7 +84,8 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 			return EMPTY_RESOLVE;
 		}
 		IJavaElement element = JavaCore.create(sql.getParent());
-		String packageName = element.getElementName();
+		String packageName = element instanceof IPackageFragment ?
+				element.getElementName() : "";
 		List ret = new ArrayList();
 		String name = sql.getName();
 		if (hasSuffix(name)) {
