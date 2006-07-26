@@ -37,7 +37,7 @@ public abstract class AbstractComponentDeployer implements IComponentDeployer {
 		this.container = container;
 		this.component = component;
 		if (componentClassName != null) {
-			assertComponentClassName(componentClassName);
+			assertComponentClassNameIsNotNull(componentClassName);
 		}
 	}
 	
@@ -56,7 +56,7 @@ public abstract class AbstractComponentDeployer implements IComponentDeployer {
 		return component;
 	}
 	
-	protected void assertComponentClassName(String componentClassName) {
+	protected void assertComponentClassNameIsNotNull(String componentClassName) {
 		if (!component.getComponentClassName().equals(componentClassName)) {
 			throw new IllegalArgumentException();
 		}

@@ -49,7 +49,7 @@ public class ComponentAutoRegisterDeployer extends
 			IPackageFragmentRoot root = JavaProjectUtil.findPackageFragmentRoot(
 					rtti.getType());
 			if (isJar(root)) {
-				process(root);
+				handler.processPackageFragmentRoot(root);
 			} else if (isFileSystem(root)) {
 				IPackageFragmentRoot[] roots =
 					JavaProjectUtil.findPackageFragmentRootsSharedOutputLocation(root);

@@ -35,7 +35,7 @@ public class ComponentCacheBuilder extends AbstractComponentCacheBuilder {
 	
 	public void build(IComponentElement[] components) {
 		for (int i = 0; i < components.length; i++) {
-			if (getFilter().isPassable(components[i])) {
+			if (getFilter().accept(components[i])) {
 				addComponent(components[i]);
 			}
 		}

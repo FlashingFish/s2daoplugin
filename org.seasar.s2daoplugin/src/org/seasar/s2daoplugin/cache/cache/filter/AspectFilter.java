@@ -35,12 +35,12 @@ public class AspectFilter extends AbstractDecorationFilter {
 		super(filter);
 	}
 	
-	public boolean isPassable(IComponentElement component) {
+	public boolean accept(IComponentElement component) {
 		List aspects = component.getAspectList();
 		for (int i = 0; i < aspects.size(); i++) {
 			IComponentElement interceptor =
 				DiconUtil.getChildComponent((IAspectElement) aspects.get(i));
-			if (getFilter().isPassable(interceptor)) {
+			if (getFilter().accept(interceptor)) {
 				return true;
 			}
 		}

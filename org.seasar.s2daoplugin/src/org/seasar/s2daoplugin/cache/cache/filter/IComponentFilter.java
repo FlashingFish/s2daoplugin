@@ -19,5 +19,5 @@ import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 
 public interface IComponentFilter {
 
-	boolean isPassable(IComponentElement component);
+	boolean accept(IComponentElement component);
 }

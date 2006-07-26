@@ -60,8 +60,15 @@ public class S2DaoPlugin extends AbstractUIPlugin implements S2DaoConstants {
 	}
 	
 	public static void log(Throwable t) {
-		getDefault().getLog().log(new Status(IStatus.ERROR, ID_PLUGIN,
-				IStatus.ERROR, t.getMessage(), t));
+		log(new Status(IStatus.ERROR, ID_PLUGIN, IStatus.ERROR, t.getMessage(), t));
+	}
+	
+	public static void log(CoreException e) {
+		log(e.getStatus());
+	}
+	
+	private static void log(IStatus status) {
+		getDefault().getLog().log(status);
 	}
 
 }

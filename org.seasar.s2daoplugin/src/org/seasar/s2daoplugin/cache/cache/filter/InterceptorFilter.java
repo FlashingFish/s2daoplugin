@@ -24,10 +24,10 @@ public class InterceptorFilter extends AbstractDecorationFilter {
 		super(filter);
 	}
 	
-	public boolean isPassable(IComponentElement component) {
+	public boolean accept(IComponentElement component) {
 		IComponentElement[] interceptors = AspectUtil.getAllInterceptors(component);
 		for (int i = 0; i < interceptors.length; i++) {
-			if (getFilter().isPassable(interceptors[i])) {
+			if (getFilter().accept(interceptors[i])) {
 				return true;
 			}
 		}

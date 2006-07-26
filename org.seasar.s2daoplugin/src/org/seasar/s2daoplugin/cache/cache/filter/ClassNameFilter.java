@@ -38,7 +38,7 @@ public class ClassNameFilter implements IComponentFilter {
 		classNameSet = new HashSet(Arrays.asList(classNames));
 	}
 	
-	public boolean isPassable(IComponentElement component) {
+	public boolean accept(IComponentElement component) {
 		String className = component.getComponentClassName();
 		if (!classNameSet.isEmpty() && !classNameSet.contains(className)) {
 			return false;

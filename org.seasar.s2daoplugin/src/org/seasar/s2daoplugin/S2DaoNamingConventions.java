@@ -76,7 +76,7 @@ public class S2DaoNamingConventions implements S2DaoConstants {
 	 * SQLファイル名から、DAOの名称と成り得るパターンを全て解決します。
 	 * 返却される配列は、最も可能性の高い名称から順に並んでいます。
 	 * 
-	 * @return {{"PackageName", "DaoTypeName", "MethodName"}, ...}
+	 * @return {{"PackageFragmentName", "DaoTypeName", "MethodName"}, ...}
 	 */
 	public static String[][] resolveDao(IFile sql) {
 		if (sql == null || !sql.getName().toLowerCase().endsWith(SQL_EXTENSION) ||
