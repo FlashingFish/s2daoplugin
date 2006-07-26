@@ -32,7 +32,8 @@
 
 <h4><span>はじめに</span></h4>
 <p>プラグインがDAOとして認識できるインターフェース（または抽象クラス）は、diconファイルにおいて
-<code>org.seasar.dao.interceptors.S2DaoInterceptor</code>がアスペクトされたコンポーネント
+<code>org.seasar.dao.interceptors.S2DaoInterceptor</code>または
+<code>org.seasar.dao.pager.PagerS2DaoInterceptorWrapper</code>がアスペクトされたコンポーネント
 のみです。また、ポイントカットの指定も有効ですので、DAOが認識されない場合はdiconファイルを
 確認してみてください。</p>
 
