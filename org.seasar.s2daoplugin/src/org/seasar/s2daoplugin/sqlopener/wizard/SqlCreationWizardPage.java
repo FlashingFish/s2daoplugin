@@ -110,11 +110,10 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 		Properties props = getDbmsSuffixProperties();
 		suffixRadios = new SuffixRadio[DBMS_SUFFIXES.length];
 		for (int i = 0; i < DBMS_SUFFIXES.length; i++) {
-			String dbmsName = props.getProperty(DBMS_SUFFIXES[i]);
 			ISuffixRadio radio = new SuffixRadio(group);
 			radio.setSelection(i == 0);
 			radio.setSuffix(DBMS_SUFFIXES[i]);
-			radio.setDbmsName(dbmsName);
+			radio.setDbmsName(props.getProperty(DBMS_SUFFIXES[i]));
 			radio.addSelectionListener(this);
 			suffixRadios[i] = radio;
 		}
