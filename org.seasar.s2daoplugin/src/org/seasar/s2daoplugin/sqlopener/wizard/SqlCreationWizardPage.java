@@ -15,6 +15,10 @@
  */
 package org.seasar.s2daoplugin.sqlopener.wizard;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -30,6 +34,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.seasar.s2daoplugin.Messages;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoNamingConventions;
+import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
 public class SqlCreationWizardPage extends WizardNewFileCreationPage
@@ -37,15 +42,8 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 
 	private IWorkbench workbench;
 	private String initialFileName;
-	private Button defaultSuffix;
-	private Button oracleSuffix;
-	private Button db2Suffix;
-	private Button mssqlSuffix;
-	private Button mysqlSuffix;
-	private Button postgresqlSuffix;
-	private Button firebirdSuffix;
-	private Button hsqlSuffx;
 	private Button openFileCheckBox;
+	private ISuffixRadio[] suffixRadios = new ISuffixRadio[0];
 	
 	public SqlCreationWizardPage(IWorkbench workbench, IStructuredSelection selection) {
 		super("SQLCreationPage1", selection);
@@ -64,7 +62,7 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
         
-		buildSuffixRadio(group);
+		setUpSuffixRadios(group);
         openFileCheckBox = new Button(composite, SWT.CHECK);
         openFileCheckBox.setText(Messages.getMessage("wizard.SQLCreation.page1.openFile"));
         openFileCheckBox.setSelection(true);
@@ -74,39 +72,24 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 	
 	public boolean finish() {
 		IFile newFile = createNewFile();
-		if (newFile == null) {
-			return false;
-		}
-        if (openFileCheckBox.getSelection()) {
-        	return IDEUtil.openEditor(workbench, newFile) != null;
-        }
-        return true;
+		return newFile != null && openFileCheckBox.getSelection() ?
+        	IDEUtil.openEditor(workbench, newFile) != null : true;
 	}
 	
 	public void handleEvent(Event event) {
 		if (event.type == SWT.Selection) {
 			Widget source = event.widget;
 			String filename = initialFileName;
-			if (defaultSuffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_DEFAULT, filename);
-			} else if (oracleSuffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_ORACLE, filename);
-			} else if (db2Suffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_DB2, filename);
-			} else if (mssqlSuffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_MSSQL, filename);
-			} else if (mysqlSuffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_MYSQL, filename);
-			} else if (postgresqlSuffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_POSTGRESQL, filename);
-			} else if (firebirdSuffix == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_FIREBIRD, filename);
-			} else if (hsqlSuffx == source) {
-				filename = S2DaoNamingConventions.changeSuffix(SUFFIX_HSQLDB, filename);
+			for (int i = 0; i < suffixRadios.length; i++) {
+				if (suffixRadios[i].equals(source)) {
+					filename = S2DaoNamingConventions.changeSuffix(
+							suffixRadios[i].getSuffix(), filename);
+					break;
+				}
 			}
 			// super.createControlを実行中にhandleEventが呼ばれる。
-			// 継承元のコントロールが作成途中にsetFileNameが呼ばれるとNullPointerExceptionが
-			// スローされる。
+			// 継承元のコントロールが作成途中にsetFileNameが呼ばれると
+			// NullPointerExceptionがスローされる。
 			if (isPageComplete()) {
 				setFileName(filename);
 			}
@@ -123,47 +106,32 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 		return Messages.getMessage("wizard.SQLCreation.page1.newFileLabel");
 	}
 	
-	private void buildSuffixRadio(Group group) {
-		// default
-        defaultSuffix = new Button(group, SWT.RADIO);
-        defaultSuffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.default"));
-        defaultSuffix.setSelection(true);
-        defaultSuffix.addListener(SWT.Selection, this);
-        
-        // oracle
-        oracleSuffix = new Button(group, SWT.RADIO);
-        oracleSuffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.oracle"));
-        oracleSuffix.addListener(SWT.Selection, this);
-        
-        // db2
-        db2Suffix = new Button(group, SWT.RADIO);
-        db2Suffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.db2"));
-        db2Suffix.addListener(SWT.Selection, this);
-        
-        // mssql
-        mssqlSuffix = new Button(group, SWT.RADIO);
-        mssqlSuffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.mssql"));
-        mssqlSuffix.addListener(SWT.Selection, this);
-        
-        // mysql
-        mysqlSuffix = new Button(group, SWT.RADIO);
-        mysqlSuffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.mysql"));
-        mysqlSuffix.addListener(SWT.Selection, this);
-        
-        // postgresql
-        postgresqlSuffix = new Button(group, SWT.RADIO);
-        postgresqlSuffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.postgresql"));
-        postgresqlSuffix.addListener(SWT.Selection ,this);
-        
-        // firebird
-        firebirdSuffix = new Button(group, SWT.RADIO);
-        firebirdSuffix.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.firebird"));
-        firebirdSuffix.addListener(SWT.Selection, this);
-        
-        // hsql
-        hsqlSuffx = new Button(group, SWT.RADIO);
-        hsqlSuffx.setText(Messages.getMessage("wizard.SQLCreation.page1.suffix.hsql"));
-        hsqlSuffx.addListener(SWT.Selection, this);
+	private void setUpSuffixRadios(Group group) {
+		Properties props = getDbmsSuffixProperties();
+		suffixRadios = new SuffixRadio[DBMS_SUFFIXES.length];
+		for (int i = 0; i < DBMS_SUFFIXES.length; i++) {
+			String dbmsName = props.getProperty(DBMS_SUFFIXES[i]);
+			ISuffixRadio radio = new SuffixRadio(group);
+			radio.setSelection(i == 0);
+			radio.setSuffix(DBMS_SUFFIXES[i]);
+			radio.setDbmsName(dbmsName);
+			radio.addSelectionListener(this);
+			suffixRadios[i] = radio;
+		}
+	}
+	
+	private Properties getDbmsSuffixProperties() {
+		String propName = getClass().getPackage().getName().toString()
+				.replace('.', '/') + "/dbms_suffix.properties";
+		InputStream is = getClass().getClassLoader().getResourceAsStream(
+				propName);
+		Properties props = new Properties();
+		try {
+			props.load(is);
+		} catch (IOException e) {
+			S2DaoPlugin.log(e);
+		}
+		return props;
 	}
 
 }

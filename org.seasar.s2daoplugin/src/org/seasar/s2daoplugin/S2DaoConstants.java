@@ -22,8 +22,6 @@ public interface S2DaoConstants {
 	String ID_SQL_MARKER_BUILDER = ID_PLUGIN + ".sqlmarkerbuilder";
 	String ID_SQL_MARKER = ID_PLUGIN + ".sqlmarker";
 
-	String S2DAO_CACHE_KEY = ID_PLUGIN + ".s2dao";
-	
 	String SUFFIX_DEFAULT = "";
 	String SUFFIX_ORACLE = "_oracle";
 	String SUFFIX_DB2 = "_db2";
@@ -32,11 +30,16 @@ public interface S2DaoConstants {
 	String SUFFIX_POSTGRESQL = "_postgre";
 	String SUFFIX_FIREBIRD = "_firebird";
 	String SUFFIX_HSQLDB = "_hsql";
+	String SUFFIX_DERBY = "_derby";
+	String SUFFIX_MAXDB = "_maxdb";
 	
 	String[] DBMS_SUFFIXES = new String[] {
 			SUFFIX_DEFAULT, SUFFIX_ORACLE, SUFFIX_DB2, SUFFIX_MSSQL,
 			SUFFIX_MYSQL, SUFFIX_POSTGRESQL, SUFFIX_FIREBIRD, SUFFIX_HSQLDB,
+			SUFFIX_DERBY, SUFFIX_MAXDB,
 	};
+
+	String S2DAO_CACHE_KEY = ID_PLUGIN + ".s2dao";
 	
 	String S2DAO_INTERCEPTOR = "org.seasar.dao.interceptors.S2DaoInterceptor";
 	String S2DAO_PAGER_INTERCEPTOR = "org.seasar.dao.pager.PagerS2DaoInterceptorWrapper";
