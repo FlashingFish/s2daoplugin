@@ -49,12 +49,8 @@ public class SuffixRadio implements ISuffixRadio {
 		radio.addListener(SWT.Selection, listener);
 	}
 	
-	public int hashCode() {
-		return radio.hashCode();
-	}
-	
-	public boolean equals(Object obj) {
-		return radio.equals(obj);
+	public Button getButton() {
+		return radio;
 	}
 
 }

@@ -17,6 +17,7 @@ package org.seasar.s2daoplugin.cache.deployment.deployer;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IStorage;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
 import org.seasar.s2daoplugin.cache.deployment.IDeploymentContainer;
@@ -34,7 +35,7 @@ public class FileSystemComponentAutoRegisterDeployer extends
 		return false;
 	}
 	
-	protected void doDeploy(IHandler handler) {
+	protected void doDeploy(IHandler handler) throws CoreException {
 		IStorage s = getAutoRegister().getStorage();
 		if (!(s instanceof IResource)) {
 			return;

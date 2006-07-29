@@ -81,7 +81,7 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 			Widget source = event.widget;
 			String filename = initialFileName;
 			for (int i = 0; i < suffixRadios.length; i++) {
-				if (suffixRadios[i].equals(source)) {
+				if (suffixRadios[i].getButton().equals(source)) {
 					filename = S2DaoNamingConventions.changeSuffix(
 							suffixRadios[i].getSuffix(), filename);
 					break;

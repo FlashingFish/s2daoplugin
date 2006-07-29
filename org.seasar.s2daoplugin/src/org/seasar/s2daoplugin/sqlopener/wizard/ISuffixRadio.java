@@ -15,6 +15,7 @@
  */
 package org.seasar.s2daoplugin.sqlopener.wizard;
 
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Listener;
 
 public interface ISuffixRadio {
@@ -28,4 +29,6 @@ public interface ISuffixRadio {
 	void setSelection(boolean selected);
 	
 	void addSelectionListener(Listener listener);
+	
+	Button getButton();
 }

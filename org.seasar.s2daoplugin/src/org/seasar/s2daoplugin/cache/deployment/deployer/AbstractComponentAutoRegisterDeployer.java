@@ -43,7 +43,8 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 	public void deployType(final IType type) {
 		try {
 			doDeploy(new IHandler() {
-				public void processPackageFragmentRoot(IPackageFragmentRoot root) {
+				public void processPackageFragmentRoot(IPackageFragmentRoot root)
+						throws CoreException {
 					processType(root, type);
 				}
 			});
@@ -57,7 +58,8 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 	protected void doDeploy() {
 		try {
 			doDeploy(new IHandler() {
-				public void processPackageFragmentRoot(IPackageFragmentRoot root) {
+				public void processPackageFragmentRoot(IPackageFragmentRoot root)
+						throws CoreException {
 					process(root);
 				}
 			});
@@ -66,14 +68,9 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		}
 	}
 	
-	protected void processType(IPackageFragmentRoot root, IType type) {
-		IJavaElement[] elements;
-		try {
-			elements = root.getChildren();
-		} catch (JavaModelException e) {
-			S2DaoPlugin.log(e);
-			return;
-		}
+	protected void processType(IPackageFragmentRoot root, IType type)
+			throws CoreException {
+		IJavaElement[] elements = root.getChildren();
 		for (int i = 0; i < elements.length; i++) {
 			if (elements[i].equals(type.getPackageFragment())) {
 				try {
@@ -86,24 +83,19 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		}
 	}
 	
-	protected void process(IPackageFragmentRoot root) {
-		IJavaElement[] elements;
-		try {
-			elements = root.getChildren();
-			for (int i = 0; i < elements.length; i++) {
-				if (elements[i] instanceof IPackageFragment == false) {
-					continue;
-				}
-				IPackageFragment fragment = (IPackageFragment) elements[i];
-				for (int j = 0; j < getClassPatternSize(); j++) {
-					ClassPattern cp = getClassPattern(j);
-					if (cp.isAppliedPackageName(fragment.getElementName())) {
-						processChildren(fragment);
-					}
+	protected void process(IPackageFragmentRoot root) throws CoreException {
+		IJavaElement[] elements = root.getChildren();
+		for (int i = 0; i < elements.length; i++) {
+			if (elements[i] instanceof IPackageFragment == false) {
+				continue;
+			}
+			IPackageFragment fragment = (IPackageFragment) elements[i];
+			for (int j = 0; j < getClassPatternSize(); j++) {
+				ClassPattern cp = getClassPattern(j);
+				if (cp.isAppliedPackageName(fragment.getElementName())) {
+					processChildren(fragment);
 				}
 			}
-		} catch (JavaModelException e) {
-			S2DaoPlugin.log(e);
 		}
 	}
 	
@@ -138,11 +130,11 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 		if (type == null || type.isLocal() || type.isAnonymous()) {
 			return false;
 		}
-		return !isEnclosingType(type) || FlagsUtil.isInterface(type) ||
+		return !isEnclosedType(type) || FlagsUtil.isInterface(type) ||
 				(FlagsUtil.isStatic(type) && FlagsUtil.isPublic(type)); 
 	}
 	
-	private boolean isEnclosingType(IType type) {
+	private boolean isEnclosedType(IType type) {
 		return type.getTypeQualifiedName().indexOf('$') != -1;
 	}
 
@@ -157,7 +149,8 @@ public abstract class AbstractComponentAutoRegisterDeployer extends
 	
 	
 	protected interface IHandler {
-		void processPackageFragmentRoot(IPackageFragmentRoot root);
+		void processPackageFragmentRoot(IPackageFragmentRoot root)
+				throws CoreException;
 	}
 
 }

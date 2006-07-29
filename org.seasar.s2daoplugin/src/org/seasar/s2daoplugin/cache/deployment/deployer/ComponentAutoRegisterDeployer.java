@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.seasar.kijimuna.core.dicon.model.IArgElement;
 import org.seasar.kijimuna.core.dicon.model.IComponentElement;
@@ -43,7 +44,7 @@ public class ComponentAutoRegisterDeployer extends
 		return setUpReferenceClasses();
 	}
 	
-	protected void doDeploy(IHandler handler) {
+	protected void doDeploy(IHandler handler) throws CoreException {
 		for (Iterator it = referenceClasses.iterator(); it.hasNext();) {
 			IRtti rtti = (IRtti) it.next();
 			IPackageFragmentRoot root = JavaProjectUtil.findPackageFragmentRoot(
