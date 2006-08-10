@@ -15,9 +15,7 @@
  */
 package org.seasar.s2daoplugin.sqlmarker;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -48,7 +46,6 @@ public class SqlMarkerUtil {
 		return creatorWithoutRunnable;
 	}
 	
-	
 	public interface ISqlMarkerCreator {
 		void remarkAll(IProject project);
 		void remark(IType type);
@@ -66,8 +63,16 @@ public class SqlMarkerUtil {
 		
 		private S2DaoResourceResolver resolver = new S2DaoResourceResolver();
 		
+		protected ISqlMarker getSqlMarker(IMarker marker) {
+			return marker != null ? new SqlMarker(marker) : null;
+		}
+		
+		protected IFile[] getSqlFiles(IMethod method) {
+			return resolver.findSqlFiles(method);
+		}
+		
 		protected boolean hasSql(IMethod method) {
-			return resolver.findSqlFiles(method).length != 0;
+			return getSqlFiles(method).length != 0;
 		}
 		
 		protected void run(IJavaElement element, IWorkspaceRunnable runnable) {
@@ -89,13 +94,16 @@ public class SqlMarkerUtil {
 		}
 		
 		protected IMarker createMarker(IMethod method) {
-			if (method.isBinary() || hasMarker(method)) {
+			if (method.isBinary()) {
 				return null;
+			}
+			if (hasMarker(method)) {
+				return setSqlFiles(method);
 			}
 			try {
 				IMarker marker = method.getResource().createMarker(
 						S2DaoConstants.ID_SQL_MARKER);
-				marker.setAttributes(createMarkerAttributes(method));
+				createMarkerAttributes(marker, method);
 				return marker;
 			} catch (CoreException e) {
 				S2DaoPlugin.log(e);
@@ -103,13 +111,23 @@ public class SqlMarkerUtil {
 			}
 		}
 		
-		protected Map createMarkerAttributes(IMethod method) throws JavaModelException {
+		protected IMarker setSqlFiles(IMethod method) {
+			ISqlMarker sqlMarker = getSqlMarker(getMarker(method));
+			if (sqlMarker == null) {
+				return null;
+			}
+			sqlMarker.setSqlFiles(getSqlFiles(method));
+			return sqlMarker.getMarker();
+		}
+		
+		protected void createMarkerAttributes(IMarker marker, IMethod method)
+				throws CoreException {
 			int start = getStart(method);
 			int end = start + getLength(method);
-			Map map = new HashMap();
-			map.put(IMarker.CHAR_START, new Integer(start));
-			map.put(IMarker.CHAR_END, new Integer(end));
-			return map;
+			ISqlMarker sqlMarker = getSqlMarker(marker);
+			sqlMarker.setStart(start);
+			sqlMarker.setEnd(end);
+			setSqlFiles(method);
 		}
 		
 		protected boolean hasMarker(IMethod method) {
@@ -238,10 +256,15 @@ public class SqlMarkerUtil {
 		}
 
 		public void unmark(IMethod method) {
-			IMarker marker = getMarker(method);
-			if (marker != null) {
+			ISqlMarker sqlMarker = getSqlMarker(getMarker(method)); 
+			if (sqlMarker == null) {
+				return;
+			}
+			if (sqlMarker.getAvailableSqlFileSize() > 0) {
+				setSqlFiles(method);
+			} else {
 				try {
-					marker.delete();
+					sqlMarker.getMarker().delete();
 				} catch (CoreException e) {
 					S2DaoPlugin.log(e);
 				}

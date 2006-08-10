@@ -49,7 +49,7 @@ public class IDEUtil {
 	}
 	
 	public static IEditorPart openEditor(IWorkbench workbench, IFile file) {
-		if (workbench == null || file == null) {
+		if (workbench == null || file == null || !file.exists()) {
 			return null;
 		}
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();

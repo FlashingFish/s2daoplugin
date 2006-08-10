@@ -13,24 +13,29 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.util;
 
-import java.text.MessageFormat;
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
-public class Messages {
+public class IOUtil {
 
-	private static final String BUNDLE_NAME = "messages";
-	private static final String BUNDLE_BASE =
-		Messages.class.getPackage().getName() + "." + BUNDLE_NAME;
-	
-	public static String getMessage(String key) {
-		ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_BASE);
-		return bundle.getString(key);
+	public static void close(InputStream in) {
+		if (in != null) {
+			try {
+				in.close();
+			} catch (IOException ignore) {
+			}
+		}
 	}
 	
-	public static String getMessage(String key, Object arg) {
-		return MessageFormat.format(getMessage(key), new Object[] {arg});
+	public static void close(Reader reader) {
+		if (reader != null) {
+			try {
+				reader.close();
+			} catch (IOException ignore) {
+			}
+		}
 	}
-
 }

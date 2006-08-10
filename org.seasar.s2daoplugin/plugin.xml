@@ -79,12 +79,13 @@
    		</page>
    </extension>
    
-   <!-- marker, marker image provider -->
+   <!-- marker, marker image provider, marker resolution -->
    <extension
    		point="org.eclipse.core.resources.markers"
    		id="sqlmarker"
    		name="SQL">
    		<super type="org.eclipse.core.resources.textmarker"/>
+     	<attribute name="sqlpaths"/>
    		<persistent value="true"/>
    </extension>
    <extension
@@ -93,6 +94,12 @@
   			markertype="org.seasar.s2daoplugin.sqlmarker"
             icon="icons/sql_marker.gif"
             id="org.seasar.s2daoplugin.sqlmarker.imageprovider"/>
+   </extension>
+   <extension
+   		point="org.eclipse.ui.ide.markerResolution">
+   		<markerResolutionGenerator
+   			markerType="org.seasar.s2daoplugin.sqlmarker"
+   			class="org.seasar.s2daoplugin.sqlmarker.SqlMarkerResolutionGenerator"/>
    </extension>
 
 </plugin>

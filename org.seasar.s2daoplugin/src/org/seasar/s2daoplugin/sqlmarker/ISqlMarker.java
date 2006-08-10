@@ -13,24 +13,34 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.s2daoplugin;
+package org.seasar.s2daoplugin.sqlmarker;
 
-import java.text.MessageFormat;
-import java.util.ResourceBundle;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 
-public class Messages {
+public interface ISqlMarker {
 
-	private static final String BUNDLE_NAME = "messages";
-	private static final String BUNDLE_BASE =
-		Messages.class.getPackage().getName() + "." + BUNDLE_NAME;
+	String ATTRIBUTE_SQL_PATHS = "sqlpaths";
 	
-	public static String getMessage(String key) {
-		ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_BASE);
-		return bundle.getString(key);
-	}
+	String SQL_PATHS_SEPARATOR = ",";
 	
-	public static String getMessage(String key, Object arg) {
-		return MessageFormat.format(getMessage(key), new Object[] {arg});
-	}
+	int getAvailableSqlFileSize();
+	
+	IMarker getMarker();
+	
+	void setStart(int start);
+	
+	int getStart();
+	
+	void setEnd(int end);
+	
+	int getEnd();
 
+	IFile[] getSqlFiles();
+	
+	void setSqlFiles(IFile[] sqlFiles);
+	
+	void addSqlFile(IFile sqlFile);
+	
+	void removeSqlFile(IFile sqlFile);
 }

@@ -20,9 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
@@ -32,8 +30,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
@@ -41,11 +37,10 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.seasar.s2daoplugin.Messages;
-import org.seasar.s2daoplugin.S2DaoNamingConventions;
 import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.S2DaoResourceResolver;
 import org.seasar.s2daoplugin.S2DaoUtil;
-import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizard;
+import org.seasar.s2daoplugin.sqlopener.wizard.SqlCreationWizardUtil;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
 public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
@@ -89,7 +84,7 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 			IFile[] sqls = findSqlFiles(methods);
 			if (sqls.length == 0 && member instanceof IMethod) {
 				if (confirmCreation()) {
-					openSqlCreationWizard(methods[0]);
+					SqlCreationWizardUtil.open(methods[0], getShell());
 					return;
 				}
 			}
@@ -151,17 +146,6 @@ public abstract class AbstractSqlOpenAction implements IEditorActionDelegate,
 		String title = Messages.getMessage("SQLFileOpenAction.creation.confirm.title");
 		String msg = Messages.getMessage("SQLFileOpenAction.creation.confirm.message");
 		return MessageDialog.openConfirm(getShell(), title, msg);
-	}
-	
-	private void openSqlCreationWizard(IMethod method) {
-		IFolder folder = resolver.resolveSqlStoredFolder(method);
-		IResource resource = folder != null ? folder : method.getResource();
-		
-		SqlCreationWizard wizard = new SqlCreationWizard();
-		wizard.setInitialFileName(S2DaoNamingConventions.createSqlFileName(method));
-		wizard.init(PlatformUI.getWorkbench(), new StructuredSelection(resource));
-		WizardDialog dialog = new WizardDialog(getShell(), wizard);
-		dialog.open();
 	}
 	
 	private Shell getShell() {

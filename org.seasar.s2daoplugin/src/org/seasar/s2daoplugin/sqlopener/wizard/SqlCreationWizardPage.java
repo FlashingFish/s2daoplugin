@@ -44,6 +44,7 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 	private String initialFileName;
 	private Button openFileCheckBox;
 	private ISuffixRadio[] suffixRadios = new ISuffixRadio[0];
+	private boolean complated;
 	
 	public SqlCreationWizardPage(IWorkbench workbench, IStructuredSelection selection) {
 		super("SQLCreationPage1", selection);
@@ -68,6 +69,7 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
         openFileCheckBox.setSelection(true);
         
         setPageComplete(validatePage());
+        complated = true;
 	}
 	
 	public boolean finish() {
@@ -90,7 +92,7 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 			// super.createControlを実行中にhandleEventが呼ばれる。
 			// 継承元のコントロールが作成途中にsetFileNameが呼ばれると
 			// NullPointerExceptionがスローされる。
-			if (isPageComplete()) {
+			if (complated) {
 				setFileName(filename);
 			}
 		}

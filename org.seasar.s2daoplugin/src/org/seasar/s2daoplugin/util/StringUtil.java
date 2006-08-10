@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 
 public class StringUtil {
 
-	private static final String[] EMPTY_STRINGS = new String[0];
+	public static final String[] EMPTY_STRINGS = new String[0];
 	
 	public static boolean isEmpty(String value) {
 		return value == null || value.length() == 0;
