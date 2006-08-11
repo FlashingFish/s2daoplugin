@@ -19,24 +19,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
-import org.eclipse.ui.PlatformUI;
 import org.seasar.s2daoplugin.Messages;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoPlugin;
@@ -57,17 +55,10 @@ public class SqlMarkerResolutionGenerator implements
 		new CreateSqlResolution();
 	
 	static {
-		S2DaoPlugin plugin = S2DaoPlugin.getDefault();
-		InputStream in = null;
-		try {
-			in = plugin.openStream(new Path(PATH_SQL_MARKER_QUICKFIX));
-			ImageRegistry registry = plugin.getImageRegistry();
-			registry.put(KEY_SQL_MARKER_QUICKFIX, new Image(PlatformUI
-					.getWorkbench().getDisplay(), in));
-		} catch (IOException e) {
-		} finally {
-			IOUtil.close(in);
-		}
+		ImageDescriptor desc = S2DaoPlugin.imageDescriptorFromPlugin(
+				S2DaoConstants.ID_PLUGIN, PATH_SQL_MARKER_QUICKFIX);
+		ImageRegistry registry = S2DaoPlugin.getDefault().getImageRegistry();
+		registry.put(KEY_SQL_MARKER_QUICKFIX, desc.createImage());
 	}
 	
 	public boolean hasResolutions(IMarker marker) {
@@ -79,14 +70,14 @@ public class SqlMarkerResolutionGenerator implements
 	}
 	
 	public IMarkerResolution[] getResolutions(IMarker marker) {
-		IMarkerResolution[] resolutions = createResolutionEachSqlFile(marker);
+		IMarkerResolution[] resolutions = createOpenResolutionEachSqlFile(marker);
 		if (resolutions.length > 1) {
 			resolutions = add(resolutions, OPEN_ALL_RESOLUTION);
 		}
 		return add(resolutions, CREATE_RESOLUTION);
 	}
 	
-	private IMarkerResolution[] createResolutionEachSqlFile(IMarker marker) {
+	private IMarkerResolution[] createOpenResolutionEachSqlFile(IMarker marker) {
 		IFile[] sqls = getSqlMarker(marker).getSqlFiles();
 		IMarkerResolution[] resolutions = new IMarkerResolution[sqls.length];
 		for (int i = 0; i < sqls.length; i++) {
@@ -112,22 +103,27 @@ public class SqlMarkerResolutionGenerator implements
 	
 	private static class OpenSqlResolution implements IMarkerResolution2 {
 		
-		private IFile sql;
+		private IFile sqlFile;
 		
-		public OpenSqlResolution(IFile sql) {
-			this.sql = sql;
+		public OpenSqlResolution(IFile sqlFile) {
+			this.sqlFile = sqlFile;
 		}
 		
 		public String getDescription() {
+			if (!sqlFile.exists()) {
+				return "";
+			}
 			InputStream in = null;
-			Reader reader = null;
+			BufferedReader reader = null;
 			StringBuffer ret = new StringBuffer();
 			try {
-				in = sql.getContents();
-				reader = new BufferedReader(new InputStreamReader(in));
-				int ch = -1;
-				while ((ch = reader.read()) != -1) {
-					ret.append((char) ch);
+				in = sqlFile.getContents();
+				reader = new BufferedReader(new InputStreamReader(in,
+						sqlFile.getCharset()));
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					// ‹ó”’‚Í&nbsp;‚É‚µ‚Ä‚àƒ_ƒ‚¾‚Á‚½c
+					ret.append(line).append("<br>");
 				}
 			} catch (CoreException ignore) {
 			} catch (IOException ignore) {
@@ -143,11 +139,11 @@ public class SqlMarkerResolutionGenerator implements
 		}
 		
 		public String getLabel() {
-			return Messages.getMessage("SQLMarker.open", sql.getName());
+			return Messages.getMessage("SQLMarker.open", sqlFile.getName());
 		}
 
 		public void run(IMarker marker) {
-			IDEUtil.openEditor(sql);
+			IDEUtil.openEditor(sqlFile);
 		}
 	}
 	
