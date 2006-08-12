@@ -15,10 +15,6 @@
  */
 package org.seasar.s2daoplugin.sqlopener.wizard;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -34,7 +30,6 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.seasar.s2daoplugin.Messages;
 import org.seasar.s2daoplugin.S2DaoConstants;
 import org.seasar.s2daoplugin.S2DaoNamingConventions;
-import org.seasar.s2daoplugin.S2DaoPlugin;
 import org.seasar.s2daoplugin.util.IDEUtil;
 
 public class SqlCreationWizardPage extends WizardNewFileCreationPage
@@ -109,30 +104,15 @@ public class SqlCreationWizardPage extends WizardNewFileCreationPage
 	}
 	
 	private void setUpSuffixRadios(Group group) {
-		Properties props = getDbmsSuffixProperties();
 		suffixRadios = new SuffixRadio[DBMS_SUFFIXES.length];
 		for (int i = 0; i < DBMS_SUFFIXES.length; i++) {
 			ISuffixRadio radio = new SuffixRadio(group);
 			radio.setSelection(i == 0);
 			radio.setSuffix(DBMS_SUFFIXES[i]);
-			radio.setDbmsName(props.getProperty(DBMS_SUFFIXES[i]));
+			radio.setDbmsName(DbmsSuffixes.getDbmsName(DBMS_SUFFIXES[i]));
 			radio.addSelectionListener(this);
 			suffixRadios[i] = radio;
 		}
-	}
-	
-	private Properties getDbmsSuffixProperties() {
-		String propName = getClass().getPackage().getName().toString()
-				.replace('.', '/') + "/dbms_suffix.properties";
-		InputStream is = getClass().getClassLoader().getResourceAsStream(
-				propName);
-		Properties props = new Properties();
-		try {
-			props.load(is);
-		} catch (IOException e) {
-			S2DaoPlugin.log(e);
-		}
-		return props;
 	}
 
 }

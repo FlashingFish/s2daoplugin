@@ -30,7 +30,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
@@ -46,19 +45,16 @@ import org.seasar.s2daoplugin.util.IOUtil;
 public class SqlMarkerResolutionGenerator implements
 		IMarkerResolutionGenerator2 {
 
-	private static final String KEY_SQL_MARKER_QUICKFIX = "sql_marker_quickfix";
-	private static final String PATH_SQL_MARKER_QUICKFIX =
-		"icons/sql_marker_quickfix.gif";
 	private static final IMarkerResolution OPEN_ALL_RESOLUTION =
 		new OpenAllSqlsResolution();
 	private static final IMarkerResolution CREATE_RESOLUTION =
 		new CreateSqlResolution();
+	private static final Image quickfixImage;
 	
 	static {
 		ImageDescriptor desc = S2DaoPlugin.imageDescriptorFromPlugin(
-				S2DaoConstants.ID_PLUGIN, PATH_SQL_MARKER_QUICKFIX);
-		ImageRegistry registry = S2DaoPlugin.getDefault().getImageRegistry();
-		registry.put(KEY_SQL_MARKER_QUICKFIX, desc.createImage());
+				S2DaoConstants.ID_PLUGIN, "icons/sql_marker_quickfix.gif");
+		quickfixImage = desc.createImage();
 	}
 	
 	public boolean hasResolutions(IMarker marker) {
@@ -96,8 +92,7 @@ public class SqlMarkerResolutionGenerator implements
 	}
 	
 	private static Image getQuickFixImage() {
-		ImageRegistry registry = S2DaoPlugin.getDefault().getImageRegistry();
-		return registry.get(KEY_SQL_MARKER_QUICKFIX);
+		return quickfixImage;
 	}
 	
 	
